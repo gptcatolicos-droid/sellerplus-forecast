@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SellerPlus Forecast</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#334155;border-radius:10px}
+
+/* ── LAYER SYSTEM ── */
+.layer{position:fixed;inset:0;display:none;z-index:10}
+.layer.on{display:flex}
+
+/* ═══════════════════════════════════════
+   WELCOME
+═══════════════════════════════════════ */
+#l-welcome{background:#f3f3f3;
+  align-items:center;justify-content:center;flex-direction:column;padding:20px;
+  animation:fadeUp .5s ease}
+
+.logo-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:36px}
+.logo-title{font-size:36px;font-weight:900;color:#fff;letter-spacing:-.02em}
+.logo-title span{color:#f97316}
+.logo-tagline{font-size:14px;color:#475569;text-align:center}
+
+.welcome-box{background:#fff;border:1px solid #e0e0e0;border-radius:24px;padding:36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.welcome-box h2{color:#1a1a1a;font-size:19px;font-weight:800;margin-bottom:6px}
+.welcome-box p{color:#666;font-size:13px;line-height:1.7;margin-bottom:28px}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.field input,.field select{width:100%;background:#fff;border:1.5px solid #ddd;border-radius:12px;padding:13px 16px;font-size:14px;color:#1a1a1a;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:#f97316}
+.field input::placeholder{color:#bbb}
+.field select option{background:#fff}
+
+.btn-cta{width:100%;padding:15px;border:none;border-radius:13px;
+  background:linear-gradient(135deg,#f97316,#f59e0b);color:#fff;
+  font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;margin-top:4px}
+.btn-cta:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(249,115,22,.4)}
+
+/* ═══════════════════════════════════════
+   PATH SELECTOR
+═══════════════════════════════════════ */
+#l-path{background:#f3f3f3;
+  align-items:center;justify-content:center;flex-direction:column;
+  padding:24px;animation:fadeUp .4s ease}
+
+.path-top{text-align:center;margin-bottom:32px}
+.path-hi{font-size:26px;font-weight:900;color:#f97316;margin-bottom:4px}
+.path-top h2{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:8px}
+.path-top p{font-size:13px;color:#888;max-width:380px;margin:0 auto;line-height:1.6}
+
+.path-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:580px}
+@media(max-width:520px){.path-grid{grid-template-columns:1fr;max-width:340px}}
+
+.path-card{background:#fff;border:2px solid #e8e8e8;box-shadow:0 2px 12px rgba(0,0,0,.06);
+  border-radius:20px;padding:30px 22px;cursor:pointer;transition:all .25s;text-align:center}
+.path-card:hover,.path-card:focus{border-color:#f97316;background:rgba(249,115,22,.08);
+  transform:translateY(-4px);box-shadow:0 16px 40px rgba(249,115,22,.2);outline:none}
+.path-icon{font-size:44px;margin-bottom:14px;display:block}
+.path-card h3{color:#1a1a1a;font-size:17px;font-weight:800;margin-bottom:8px}
+.path-card p{color:#888;font-size:12px;line-height:1.65}
+.path-tag{display:inline-block;margin-top:12px;background:rgba(249,115,22,.18);
+  color:#fb923c;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;
+  text-transform:uppercase;letter-spacing:.06em}
+
+/* ═══════════════════════════════════════
+   CHAT / WIZARD
+═══════════════════════════════════════ */
+#l-chat{background:#f1f5f9;flex-direction:column;align-items:center;animation:fadeUp .3s ease}
+
+.chat-topbar{width:100%;background:#1a1a1a;padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.chat-topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-logo{font-size:16px;font-weight:900;color:#fff}
+.topbar-logo span{color:#f97316}
+.topbar-mode{background:rgba(249,115,22,.15);color:#fb923c;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;text-transform:uppercase}
+.topbar-user{color:#64748b;font-size:11px}
+.btn-restart{background:none;border:1px solid rgba(255,255,255,.1);color:#64748b;
+  font-size:11px;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-restart:hover{border-color:#f97316;color:#f97316}
+
+.chat-body{flex:1;overflow-y:auto;width:100%;max-width:760px;
+  padding:20px 16px 8px;display:flex;flex-direction:column;gap:14px}
+
+/* messages */
+.msg{display:flex;gap:10px;animation:fadeUp .25s ease}
+.msg.user{flex-direction:row-reverse}
+.avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.avatar.bot{background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff}
+.avatar.usr{background:#3b82f6;color:#fff;font-size:11px}
+.bubble{max-width:82%;padding:12px 16px;border-radius:16px;font-size:13.5px;line-height:1.65}
+.bubble.bot{background:#fff;color:#1e293b;border-top-left-radius:4px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.bubble.usr{background:#3b82f6;color:#fff;border-top-right-radius:4px}
+.bubble strong{font-weight:700}
+.bubble .highlight{color:#f97316;font-weight:700}
+
+/* quick replies */
+.quick-replies{display:flex;flex-wrap:wrap;gap:8px;padding:0 42px 4px;animation:fadeUp .3s ease}
+.qr{background:#fff;border:1.5px solid #e2e8f0;border-radius:99px;
+  padding:8px 18px;font-size:13px;font-weight:600;color:#475569;
+  cursor:pointer;transition:all .15s;font-family:inherit}
+.qr:hover{border-color:#f97316;color:#f97316;background:#fff7ed}
+
+/* product cards in chat */
+.prod-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:10px;padding:0 42px;animation:fadeUp .3s ease;width:100%}
+.prod-pick{background:#fff;border:2px solid #e2e8f0;border-radius:14px;
+  padding:14px;cursor:pointer;transition:all .2s}
+.prod-pick:hover,.prod-pick.sel{border-color:#f97316;background:#fff7ed}
+.prod-pick .pp-name{font-size:12.5px;font-weight:700;color:#0f172a;margin-bottom:4px}
+.prod-pick .pp-sub{font-size:11px;color:#64748b;line-height:1.5}
+.prod-pick .pp-price{font-size:12px;font-weight:800;color:#f97316;margin-top:6px}
+.prod-pick .pp-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.pp-tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px}
+.tag-demand{background:#dcfce7;color:#15803d}
+.tag-comp{background:#dbeafe;color:#1d4ed8}
+.tag-margin{background:#fef9c3;color:#854d0e}
+.check-mark{display:none;color:#f97316;font-size:18px;float:right;margin-top:-2px}
+.prod-pick.sel .check-mark{display:inline}
+.btn-confirm-picks{margin:0 42px;padding:13px 28px;background:#f97316;
+  border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:800;
+  cursor:pointer;font-family:inherit;transition:all .2s;animation:fadeUp .3s ease}
+.btn-confirm-picks:hover{background:#ea580c;transform:translateY(-1px)}
+.btn-confirm-picks:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* typing indicator */
+.typing-bubble{background:#fff;padding:14px 18px;border-radius:16px;border-top-left-radius:4px;
+  display:inline-flex;gap:5px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.typing-bubble span{width:7px;height:7px;background:#cbd5e1;border-radius:50%;animation:bounce 1.2s infinite}
+.typing-bubble span:nth-child(2){animation-delay:.15s}
+.typing-bubble span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+
+/* chat input */
+.chat-footer{width:100%;max-width:760px;padding:10px 16px 16px;flex-shrink:0}
+.chat-input-row{display:flex;gap:8px;background:#fff;border:1.5px solid #e2e8f0;
+  border-radius:14px;padding:8px 8px 8px 16px;transition:border-color .2s;
+  box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.chat-input-row:focus-within{border-color:#f97316}
+#chat-input{flex:1;border:none;background:none;font-size:14px;font-family:inherit;
+  outline:none;color:#1e293b;padding:4px 0}
+#chat-input::placeholder{color:#94a3b8}
+#chat-input:disabled{color:#94a3b8}
+.btn-send{background:#f97316;border:none;border-radius:10px;
+  width:40px;height:40px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:background .15s;flex-shrink:0}
+.btn-send:hover{background:#ea580c}
+.btn-send:disabled{opacity:.4;cursor:not-allowed}
+.spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════ */
+#l-dash{background:#f1f5f9;flex-direction:column;overflow:hidden;animation:fadeUp .4s ease}
+
+.dash-topbar{background:#1a1a1a;padding:12px 24px;display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0;gap:12px;flex-wrap:wrap}
+.dash-topbar-left{display:flex;align-items:center;gap:12px}
+.dash-logo{font-size:16px;font-weight:900;color:#fff}
+.dash-logo span{color:#f97316}
+.dash-plan-name{color:#94a3b8;font-size:12px;font-weight:600}
+.dash-actions{display:flex;gap:8px;align-items:center}
+.btn-dash{padding:7px 16px;border-radius:9px;font-size:11.5px;font-weight:700;
+  cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-new{background:rgba(249,115,22,.15);color:#fb923c}
+.btn-new:hover{background:rgba(249,115,22,.28)}
+.btn-export{background:rgba(255,255,255,.08);color:#94a3b8}
+.btn-export:hover{background:rgba(255,255,255,.15);color:#fff}
+.status-pill{display:flex;align-items:center;gap:6px;padding:6px 14px;
+  border-radius:99px;font-size:11.5px;font-weight:800}
+.pill-ok{background:#f0fdf4;color:#166534;border:1.5px solid #bbf7d0}
+.pill-bad{background:#fef2f2;color:#991b1b;border:1.5px solid #fecaca}
+.dot{width:7px;height:7px;border-radius:50%;animation:pulse 2s infinite}
+.dot-ok{background:#22c55e}.dot-bad{background:#ef4444}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.dash-body{flex:1;overflow-y:auto;padding:20px 24px}
+.dash-inner{max-width:1100px;margin:0 auto}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:12px;margin-bottom:18px}
+.kpi{background:#fff;border-radius:16px;padding:18px;border:1px solid #e2e8f0;
+  transition:box-shadow .2s}
+.kpi:hover{box-shadow:0 4px 20px rgba(0,0,0,.07)}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:20px;margin-bottom:10px}
+.ki-b{background:#dbeafe}.ki-g{background:#dcfce7}.ki-o{background:#ffedd5}.ki-p{background:#ede9fe}.ki-r{background:#fee2e2}
+.kpi-val{font-size:24px;font-weight:800;color:#0f172a;line-height:1}
+.kpi-val.neg{color:#dc2626}
+.kpi-lbl{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.kpi-hint{font-size:10px;color:#cbd5e1;margin-top:2px}
+
+/* chart */
+.chart-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:18px;margin-bottom:18px}
+.chart-title{font-size:12px;font-weight:700;color:#64748b;margin-bottom:14px}
+.chart-area{position:relative;height:200px}
+
+/* table */
+.table-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:16px}
+.table-head{padding:12px 18px;border-bottom:1px solid #f1f5f9;font-size:12px;font-weight:700;color:#475569;display:flex;align-items:center;gap:8px}
+.table-scroll{overflow-x:auto}
+.fin-table{width:100%;border-collapse:collapse;font-size:11px}
+.fin-table th{background:#f8fafc;padding:8px 11px;text-align:right;font-weight:700;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #f1f5f9}
+.fin-table th.lft{text-align:left;position:sticky;left:0;background:#f8fafc;z-index:2;min-width:210px}
+.fin-table td{padding:7px 11px;text-align:right;border-top:1px solid #f8fafc;white-space:nowrap;font-variant-numeric:tabular-nums}
+.fin-table td.lft{text-align:left;position:sticky;left:0;background:#fff;z-index:1;font-size:11px}
+.fin-table tr:hover td{background:#fafafa}.fin-table tr:hover td.lft{background:#fafafa}
+.tr-rev td{color:#1d4ed8;font-weight:700;background:#eff6ff!important}.tr-rev td.lft{background:#eff6ff!important}
+.tr-net td{color:#15803d;font-weight:700;background:#f0fdf4!important}.tr-net td.lft{background:#f0fdf4!important}
+.tr-fin td{color:#166534;font-weight:800;background:#dcfce7!important}.tr-fin td.lft{background:#dcfce7!important}
+.tc{background:#f1f5f9!important;font-weight:800!important}
+
+/* profitability insight */
+.insight{padding:14px 18px;border-radius:14px;font-size:12.5px;line-height:1.6;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.ins-ok{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.ins-bad{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.ins-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+
+/* unit economics */
+.econ-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+@media(max-width:600px){.econ-grid{grid-template-columns:1fr}}
+.econ-card{background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:16px}
+.econ-title{font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.econ-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f8fafc;font-size:12px}
+.econ-row:last-child{border-bottom:none;font-weight:700;color:#0f172a}
+.econ-row span:first-child{color:#64748b}
+.econ-row span:last-child{font-weight:600}
+.econ-pos{color:#15803d}
+.econ-neg{color:#dc2626}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.btn-export{background:rgba(16,185,129,.15);color:#10b981}
+.btn-export:hover{background:rgba(16,185,129,.28)}
+.btn-save-plan{background:rgba(99,102,241,.15);color:#818cf8}
+.btn-save-plan:hover{background:rgba(99,102,241,.28)}
+.saved-panel{position:fixed;right:0;top:0;bottom:0;width:300px;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.12);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s ease}
+.saved-panel.open{transform:translateX(0)}
+.saved-panel-header{padding:16px 18px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+.saved-panel-header h3{font-size:15px;font-weight:800;color:#1a1a1a}
+.btn-close-panel{background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1;padding:0}
+.saved-list{flex:1;overflow-y:auto;padding:12px}
+.saved-item{background:#f8f8f8;border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.saved-item:hover{border-color:#f97316;background:#fff7ed}
+.saved-item-name{font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:2px}
+.saved-item-meta{font-size:11px;color:#999}
+.saved-item-actions{display:flex;gap:6px;margin-top:8px}
+.no-saves{text-align:center;padding:40px 20px;color:#bbb;font-size:13px;line-height:1.6}
+.btn-url-float{position:fixed;bottom:80px;right:20px;background:#ff6a00;border:none;border-radius:50%;width:46px;height:46px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(255,106,0,.4);z-index:50;transition:all .2s}
+.btn-url-float:hover{transform:scale(1.1)}
+.ai-advisor{background:linear-gradient(135deg,#fff7ed,#fffbeb);border:1.5px solid #fed7aa;border-radius:16px;padding:18px;margin-bottom:18px}
+.ai-advisor-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.ai-advisor-icon{width:36px;height:36px;background:linear-gradient(135deg,#f59e0b,#f97316);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ai-advisor-title{font-size:14px;font-weight:800;color:#92400e}
+.ai-advisor-sub{font-size:11.5px;color:#b45309;margin-top:1px}
+.ai-recs{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.ai-rec{background:#fff;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:all .15s}
+.ai-rec:hover{border-color:#f97316;background:#fff7ed;transform:translateX(2px)}
+.ai-rec-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.ai-rec-text{flex:1}
+.ai-rec-title{font-size:12.5px;font-weight:700;color:#1a1a1a;margin-bottom:2px}
+.ai-rec-desc{font-size:11px;color:#888;line-height:1.4}
+.ai-rec-impact{font-size:11px;font-weight:700;color:#15803d;margin-top:3px}
+.ai-chat-row{display:flex;gap:8px}
+.ai-chat-input{flex:1;border:1.5px solid #fed7aa;border-radius:10px;padding:10px 14px;font-size:13px;font-family:inherit;outline:none;background:#fff;color:#1a1a1a;transition:border-color .2s}
+.ai-chat-input:focus{border-color:#f97316}
+.ai-chat-input::placeholder{color:#bbb}
+.ai-chat-btn{padding:10px 18px;background:#f97316;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.ai-chat-btn:hover{background:#ea580c}
+.ai-chat-btn:disabled{opacity:.4;cursor:not-allowed}
+.ai-response{background:#fff;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:13px;color:#1a1a1a;line-height:1.6;margin-top:8px;display:none}
+.ai-response.show{display:block}
+.scenario-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.scenario-chip{background:#fff;border:1.5px solid #e8e8e8;border-radius:99px;padding:5px 14px;font-size:11.5px;font-weight:600;color:#555;cursor:pointer;transition:all .15s;font-family:inherit}
+.scenario-chip:hover{border-color:#f97316;color:#f97316;background:#fff7ed}
+@keyframes shimmer{from{opacity:.5}to{opacity:1}}
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     LAYER 1: WELCOME
+══════════════════════════════ -->
+<div class="layer on" id="l-welcome">
+  <div class="logo-wrap"><img src="/logo.png" alt="SellerPlus" style="height:110px;width:auto;object-fit:contain"/>
+    <div style="font-size:13px;color:#888;margin-top:8px;text-align:center">Tu éxito es nuestra meta</div>
+  </div>
+  <div class="welcome-box">
+    <h2>¡Bienvenido! 👋</h2>
+    <p>Tu asistente para tomar decisiones inteligentes antes de invertir en Amazon. <strong style="color:#f97316">Gratis. Sin complicaciones.</strong></p>
+    <div class="field">
+      <label>¿Cómo te llamamos?</label>
+      <input type="text" id="inp-name" placeholder="Ej: Carlos, Mariana..." maxlength="30" autocomplete="off"/>
+    </div>
+    <div class="field">
+      <label>¿Cuál es tu perfil?</label>
+      <select id="inp-profile">
+        <option value="">Selecciona una opción...</option>
+        <option value="emprendedor">🚀 Emprendedor / Quiero empezar</option>
+        <option value="vendedor">📦 Ya vendo en Amazon</option>
+        <option value="estudiante">🎓 Estudiante / Investigando</option>
+        <option value="inversion">💼 Inversionista / Analizo negocios</option>
+      </select>
+    </div>
+    <button class="btn-cta" type="button" onclick="startApp()" id="btn-comenzar">
+      Comenzar &rarr;
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LAYER 2: PATH SELECTOR
+══════════════════════════════ -->
+<div class="layer" id="l-path">
+  <div class="path-top">
+    <div class="path-hi" id="path-hi">¡Hola!</div>
+    <h2>Mi Plan de Negocio en Amazon</h2>
+    <p>Elige tu punto de partida. Te guiaremos paso a paso.</p>
+  </div>
+  <div class="path-grid">
+    <div class="path-card" tabindex="0" onclick="startPath('simulate')" onkeydown="if(event.key==='Enter')startPath('simulate')">
+      <div style="height:52px;display:flex;align-items:center;justify-content:center;margin-bottom:12px"><img src="/amazon-logo.png" alt="Amazon" style="max-height:52px;max-width:160px;object-fit:contain"/></div>
+      <h3>Simular mi inversión</h3>
+      <p>Ya tienes un producto en mente. Te ayudamos a calcular si es rentable y cuánto puedes ganar.</p>
+      <span class="path-tag">Calculadora paso a paso</span>
+    </div>
+    <div class="path-card" tabindex="0" onclick="startPath('discover')" onkeydown="if(event.key==='Enter')startPath('discover')">
+      <div style="height:52px;display:flex;align-items:center;justify-content:center;margin-bottom:12px"><img src="/alibaba-logo.png" alt="Alibaba" style="max-height:52px;max-width:160px;object-fit:contain"/></div>
+      <h3>Buscar productos ganadores</h3>
+      <p>No sabes qué vender. La IA busca productos con bajo costo, alta demanda y buen margen.</p>
+      <span class="path-tag">IA busca por ti</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LAYER 3: CHAT / WIZARD
+══════════════════════════════ -->
+<div class="layer" id="l-chat">
+  <div class="chat-topbar">
+    <div class="chat-topbar-left">
+      <img src="/logo.png" alt="SellerPlus" style="height:30px;width:auto"/>
+      <span class="topbar-mode" id="topbar-mode">Simulador</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button class="btn-restart" onclick="goHome()">← Inicio</button>
+    </div>
+  </div>
+  <div class="chat-body" id="chat-body"></div>
+  <div id="quick-area"></div>
+  <div class="chat-footer">
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="Escribe tu respuesta aquí..." autocomplete="off"/>
+      <button class="btn-send" id="btn-send" onclick="sendUserMsg()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LAYER 4: DASHBOARD
+══════════════════════════════ -->
+<div class="layer" id="l-dash">
+  <div class="dash-topbar">
+    <div class="dash-topbar-left">
+      <img src="/logo.png" alt="SellerPlus" style="height:30px;width:auto"/>
+      <span class="dash-plan-name" id="dash-plan-name"></span>
+    </div>
+    <div class="dash-actions">
+      <div class="status-pill" id="dash-status"></div>
+      <button class="btn-dash" id="btn-save-plan" onclick="savePlanToStorage()" style="background:rgba(99,102,241,.15);color:#818cf8">Guardar</button>
+      <button class="btn-dash" onclick="downloadExcel()" style="background:rgba(16,185,129,.15);color:#10b981">Descargar Excel</button>
+      <button class="btn-dash" onclick="openSavedPanel()" style="background:rgba(255,255,255,.08);color:#aaa">Mis Planes</button>
+      <button class="btn-dash btn-new" onclick="goHome()">+ Nuevo</button>
+    </div>
+  </div>
+  <div class="dash-body">
+    <div class="dash-inner" id="dash-inner"></div>
+  </div>
+</div>
+
+<script>
+/* ===========================================
+   STATE
+=========================================== */
+const S = {
+  user: { name:'', profile:'' },
+  currentPlan: null,
+  path: '',
+  step: 0,
+  data: {},
+  products: [],
+  selectedProducts: [],
+  confirmedProducts: [],
+  currentBatchPicks: [],
+  chatLocked: false,
+};
+
+/* ===========================================
+   LAYER SWITCHER
+=========================================== */
+function show(id){ document.querySelectorAll('.layer').forEach(l=>l.classList.remove('on')); document.getElementById(id).classList.add('on'); }
+
+/* ===========================================
+   WELCOME
+=========================================== */
+function startApp(){
+  const name = document.getElementById('inp-name').value.trim();
+  const profile = document.getElementById('inp-profile').value;
+  if(!name){ document.getElementById('inp-name').focus(); return; }
+  if(!profile){ document.getElementById('inp-profile').focus(); return; }
+  S.user = { name, profile };
+  // persist per-user data namespace
+  S.userKey = 'sp_' + name.toLowerCase().replace(/\s+/g,'_');
+  document.getElementById('path-hi').textContent = `¡Hola, ${name}! 👋`;
+  document.getElementById('topbar-user').textContent = name;
+  show('l-path');
+}
+
+document.getElementById('inp-name').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('inp-profile').focus(); });
+
+/* ===========================================
+   PATH SELECT
+=========================================== */
+function startPath(path){
+  S.path = path;
+  S.step = 0;
+  S.data = {};
+  S.products = [];
+  S.confirmedProducts = [];
+  S.currentBatchPicks = [];
+  S.products = [];
+  S.confirmedProducts = [];
+  S.currentBatchPicks = [];
+  S.chatLocked = false;
+  document.getElementById('chat-body').innerHTML = '';
+  document.getElementById('quick-area').innerHTML = '';
+  document.getElementById('topbar-mode').textContent = path==='simulate' ? '📊 Simulador' : '🔍 Buscador IA';
+  showURLBtn(path==='discover');
+  show('l-chat');
+  setTimeout(()=>{ path==='simulate' ? runSimulateStep(0) : runDiscoverStep(0); }, 300);
+}
+
+function goHome(){ show('l-path'); }
+
+/* ===========================================
+   CHAT HELPERS
+=========================================== */
+function botMsg(html, delay=0){
+  return new Promise(res=>{
+    const body = document.getElementById('chat-body');
+    // typing indicator
+    const t = document.createElement('div');
+    t.className='msg'; t.id='typing-row';
+    t.innerHTML=`<div class="avatar bot">✦</div><div class="typing-bubble"><span></span><span></span><span></span></div>`;
+    body.appendChild(t); scrollBot();
+    setTimeout(()=>{
+      t.remove();
+      const d=document.createElement('div'); d.className='msg';
+      d.innerHTML=`<div class="avatar bot">✦</div><div class="bubble bot">${html}</div>`;
+      body.appendChild(d); scrollBot(); res();
+    }, delay||650 + html.length*1.2);
+  });
+}
+
+function userMsg(text){
+  const body=document.getElementById('chat-body');
+  const initials=(S.user.name||'?').slice(0,2).toUpperCase();
+  const d=document.createElement('div'); d.className='msg user';
+  d.innerHTML=`<div class="bubble usr">${esc(text)}</div><div class="avatar usr">${initials}</div>`;
+  body.appendChild(d); scrollBot();
+}
+
+function scrollBot(){ const b=document.getElementById('chat-body'); b.scrollTop=b.scrollHeight; }
+function esc(t){ var d=document.createElement('div');d.appendChild(document.createTextNode(t));return d.innerHTML; }
+
+function showQuickReplies(options, onPick){
+  clearQuick();
+  const area=document.getElementById('quick-area');
+  const wrap=document.createElement('div'); wrap.className='quick-replies'; wrap.id='qr-wrap';
+  options.forEach(opt=>{
+    const b=document.createElement('button'); b.className='qr'; b.textContent=opt;
+    b.onclick=()=>{ clearQuick(); onPick(opt); };
+    wrap.appendChild(b);
+  });
+  area.appendChild(wrap); scrollBot();
+}
+
+function clearQuick(){ document.getElementById('quick-area').innerHTML=''; }
+
+function lockInput(){ S.chatLocked=true; document.getElementById('chat-input').disabled=true; document.getElementById('btn-send').disabled=true; }
+function unlockInput(){ S.chatLocked=false; document.getElementById('chat-input').disabled=false; document.getElementById('btn-send').disabled=false; document.getElementById('chat-input').focus(); }
+
+async function callAI(messages, system){
+  const body = { model:'claude-sonnet-4-20250514', max_tokens:2000, messages };
+  if(system) body.system = system;
+  const r = await fetch('/api/ai',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  const d = await r.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.content.map(c=>c.text||'').join('');
+}
+
+/* ===========================================
+   SIMULATE PATH - step-by-step wizard
+=========================================== */
+const SIM_STEPS = [
+  // step 0 - product name
+  {
+    ask: async ()=> {
+      await botMsg(`Perfecto ${S.user.name}, vamos a construir tu plan de negocio juntos. 🚀<br><br>Primero lo primero: <strong>¿Qué producto quieres vender en Amazon?</strong><br><small style="color:#94a3b8">Puedes ser específico o general, por ejemplo: "audífonos bluetooth", "café molido 250g", "suplemento proteína"</small>`);
+      unlockInput();
+    },
+    collect: (v)=>{ S.data.productName = v; }
+  },
+  // step 1 - supplier cost
+  {
+    ask: async ()=>{
+      await botMsg(`Excelente, <span class="highlight">${S.data.productName}</span> 👍<br><br>¿<strong>Cuánto te cuesta el producto al proveedor</strong> por unidad? (en USD 💵)<br><small style="color:#94a3b8">Ej: si compras en Alibaba a $5 por unidad, escribe 5</small>`);
+      unlockInput();
+    },
+    collect:(v)=>{ const n=parseNum(v); if(!n||n<=0) return 'Por favor ingresa un número válido mayor a 0'; S.data.supplierCost=n; }
+  },
+  // step 2 - initial units
+  {
+    ask: async ()=>{
+      await botMsg(`Perfecto. ¿<strong>Cuántas unidades</strong> planeas comprar para tu primer pedido?<br><small style="color:#94a3b8">Ej: 100, 200, 500. Esto determina tu inversión inicial.</small>`);
+      unlockInput();
+    },
+    collect:(v)=>{ const n=parseNum(v); if(!n||n<1) return 'Ingresa un número entero mayor a 0'; S.data.initialUnits=Math.round(n); }
+  },
+  // step 3 - selling price
+  {
+    ask: async ()=>{
+      const suggested = Math.round(S.data.supplierCost * 4.5);
+      await botMsg(`¿A qué <strong>precio piensas venderlo en Amazon</strong>? (USD 💵)<br><small style="color:#94a3b8">Tip: basado en tu costo de ${fmt$(S.data.supplierCost)}, un precio competitivo estaría entre ${fmt$(S.data.supplierCost*3)} y ${fmt$(S.data.supplierCost*6)}. Te sugerimos ${fmt$(suggested)}.</small>`);
+      showQuickReplies([fmt$(suggested), fmt$(S.data.supplierCost*3.5), fmt$(S.data.supplierCost*5)], (v)=>{
+        userMsg(v); clearQuick();
+        const n=parseNum(v.replace('$',''));
+        S.data.sellingPrice=n;
+        nextSimStep();
+      });
+      unlockInput();
+    },
+    collect:(v)=>{ const n=parseNum(v.replace(/[$,]/g,'')); if(!n||n<=0) return 'Ingresa un precio válido mayor a 0'; S.data.sellingPrice=n; }
+  },
+  // step 4 - marketplace
+  {
+    ask: async ()=>{
+      await botMsg(`¿En qué <strong>mercado de Amazon</strong> vas a vender?`);
+      showQuickReplies(['🇺🇸 Amazon USA', '🇲🇽 Amazon México', '🇪🇸 Amazon España', '🇨🇦 Amazon Canadá'], (v)=>{
+        userMsg(v); clearQuick();
+        S.data.marketplace = v;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 5 - category / fees
+  {
+    ask: async ()=>{
+      await botMsg(`¿A qué <strong>categoría</strong> pertenece tu producto?<br><small style="color:#94a3b8">Esto afecta el % de comisión de Amazon</small>`);
+      showQuickReplies(['Electrónica','Salud / Belleza','Hogar y Cocina','Ropa / Moda','Alimentos','Juguetes','Deportes','Otra'], (v)=>{
+        userMsg(v); clearQuick();
+        S.data.category = v;
+        // referral fee by category
+        const fees={'Electrónica':0.08,'Ropa / Moda':0.17,'Alimentos':0.08,'Otra':0.15};
+        S.data.amzFeePct = fees[v] || 0.15;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 6 - estimated weight (for FBA)
+  {
+    ask: async ()=>{
+      await botMsg(`¿Cuánto pesa aproximadamente <strong>cada unidad</strong> (con embalaje)?`);
+      showQuickReplies(['Menos de 250g','250g - 500g','500g - 1kg','1kg - 2kg','Más de 2kg'], (v)=>{
+        userMsg(v); clearQuick();
+        S.data.weight = v;
+        const fbaFees={'Menos de 250g':3.22,'250g - 500g':4.59,'500g - 1kg':5.58,'1kg - 2kg':6.80,'Más de 2kg':8.25};
+        S.data.fbaFee = fbaFees[v] || 5.58;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 7 - growth expectation
+  {
+    ask: async ()=>{
+      await botMsg(`¡Casi listo! ¿Cuántas <strong>unidades esperas vender el primer mes</strong>?<br><small style="color:#94a3b8">Sé conservador/a para empezar. Puedes ajustarlo después.</small>`);
+      showQuickReplies(['10-20 unidades','20-50 unidades','50-100 unidades','100+ unidades'], (v)=>{
+        userMsg(v); clearQuick();
+        const map={'10-20 unidades':15,'20-50 unidades':35,'50-100 unidades':75,'100+ unidades':120};
+        S.data.unitsM1 = map[v] || 20;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 8 - GENERATE PLAN
+  {
+    ask: async ()=>{
+      lockInput();
+      await botMsg(`Perfecto. Tengo todo lo que necesito. 🎯<br><br>Déjame calcular tu <strong>plan de negocio completo a 12 meses</strong>...`);
+      await generateSimPlan();
+    },
+    collect:()=>{}
+  }
+];
+
+let simStepIdx = 0;
+
+async function runSimulateStep(idx){
+  simStepIdx = idx;
+  const step = SIM_STEPS[idx];
+  if(!step) return;
+  lockInput();
+  await step.ask();
+}
+
+function nextSimStep(){ runSimulateStep(simStepIdx+1); }
+
+document.getElementById('chat-input').addEventListener('keydown', e=>{ if(e.key==='Enter') sendUserMsg(); });
+
+function sendUserMsg(){
+  if(S.chatLocked) return;
+  const inp=document.getElementById('chat-input');
+  const val=inp.value.trim(); if(!val) return;
+  inp.value='';
+  userMsg(val);
+  lockInput(); clearQuick();
+
+  if(S.path==='simulate'){
+    const step=SIM_STEPS[simStepIdx];
+    if(!step){return;}
+    const err=step.collect(val);
+    if(err){ botMsg(`⚠️ ${err}`).then(()=>unlockInput()); return; }
+    nextSimStep();
+  } else {
+    // discover path free text handling
+    handleDiscoverInput(val);
+  }
+}
+
+function parseNum(v){ return parseFloat(String(v).replace(/[^0-9.]/g,'')); }
+function fmt$(n){ return '$'+Number(n).toFixed(2); }
+
+/* ===========================================
+   SIMULATE - GENERATE PLAN
+=========================================== */
+async function generateSimPlan(){
+  const d=S.data;
+  // build financial model
+  const cfg={
+    productName: d.productName,
+    supplierCost: d.supplierCost,
+    sellingPrice: d.sellingPrice,
+    fbaFee: d.fbaFee||5.58,
+    amzFeePct: d.amzFeePct||0.15,
+    mktgPct: 0.25,
+    agencyFee: 0,
+    membership: 39.99/12, // monthly amortized
+    taxRate: 0.08,
+    growthRate: 0.10,
+    unitsM1: d.unitsM1||20,
+  };
+
+  // unit economics
+  const ue = calcUnitEconomics(cfg);
+
+  if(ue.margin < 0){
+    await botMsg(`⚠️ <strong>Atención:</strong> Con los datos que me diste, este producto <strong>no sería rentable</strong> con el precio actual.<br><br>Tu costo total por unidad es ${fmt$(ue.totalCostPerUnit)} y estás vendiendo a ${fmt$(d.sellingPrice)}. <strong>Estás perdiendo ${fmt$(Math.abs(ue.profit))} por unidad.</strong><br><br>Opciones: 1) Subir el precio de venta, 2) Conseguir proveedor más barato, 3) Reducir peso del paquete para bajar FBA.`);
+  }
+
+  const months = buildMonths(cfg);
+
+  // AI insight
+  try{
+    const insight = await callAI([{role:'user',content:`Analiza este negocio Amazon en español (2-3 oraciones máximo, directo, útil):
+Producto: ${d.productName}
+Precio venta: $${d.sellingPrice}
+Costo proveedor: $${d.supplierCost}
+Margen neto por unidad: ${(ue.margin*100).toFixed(1)}%
+ROI: ${(ue.roi*100).toFixed(0)}%
+Ganancia total 12 meses: $${months.reduce((s,m)=>s+m.netTax,0).toFixed(0)}
+Categoría: ${d.category||'General'}
+Da una recomendación clave de 1 oración.`}]);
+    S.aiInsight = insight.trim();
+  } catch(e){ S.aiInsight=''; }
+
+  await botMsg(`✅ <strong>¡Plan listo!</strong> Aquí está tu análisis completo 👇`);
+  setTimeout(()=> showDashboard({ cfg, months, ue, title: d.productName }), 800);
+}
+
+/* ===========================================
+   DISCOVER PATH
+=========================================== */
+let discoverStep=0;
+let discoverCategory='';
+
+let discoverMode='ai';
+
+async function runDiscoverStep(step){
+  discoverStep=step;
+  if(step===0){
+    await botMsg(`Perfecto ${S.user.name}! Vamos a encontrar tus productos ganadores <br><br>Tengo <strong>dos formas</strong> de ayudarte:`);
+    showQuickReplies(
+      ['La IA me busca productos','Tengo URLs de Alibaba/AliExpress'],
+      (v)=>{ userMsg(v); clearQuick(); if(v.includes('IA')){discoverMode='ai';showAISearchOptions();}else{discoverMode='urls';showURLInputBox();} }
+    );
+    lockInput();
+  }
+}
+
+function handleDiscoverInput(val){
+  if(discoverMode==='ai' && discoverStep===1){ clearQuick(); discoverCategory=val; searchWinningProducts(val); }
+}
+
+async function showAISearchOptions(){
+  await botMsg(`En que <strong>categoria</strong> quieres buscar?`);
+  showQuickReplies(
+    ['Hogar y cocina','Belleza y cuidado personal','Fitness y deporte','Electronica / Gadgets','Mascotas','Bebes y ninos','Oficina','Cocina gourmet','Sorprendeme'],
+    (v)=>{ userMsg(v); clearQuick(); discoverCategory=v; searchWinningProducts(v); }
+  );
+  discoverStep=1;
+  unlockInput();
+}
+
+function showURLInputBox(){
+  document.getElementById('url-input-box') && document.getElementById('url-input-box').remove();
+  const body=document.getElementById('chat-body');
+  lockInput(); clearQuick();
+  const box=document.createElement('div');
+  box.className='url-box'; box.id='url-input-box';
+  box.style.cssText='margin:6px 42px;animation:fadeUp .3s ease';
+  box.innerHTML='<textarea id="url-textarea" style="width:100%;border:1.5px solid #e0e0e0;border-radius:12px;padding:14px;font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:110px;color:#1a1a1a;line-height:1.6;background:#fff" placeholder="Pega tus URLs (una por linea o separadas por comas):\n\nhttps://www.alibaba.com/product-detail/...\nhttps://www.aliexpress.com/item/..."></textarea>'
+    +'<div style="font-size:11px;color:#999;margin-top:6px">Puedes pegar 1 a 10 URLs de Alibaba o AliExpress. La IA extrae el precio y calcula el precio optimo en Amazon.</div>'
+    +'<div style="display:flex;gap:8px;margin-top:10px">'
+    +'<button onclick="analyzeURLs()" style="flex:1;padding:12px;background:#f97316;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit">Analizar con IA</button>'
+    +'<button onclick="cancelURLInput()" style="padding:12px 18px;background:#f1f5f9;border:none;border-radius:10px;color:#666;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Cancelar</button>'
+    +'</div>';
+  body.appendChild(box); scrollBot();
+}
+
+function cancelURLInput(){
+  document.getElementById('url-input-box') && document.getElementById('url-input-box').remove();
+  unlockInput();
+  botMsg('Que quieres hacer?').then(()=>{
+    showQuickReplies(['La IA me busca productos','Tengo URLs de Alibaba/AliExpress'],
+      (v)=>{ userMsg(v); clearQuick(); if(v.includes('IA')){discoverMode='ai';showAISearchOptions();}else{discoverMode='urls';showURLInputBox();} });
+    lockInput();
+  });
+}
+
+async function analyzeURLs(){
+  const raw=document.getElementById('url-textarea') ? document.getElementById('url-textarea').value : '';
+  const urls=[...new Set(raw.split(/[\n\r,; \t]+/).map(u=>u.trim()).filter(u=>u.startsWith('http')&&(u.includes('alibaba')||u.includes('aliexpress'))))].slice(0,10);
+  if(!urls.length){
+    const ta=document.getElementById('url-textarea');
+    if(ta){ta.style.borderColor='#f97316';ta.placeholder='Por favor pega al menos una URL de Alibaba o AliExpress...';}
+    return;
+  }
+  document.getElementById('url-input-box') && document.getElementById('url-input-box').remove();
+  userMsg('Analice '+urls.length+' URL'+(urls.length>1?'s':'')+' de proveedor.');
+  lockInput();
+  await botMsg('Analizando <strong>'+urls.length+' producto'+(urls.length>1?'s':'')+'</strong> de tus URLs...');
+  const sys='Eres experto en Amazon FBA. Analiza URLs de Alibaba/AliExpress. Responde SOLO con JSON valido.';
+  const prompt='Analiza estas URLs para Amazon FBA:\n'+urls.map((u,i)=>(i+1)+'. '+u).join('\n')+'\nPara cada URL estima: nombre, supplierPrice, amazonPrice, fbaFee, amzFeePct, margin, roi, demand, competition, description, whyNow, imageKeyword, alibabaTerm, aliexpressTerm.\nJSON: {"products":[{"name":"","supplierPrice":0,"amazonPrice":0,"fbaFee":5.58,"amzFeePct":0.15,"margin":0.2,"roi":0.5,"demand":"Alta","competition":"Media","description":"","whyNow":"","imageKeyword":"","alibabaTerm":"","aliexpressTerm":""}]}';
+  try{
+    const raw2=await callAI([{role:'user',content:prompt}],sys);
+    const m=raw2.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('no JSON');
+    const parsed=JSON.parse(m[0]);
+    const prods=parsed.products||[];
+    const batchOffset=S.products.length;
+    S.products.push(...prods); S.currentBatchPicks=[];
+    await showProductCards(prods,batchOffset);
+  } catch(e){
+    await botMsg('Error al analizar URLs: '+e.message);
+    unlockInput();
+  }
+}
+
+function triggerURLInput(){
+  document.getElementById('url-input-box') && document.getElementById('url-input-box').remove();
+  showURLInputBox();
+}
+
+async function searchWinningProducts(category){
+  lockInput(); clearQuick();
+  var body=document.getElementById('chat-body');
+  var prog=document.createElement('div'); prog.className='msg'; prog.id='search-progress';
+  prog.innerHTML='<div class="avatar bot">&#10022;</div>'
+    +'<div class="bubble bot">'
+    +'<div id="prog-text">Buscando proveedores verificados en <strong>'+category+'</strong>...</div>'
+    +'<div style="margin-top:10px;background:#f1f5f9;border-radius:99px;height:6px;overflow:hidden">'
+    +'<div id="prog-bar" style="height:100%;background:linear-gradient(90deg,#f97316,#f59e0b);border-radius:99px;width:0%;transition:width .4s ease"></div></div>'
+    +'<div id="prog-step" style="font-size:11px;color:#94a3b8;margin-top:6px">Filtrando proveedores verificados...</div>'
+    +'</div>';
+  body.appendChild(prog);
+  var steps=[[15,'Filtrando proveedores verificados...'],[35,'Analizando demanda en Amazon...'],[55,'Calculando margenes y ROI...'],[75,'Evaluando competencia...'],[90,'Preparando resultados...']];
+  var si=0;
+  var progInt=setInterval(function(){
+    if(si<steps.length){
+      var bar=document.getElementById('prog-bar');
+      var step=document.getElementById('prog-step');
+      if(bar) bar.style.width=steps[si][0]+'%';
+      if(step) step.textContent=steps[si][1];
+      si++;
+    }
+  },700);
+
+  var sys='Eres experto en Amazon FBA y sourcing Alibaba. Responde SOLO con JSON compacto sin markdown.';
+  var prompt='Lista 10 productos para Amazon FBA con proveedores VERIFICADOS en Alibaba, categoria: "'+category+'".'
+    +'\nCRITERIOS: precio proveedor $3-$15 por unidad, alta demanda Amazon, competencia media-baja, margen neto >20%, SOLO proveedores con Gold Supplier o Verified en Alibaba.'
+    +'\nPara imageKeyword usa terminos en INGLES muy especificos del producto para buscar foto real (ej: "wooden rosary beads catholic", "silicone pet bowl feeder").'
+    +'\nIncluye: priceMin y priceMax (rango USD por unidad para 100-500 uds), moq (minimo de pedido en unidades), supplierRating (1-5 estrellas estimado), tradeAssurance (true/false).'
+    +'\nJSON:'
+    +'\n{"products":[{"name":"nombre especifico en espanol","supplierPrice":5.50,"priceMin":4.50,"priceMax":7.00,"moq":100,"amazonPrice":24.99,"fbaFee":4.59,"amzFeePct":0.15,"margin":0.22,"demand":"Alta","competition":"Media","description":"por que es ganador","whyNow":"tendencia actual","imageKeyword":"specific english product photo keyword","alibabaTerm":"verified supplier english search","aliexpressTerm":"english term","supplierRating":4.5,"tradeAssurance":true}]}';
+
+  try{
+    var raw=await callAI([{role:'user',content:prompt}],sys);
+    clearInterval(progInt);
+    document.getElementById('search-progress')&&document.getElementById('search-progress').remove();
+    var m=raw.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('No se recibio JSON');
+    var parsed=JSON.parse(m[0]);
+    var prods=parsed.products||[];
+    if(!prods.length) throw new Error('No se encontraron productos');
+    var batchOffset=S.products.length;
+    S.products.push.apply(S.products,prods);
+    S.currentBatchPicks=[];
+    await showProductCards(prods,batchOffset);
+  } catch(err){
+    clearInterval(progInt);
+    document.getElementById('search-progress')&&document.getElementById('search-progress').remove();
+    await botMsg('Error al buscar: '+err.message);
+    showQuickReplies(['Intentar de nuevo','Otra categoria'],function(v){
+      userMsg(v); clearQuick();
+      if(v.includes('Intentar')) searchWinningProducts(category);
+      else showAISearchOptions();
+    });
+    lockInput();
+  }
+}
+
+async function showProductCards(prods, batchOffset){
+  batchOffset=batchOffset||0;
+  await botMsg('Encontre <strong>'+prods.length+' productos de proveedores verificados</strong> Tienes <strong>'+S.confirmedProducts.length+'/10</strong> en tu lista. Haz clic en la card para seleccionar, en Alibaba/AliExpress para ver el proveedor.');
+
+  var body=document.getElementById('chat-body');
+  document.getElementById('prod-grid')&&document.getElementById('prod-grid').remove();
+  document.getElementById('btn-confirm-picks')&&document.getElementById('btn-confirm-picks').remove();
+
+  var grid=document.createElement('div'); grid.className='prod-cards'; grid.id='prod-grid';
+
+  prods.forEach(function(p,i){
+    var globalIdx=batchOffset+i;
+    var card=document.createElement('div'); card.className='prod-pick'; card.id='pc-'+globalIdx;
+
+    // Use Picsum + category-specific seeds for reliable images
+    // Also try product-specific search via DuckDuckGo image proxy
+    var imgKw=encodeURIComponent((p.imageKeyword||p.name).replace(/['"]/g,''));
+    // Use multiple fallback image sources
+    var imgUrl='https://api.dicebear.com/7.x/icons/svg?seed='+encodeURIComponent(p.name)+'&backgroundColor=f97316&scale=50';
+    // Primary: loremflickr (reliable, free, no API key)
+    var imgPrimary='https://loremflickr.com/400/240/'+imgKw+'?random='+(globalIdx+1);
+
+    var aliUrl='https://www.alibaba.com/trade/search?SearchText='+encodeURIComponent((p.alibabaTerm||p.name)+' verified supplier')+'&IndexArea=product_en&TradeType=readyToShip';
+    var aexUrl='https://www.aliexpress.com/wholesale?SearchText='+encodeURIComponent(p.aliexpressTerm||p.name)+'&shipCountry=us&SortType=best_match_sort';
+
+    // Price range display
+    var priceRange=p.priceMin&&p.priceMax
+      ?'$'+Number(p.priceMin).toFixed(2)+' - $'+Number(p.priceMax).toFixed(2)+'/ud'
+      :'~$'+Number(p.supplierPrice).toFixed(2)+'/ud';
+    var moqText=p.moq?'MOQ: '+p.moq+' uds':'';
+    var stars=p.supplierRating?('&#9733;').repeat(Math.round(p.supplierRating||4)):'&#9733;&#9733;&#9733;&#9733;';
+    var tradeAssurance=p.tradeAssurance!==false;
+
+    card.innerHTML=
+      '<div class="pp-img-wrap" style="position:relative">'
+        +'<img class="pp-img" src="'+imgPrimary+'" alt="'+p.name+'" loading="lazy" '
+          +'style="width:100%;height:160px;object-fit:cover;display:block" '
+          +'onerror="this.src=\'https://loremflickr.com/400/240/product,wholesale?random='+globalIdx+'\'"/>'
+        +'<div class="pp-check" style="position:absolute;top:8px;right:8px;width:28px;height:28px;background:#f97316;border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:900">&#10003;</div>'
+        +(tradeAssurance?'<div style="position:absolute;top:8px;left:8px;background:#0052cc;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.03em">Trade Assurance</div>':'')
+      +'</div>'
+      +'<div class="pp-body" style="padding:11px 12px">'
+        +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px">'
+          +'<div class="pp-name" style="font-size:12.5px;font-weight:800;color:#1a1a1a;line-height:1.3;flex:1">'+p.name+'</div>'
+          +'<div style="color:#f59e0b;font-size:10px;flex-shrink:0">'+stars+'</div>'
+        +'</div>'
+        +'<div class="pp-sub" style="font-size:11px;color:#888;margin-bottom:7px;line-height:1.4">'+p.description+'</div>'
+        // Price block
+        +'<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:8px">'
+          +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'
+            +'<span style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase">Precio proveedor</span>'
+            +'<span style="font-size:13px;font-weight:800;color:#f97316">'+priceRange+'</span>'
+          +'</div>'
+          +(moqText?'<div style="display:flex;justify-content:space-between"><span style="font-size:10px;color:#94a3b8">Pedido minimo</span><span style="font-size:11px;font-weight:700;color:#475569">'+moqText+'</span></div>':'')
+          +'<div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:10px;color:#94a3b8">Precio Amazon</span><span style="font-size:12px;font-weight:800;color:#2563eb">$'+Number(p.amazonPrice).toFixed(2)+'</span></div>'
+          +'<div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:10px;color:#94a3b8">Margen neto</span><span style="font-size:12px;font-weight:800;color:'+(p.margin>=0.2?'#15803d':'#d97706')+'">'+Math.round(p.margin*100)+'%</span></div>'
+        +'</div>'
+        +'<div class="pp-tags" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">'
+          +'<span class="pp-tag tag-demand" style="font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px;background:#dcfce7;color:#15803d">Demanda '+p.demand+'</span>'
+          +'<span class="pp-tag tag-comp" style="font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px;background:#dbeafe;color:#1d4ed8">Comp. '+p.competition+'</span>'
+          +(tradeAssurance?'<span style="font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px;background:#dbeafe;color:#0052cc">Verificado</span>':'')
+        +'</div>'
+        +'<div style="font-size:10px;color:#94a3b8;margin-bottom:8px;font-style:italic">'+( p.whyNow||'')+'</div>'
+        +'<div style="display:flex;gap:5px">'
+          +'<a href="'+aliUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" '
+            +'style="flex:1;padding:7px 4px;border-radius:7px;font-size:11px;font-weight:700;text-align:center;text-decoration:none;background:#ff6a00;color:#fff;display:block">Ver en Alibaba</a>'
+          +'<a href="'+aexUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" '
+            +'style="flex:1;padding:7px 4px;border-radius:7px;font-size:11px;font-weight:700;text-align:center;text-decoration:none;background:#e62e04;color:#fff;display:block">Ver en AliExpress</a>'
+        +'</div>'
+      +'</div>';
+
+    card.onclick=function(){toggleProductPick(globalIdx);};
+    grid.appendChild(card);
+  });
+
+  body.appendChild(grid);
+  var confirmBtn=document.createElement('button');
+  confirmBtn.className='btn-confirm-picks'; confirmBtn.id='btn-confirm-picks';
+  confirmBtn.textContent='Selecciona productos para continuar';
+  confirmBtn.disabled=true;
+  confirmBtn.onclick=function(){afterPickDecision();};
+  body.appendChild(confirmBtn);
+  scrollBot();
+}
+
+function toggleProductPick(globalIdx){
+  var already=S.currentBatchPicks.indexOf(globalIdx);
+  var totalSel=S.confirmedProducts.length+S.currentBatchPicks.length;
+  if(already>=0){
+    S.currentBatchPicks.splice(already,1);
+    var c=document.getElementById('pc-'+globalIdx); if(c) c.classList.remove('sel');
+  } else if(totalSel<10){
+    S.currentBatchPicks.push(globalIdx);
+    var c2=document.getElementById('pc-'+globalIdx); if(c2) c2.classList.add('sel');
+  }
+  var btn=document.getElementById('btn-confirm-picks');
+  var n=S.currentBatchPicks.length;
+  var total=S.confirmedProducts.length+n;
+  if(btn){ btn.disabled=n===0; btn.textContent=n>0?'Agregar '+n+' producto'+(n>1?'s':'')+' (total: '+total+'/10)':'Selecciona productos para continuar'; }
+}
+
+async function afterPickDecision(){
+  var newlyPicked=S.currentBatchPicks.map(function(i){return S.products[i];});
+  S.confirmedProducts.push.apply(S.confirmedProducts, newlyPicked);
+  S.currentBatchPicks=[];
+  document.getElementById('prod-grid') && document.getElementById('prod-grid').remove();
+  document.getElementById('btn-confirm-picks') && document.getElementById('btn-confirm-picks').remove();
+  var total=S.confirmedProducts.length;
+  userMsg('Agregue '+newlyPicked.length+' producto'+(newlyPicked.length>1?'s':'')+' a mi lista.');
+  if(total>=10){ lockInput(); await botMsg('Excelente! Tienes <strong>'+total+' productos</strong>. Construyendo plan...'); await buildDiscoverPlan(); return; }
+  lockInput();
+  await botMsg('Agregaste '+newlyPicked.map(function(p){return '<strong>'+p.name+'</strong>';}).join(', ')+'.<br><br>Tienes <strong>'+total+'/10</strong> productos. Que quieres hacer?');
+  showQuickReplies(
+    ['Crear plan con '+total+' producto'+(total>1?'s':''), 'Buscar en otra categoria', 'Mas productos de esta categoria'],
+    async function(v){
+      userMsg(v); clearQuick();
+      if(v.startsWith('Crear')){lockInput();await botMsg('Construyendo plan con '+total+' productos...');await buildDiscoverPlan();}
+      else if(v.includes('otra')){await botMsg('Que categoria quieres explorar?');showQuickReplies(['Hogar y cocina','Belleza','Fitness','Electronica','Mascotas','Bebes','Otra'],function(cat){userMsg(cat);clearQuick();discoverCategory=cat;searchWinningProducts(cat);});unlockInput();}
+      else{searchWinningProducts(discoverCategory+' complementarios');}
+    }
+  );
+  unlockInput();
+}
+
+async function buildDiscoverPlan(){
+  var chosen=S.confirmedProducts;
+  if(!chosen.length) return;
+  lockInput(); clearQuick();
+  var cfg={
+    productName: chosen.length===1?chosen[0].name:'Portafolio '+chosen.length+' Productos',
+    supplierCost: chosen.reduce(function(s,p){return s+p.supplierPrice;},0)/chosen.length,
+    sellingPrice: chosen.reduce(function(s,p){return s+p.amazonPrice;},0)/chosen.length,
+    fbaFee: chosen.reduce(function(s,p){return s+(p.fbaFee||5.58);},0)/chosen.length,
+    amzFeePct: chosen.reduce(function(s,p){return s+(p.amzFeePct||0.15);},0)/chosen.length,
+    mktgPct:0.25, agencyFee:0, membership:3.33, taxRate:0.08,
+    growthRate:0.10, unitsM1:chosen.length*15
+  };
+  var ue=calcUnitEconomics(cfg);
+  var months=buildMonths(cfg);
+  S.aiInsight='';
+  await botMsg('Plan listo con <strong>'+chosen.length+' producto'+(chosen.length>1?'s':'')+'</strong>!');
+  setTimeout(function(){showDashboard({cfg:cfg,months:months,ue:ue,title:cfg.productName});},800);
+}
+
+/* ===========================================
+   FINANCIAL ENGINE
+=========================================== */
+function calcUnitEconomics(cfg){
+  const amzFee=cfg.sellingPrice*cfg.amzFeePct;
+  const mktg=cfg.sellingPrice*cfg.mktgPct;
+  const totalCost=cfg.supplierCost+cfg.fbaFee+amzFee+mktg;
+  const profit=cfg.sellingPrice-totalCost;
+  const margin=cfg.sellingPrice>0?profit/cfg.sellingPrice:0;
+  const roi=cfg.supplierCost>0?profit/cfg.supplierCost:0;
+  return {amzFee,mktg,totalCostPerUnit:totalCost,profit,margin,roi};
+}
+
+function buildMonths(cfg){
+  return Array.from({length:12},(_,i)=>{
+    const g=Math.pow(1+cfg.growthRate,i);
+    const units=cfg.unitsM1*g;
+    const rev=units*cfg.sellingPrice;
+    const mktg=rev*cfg.mktgPct;
+    const amzFee=rev*cfg.amzFeePct;
+    const fba=units*cfg.fbaFee;
+    const agency=cfg.agencyFee||0;
+    const memb=cfg.membership||0;
+    const costs=mktg+amzFee+fba+agency+memb;
+    const cogs=units*cfg.supplierCost;
+    const net=rev-costs-cogs;
+    const tax=Math.max(0,net*cfg.taxRate);
+    return {m:i+1,label:`Mes ${i+1}`,rev,units:Math.round(units),mktg,amzFee,fba,cogs,costs:costs+cogs,net,tax,netTax:net-tax};
+  });
+}
+
+/* ===========================================
+   DASHBOARD RENDERER
+=========================================== */
+const C$=(n)=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0);
+const C=(n)=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0}).format(n||0);
+const N=(n)=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(n||0));
+const PCT=(n)=>`${((n||0)*100).toFixed(1)}%`;
+
+function showDashboard({cfg,months,ue,title}){
+  show('l-dash');
+  document.getElementById('dash-plan-name').textContent=title;
+  var _Ts=months.reduce(function(a,m){return{rev:a.rev+m.rev,netTax:a.netTax+m.netTax};},{rev:0,netTax:0});
+  S.currentPlan={id:(S.currentPlan&&S.currentPlan.id)||Date.now().toString(36),cfg:cfg,months:months,ue:ue,title:title,
+    summary:'$'+Math.round(_Ts.rev/1000)+'k ingresos | $'+Math.round(_Ts.netTax/1000)+'k ganancia',savedAt:new Date().toISOString()};
+  showURLBtn(false);
+  _simCfg=JSON.parse(JSON.stringify(cfg));
+  var T=months.reduce(function(a,m){return{rev:a.rev+m.rev,units:a.units+m.units,mktg:a.mktg+m.mktg,
+    amzFee:a.amzFee+m.amzFee,fba:a.fba+m.fba,cogs:a.cogs+m.cogs,costs:a.costs+m.costs,
+    net:a.net+m.net,tax:a.tax+m.tax,netTax:a.netTax+m.netTax};},
+    {rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0});
+  var ok=T.netTax>0;
+  var status=document.getElementById('dash-status');
+  status.className='status-pill '+(ok?'pill-ok':'pill-bad');
+  status.innerHTML='<div class="dot '+(ok?'dot-ok':'dot-bad')+'"></div>'+(ok?'Negocio Rentable':'Revisar Numeros');
+
+  // Break-even month
+  var cumNet=0,beMonth=null;
+  for(var i=0;i<months.length;i++){cumNet+=months[i].netTax;if(cumNet>0&&!beMonth){beMonth=i+1;break;}}
+
+  // ROAS real
+  var roasReal=T.mktg>0?(T.rev/T.mktg):0;
+
+  // KPIs
+  var kpiHTML='<div class="kpi-grid">'
+    +'<div class="kpi"><div class="kpi-icon ki-b">$</div><div class="kpi-val">'+C(T.rev)+'</div><div class="kpi-lbl">Ingresos 12 meses</div></div>'
+    +'<div class="kpi"><div class="kpi-icon ki-p">#</div><div class="kpi-val">'+N(T.units)+'</div><div class="kpi-lbl">Unidades vendidas</div></div>'
+    +'<div class="kpi"><div class="kpi-icon '+(ok?'ki-g':'ki-r')+'">+</div><div class="kpi-val '+(T.net<0?'neg':'')+'">'+C(T.net)+'</div><div class="kpi-lbl">Ganancia neta</div></div>'
+    +'<div class="kpi"><div class="kpi-icon '+(ok?'ki-g':'ki-r')+'">$</div><div class="kpi-val '+(T.netTax<0?'neg':'')+'">'+C(T.netTax)+'</div><div class="kpi-lbl">Ganancia despues imp.</div><div class="kpi-hint">Margen: '+PCT(T.rev?T.netTax/T.rev:0)+'</div></div>'
+    +(beMonth
+      ?'<div class="kpi" style="border:2px solid #22c55e;background:#f0fdf4"><div class="kpi-icon ki-g">M</div><div class="kpi-val" style="color:#15803d">Mes '+beMonth+'</div><div class="kpi-lbl">Punto de equilibrio</div><div class="kpi-hint">Primer mes rentable acumulado</div></div>'
+      :'<div class="kpi" style="border:2px solid #ef4444;background:#fef2f2"><div class="kpi-icon ki-r">!</div><div class="kpi-val neg">No alcanzado</div><div class="kpi-lbl">Punto de equilibrio</div><div class="kpi-hint">No cubre costos en 12m</div></div>')
+    +'</div>';
+
+  // Economics
+  var econHTML='<div class="econ-grid">'
+    +'<div class="econ-card"><div class="econ-title">Economia por Unidad</div>'
+    +'<div class="econ-row"><span>Precio de venta</span><span>'+C$(cfg.sellingPrice)+'</span></div>'
+    +'<div class="econ-row"><span>Costo proveedor</span><span class="econ-neg">- '+C$(cfg.supplierCost)+'</span></div>'
+    +'<div class="econ-row"><span>FBA logistica</span><span class="econ-neg">- '+C$(cfg.fbaFee)+'</span></div>'
+    +'<div class="econ-row"><span>Comision Amazon ('+PCT(cfg.amzFeePct)+')</span><span class="econ-neg">- '+C$(cfg.sellingPrice*cfg.amzFeePct)+'</span></div>'
+    +'<div class="econ-row"><span>Marketing ('+PCT(cfg.mktgPct)+')</span><span class="econ-neg">- '+C$(cfg.sellingPrice*cfg.mktgPct)+'</span></div>'
+    +'<div class="econ-row"><span><strong>Ganancia por unidad</strong></span><span class="'+(ue.profit>=0?'econ-pos':'econ-neg')+'">'+C$(ue.profit)+'</span></div>'
+    +'</div>'
+    +'<div class="econ-card"><div class="econ-title">Indicadores Clave</div>'
+    +'<div class="econ-row"><span>Margen neto</span><span class="'+(ue.margin>=0.15?'econ-pos':ue.margin>0?'':'econ-neg')+'">'+PCT(ue.margin)+'</span></div>'
+    +'<div class="econ-row"><span>ROI sobre costo</span><span class="'+(ue.roi>0?'econ-pos':'econ-neg')+'">'+PCT(ue.roi)+'</span></div>'
+    +'<div class="econ-row"><span>ROAS real (ingresos/mktg)</span><span class="'+(roasReal>=3?'econ-pos':roasReal>=2?'':'econ-neg')+'">'+roasReal.toFixed(2)+'x</span></div>'
+    +'<div class="econ-row"><span>Inversion mktg 12m</span><span>'+C(T.mktg)+'</span></div>'
+    +'<div class="econ-row"><span>Es rentable</span><span class="'+(ue.margin>0.15?'econ-pos':ue.margin>0?'':'econ-neg')+'">'+(ue.margin>0.2?'Si, muy bien':ue.margin>0.1?'Si, ajustado':ue.margin>0?'Apenas':'No rentable')+'</span></div>'
+    +'</div></div>';
+
+  var chartHTML='<div class="chart-card"><div class="chart-title">Proyeccion de Ingresos, Costos y Ganancia - 12 meses</div><div class="chart-area" id="chart-svg"></div></div>';
+
+  // Table with break-even highlight
+  var rows=[
+    {key:'rev',label:'INGRESOS POR VENTAS',cls:'tr-rev',fmt:C$},
+    {key:'units',label:'UNIDADES VENDIDAS',cls:'',fmt:N},
+    {key:'cogs',label:'COSTO PRODUCTO (COGS)',cls:'',fmt:C$},
+    {key:'mktg',label:'GASTOS MARKETING ('+Math.round(cfg.mktgPct*100)+'%)',cls:'',fmt:C$},
+    {key:'amzFee',label:'COMISION AMAZON',cls:'',fmt:C$},
+    {key:'fba',label:'LOGISTICA FBA',cls:'',fmt:C$},
+    {key:'net',label:'GANANCIAS NETAS',cls:'tr-net',fmt:C$},
+    {key:'tax',label:'IMPUESTOS ('+Math.round(cfg.taxRate*100)+'%)',cls:'',fmt:C$},
+    {key:'netTax',label:'GANANCIAS DESPUES IMP.',cls:'tr-fin',fmt:C$},
+  ];
+  var cumArr=[],cumS=0;
+  months.forEach(function(m){cumS+=m.netTax;cumArr.push(cumS);});
+
+  var tbl='<div class="table-card"><div class="table-head">Plan Financiero Detallado 12 Meses'
+    +(beMonth?' <span style="margin-left:10px;background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 10px;border-radius:99px;">Punto equilibrio: Mes '+beMonth+'</span>':'')
+    +'</div><div class="table-scroll"><table class="fin-table"><thead><tr><th class="lft">Metrica</th>'
+    +months.map(function(m,i){
+      return '<th style="'+(i+1===beMonth?'background:#dcfce7;color:#15803d;font-weight:800;':'')+'">'+m.label+(i+1===beMonth?'<br><small style="font-size:8px">EQUIL.</small>':'')+'</th>';
+    }).join('')
+    +'<th class="tc">TOTAL</th></tr></thead><tbody>';
+
+  rows.forEach(function(row){
+    tbl+='<tr class="'+row.cls+'"><td class="lft">'+row.label+'</td>';
+    months.forEach(function(m,i){
+      var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';
+      tbl+='<td style="'+st+'">'+row.fmt(m[row.key])+'</td>';
+    });
+    var total=months.reduce(function(sum,m){return sum+m[row.key];},0);
+    tbl+='<td class="tc">'+row.fmt(total)+'</td></tr>';
+  });
+  tbl+='<tr style="background:#f0f9ff"><td class="lft" style="color:#0369a1;font-weight:700;">GANANCIA ACUMULADA</td>';
+  cumArr.forEach(function(c2,i){
+    var be=i+1===beMonth;
+    tbl+='<td style="font-weight:700;color:'+(c2>=0?'#15803d':'#dc2626')+';'+(be?'background:#dcfce7;outline:2px solid #22c55e;outline-offset:-2px;':'')+'">'+C$(c2)+'</td>';
+  });
+  tbl+='<td class="tc" style="font-weight:800;color:'+(T.netTax>=0?'#15803d':'#dc2626')+'">'+C$(T.netTax)+'</td></tr>';
+  tbl+='</tbody></table></div></div>';
+
+  // AI panel
+  var aiHTML='<div id="ai-panel" style="background:#fff;border-radius:16px;border:1px solid #e8e8e8;margin-bottom:18px;overflow:hidden">'
+    +'<div style="padding:13px 18px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
+    +'<div style="font-size:13px;font-weight:800;color:#1a1a1a">Asesor IA - Analisis y Simulacion</div>'
+    +'<span style="font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:99px;background:#fff7ed;color:#ea580c;border:1px solid #fed7aa">IA activa</span></div>'
+    +'<div id="ai-thinking" style="padding:12px 18px;font-size:12px;color:#999;display:flex;align-items:center;gap:8px">'
+    +'<span style="display:inline-flex;gap:4px">'
+    +'<span style="width:5px;height:5px;background:#f97316;border-radius:50%;display:inline-block;animation:bounce 1.2s infinite"></span>'
+    +'<span style="width:5px;height:5px;background:#f97316;border-radius:50%;display:inline-block;animation:bounce 1.2s .15s infinite"></span>'
+    +'<span style="width:5px;height:5px;background:#f97316;border-radius:50%;display:inline-block;animation:bounce 1.2s .3s infinite"></span>'
+    +'</span>Analizando tu plan...</div>'
+    +'<div id="ai-recs-area" style="display:none">'
+    +'<div id="ai-bullets" style="padding:12px 18px 0"></div>'
+    +'<div id="ai-rec-list" style="padding:8px 18px 4px;display:flex;flex-direction:column;gap:7px"></div>'
+    +'<div id="ai-scenarios" style="display:flex;flex-wrap:wrap;gap:6px;padding:4px 18px 12px"></div>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px;border-top:1px solid #f5f5f5;padding:11px 16px;background:#fafafa;flex-wrap:wrap">'
+    +'<input id="ai-sim-input" style="flex:1;min-width:180px;border:1.5px solid #e0e0e0;border-radius:10px;padding:8px 13px;font-size:13px;font-family:inherit;outline:none;background:#fff" '
+    +'placeholder="Ej: aumenta unidades mes 3 a 50, baja marketing a 15%..."/>'
+    +'<button onclick="runAISim()" style="padding:8px 18px;background:#f97316;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">Simular</button>'
+    +'</div></div>';
+
+  var insightHTML='';
+  if(S.aiInsight){
+    var cls2=ok?'ins-ok':ue.margin>0?'ins-warn':'ins-bad';
+    insightHTML='<div class="insight '+cls2+'">💡 '+S.aiInsight+'</div>';
+  }
+
+  document.getElementById('dash-inner').innerHTML=insightHTML+aiHTML+kpiHTML+econHTML+chartHTML+tbl;
+
+  setTimeout(function(){
+    var inp=document.getElementById('ai-sim-input');
+    if(inp) inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')runAISim();});
+  },100);
+  setTimeout(function(){renderChart(months,beMonth);},60);
+  setTimeout(function(){loadAIAdvisor(cfg,months,ue,T,beMonth);},400);
+}
+
+function renderChart(months,beMonth){
+  var wrap=document.getElementById('chart-svg'); if(!wrap) return;
+  var W=800,H=180,PL=55,PR=15,PT=10,PB=28;
+  var pw=W-PL-PR,ph=H-PT-PB;
+  var maxV=months.reduce(function(m,d){return Math.max(m,d.rev,d.costs);},0)*1.1||1;
+  function sx(i){return PL+i*(pw/(months.length-1));}
+  function sy(v){return PT+ph-(v/maxV)*ph;}
+  function poly(vals,col,dash){
+    var pts=vals.map(function(v,i){return sx(i)+','+sy(v);}).join(' ');
+    return '<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" '+(dash?'stroke-dasharray="6 3"':'')+'/>';
+  }
+  function area(vals,col){
+    var pts=vals.map(function(v,i){return sx(i)+','+sy(v);}).join(' ');
+    return '<polygon points="'+sx(0)+','+sy(0)+' '+pts+' '+sx(months.length-1)+','+sy(0)+'" fill="'+col+'" opacity="0.07"/>';
+  }
+  var revV=months.map(function(m){return m.rev;});
+  var costV=months.map(function(m){return m.costs;});
+  var netV=months.map(function(m){return m.netTax;});
+  var grid='',xl='';
+  for(var i=0;i<=3;i++){
+    var v=maxV*i/3,y=sy(v);
+    grid+='<line x1="'+PL+'" y1="'+y+'" x2="'+(W-PR)+'" y2="'+y+'" stroke="#f1f5f9" stroke-width="1"/>';
+    grid+='<text x="'+(PL-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="10" fill="#94a3b8">$'+(v/1000).toFixed(0)+'k</text>';
+  }
+  months.forEach(function(m,i){
+    if(i%2===0||i===11)
+      xl+='<text x="'+sx(i)+'" y="'+(H-4)+'" text-anchor="middle" font-size="9.5" fill="#94a3b8">'+m.label+'</text>';
+  });
+  var beLine='';
+  if(beMonth>=1&&beMonth<=12){
+    var bx=sx(beMonth-1);
+    beLine='<line x1="'+bx+'" y1="'+PT+'" x2="'+bx+'" y2="'+(H-PB)+'" stroke="#22c55e" stroke-width="2" stroke-dasharray="4 3"/>'
+      +'<text x="'+(bx+4)+'" y="'+(PT+12)+'" font-size="9" fill="#15803d" font-weight="700">Mes '+beMonth+'</text>';
+  }
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:100%" xmlns="http://www.w3.org/2000/svg">'
+    +grid+xl+beLine
+    +area(revV,'#3b82f6')+area(netV,'#10b981')
+    +poly(revV,'#3b82f6')+poly(costV,'#f97316',true)+poly(netV,'#10b981')
+    +'<rect x="20" y="6" width="8" height="8" rx="2" fill="#3b82f6"/><text x="32" y="14" font-size="10" fill="#64748b">Ingresos</text>'
+    +'<rect x="100" y="6" width="8" height="8" rx="2" fill="#f97316" opacity=".7"/><text x="112" y="14" font-size="10" fill="#64748b">Costos</text>'
+    +'<rect x="165" y="6" width="8" height="8" rx="2" fill="#10b981"/><text x="177" y="14" font-size="10" fill="#64748b">Ganancia Neta</text>'
+    +(beMonth?'<line x1="255" y1="10" x2="263" y2="10" stroke="#22c55e" stroke-width="2" stroke-dasharray="3 2"/><text x="267" y="14" font-size="10" fill="#15803d" font-weight="700">Punto equilibrio</text>':'')
+    +'</svg>';
+  wrap.innerHTML=svg;
+}
+
+async async function loadAIAdvisor(cfg, months, ue, T, beMonth) {
+  _simCfg=JSON.parse(JSON.stringify(cfg));
+  var profitable=T.netTax>0;
+  var roasReal=T.mktg>0?(T.rev/T.mktg).toFixed(2):'0';
+  var prompt='Eres asesor experto en Amazon FBA. Responde SOLO con JSON sin markdown.'
+    +' Producto: '+cfg.productName
+    +', Precio: $'+cfg.sellingPrice+', Costo: $'+cfg.supplierCost+', FBA: $'+cfg.fbaFee
+    +', Marketing: '+(cfg.mktgPct*100).toFixed(0)+'%, Amazon fee: '+(cfg.amzFeePct*100).toFixed(0)+'%'
+    +', Margen: '+(ue.margin*100).toFixed(1)+'%, ROAS real: '+roasReal+'x'
+    +', Ganancia 12m: $'+Math.round(T.netTax)+', Rentable: '+(profitable?'SI':'NO')
+    +', Punto equilibrio: '+(beMonth?'Mes '+beMonth:'No alcanzado')
+    +', Unidades mes1: '+cfg.unitsM1+', Crecimiento: '+(cfg.growthRate*100).toFixed(0)+'%/mes'
+    +'. JSON: {"bullets":["punto1","punto2","punto3","punto4","punto5"]'
+    +',"recommendations":[{"icon":"emoji","title":"titulo","text":"accion con numeros","type":"price","action":{"field":"sellingPrice","newValue":0,"label":"Aplicar"}}]'
+    +',"scenarios":["Simular 50 uds mes 1","Reducir marketing 15%","Subir precio $2","Crecimiento 15%/mes"]}';
+  try{
+    var raw=await callAI([{role:'user',content:prompt}]);
+    var m=raw.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('no json');
+    var data=JSON.parse(m[0]);
+    renderAIAdvisor(data,cfg);
+  } catch(err){
+    var el=document.getElementById('ai-thinking');
+    if(el) el.innerHTML='<span style="color:#f97316;font-size:12px">Error al cargar analisis IA. Usa el simulador.</span>';
+    var ar=document.getElementById('ai-recs-area');
+    if(ar) ar.style.display='block';
+  }
+}
+
+function renderAIAdvisor(data, cfg) {
+  var thinking=document.getElementById('ai-thinking');
+  var area=document.getElementById('ai-recs-area');
+  var bulletsDiv=document.getElementById('ai-bullets');
+  var list=document.getElementById('ai-rec-list');
+  var scenDiv=document.getElementById('ai-scenarios');
+  if(thinking) thinking.style.display='none';
+  if(area) area.style.display='block';
+
+  if(bulletsDiv&&data.bullets&&data.bullets.length){
+    bulletsDiv.innerHTML='<div style="background:#f8fafc;border-radius:10px;padding:12px 16px;margin-bottom:4px">'
+      +'<div style="font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Analisis de tu plan</div>'
+      +data.bullets.map(function(b,i){
+        return '<div style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:12.5px;color:#374151;border-bottom:'+(i<data.bullets.length-1?'1px solid #f1f5f9':'none')+'">'
+          +'<span style="color:#f97316;font-weight:800;flex-shrink:0">'+(i+1)+'.</span><span>'+b+'</span></div>';
+      }).join('')
+      +'</div>';
+  }
+
+  var colors={price:'#dbeafe',cost:'#dcfce7',marketing:'#fef9c3',units:'#ede9fe',fba:'#ffedd5'};
+  if(list){
+    window._aiRecs=data.recommendations||[];
+    list.innerHTML=(data.recommendations||[]).map(function(r,i){
+      var bg=colors[r.type]||'#f5f5f5';
+      return '<div style="display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border-radius:10px;border:1px solid #f0f0f0;background:#fafafa">'
+        +'<div style="flex-shrink:0;width:28px;height:28px;border-radius:8px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:14px">'+r.icon+'</div>'
+        +'<div style="flex:1"><div style="font-weight:700;font-size:12.5px;margin-bottom:2px">'+r.title+'</div>'
+        +'<div style="color:#666;font-size:12px">'+r.text+'</div></div>'
+        +(r.action?'<button onclick="applyRec('+i+')" style="flex-shrink:0;padding:4px 11px;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;background:#f97316;color:#fff;font-family:inherit;white-space:nowrap">'+(r.action.label||'Aplicar')+'</button>':'')
+        +'</div>';
+    }).join('');
+  }
+
+  if(scenDiv){
+    scenDiv.innerHTML='<span style="font-size:11px;color:#aaa;margin-right:4px">Simular:</span>'
+      +(data.scenarios||[]).map(function(sc){
+        var safe=sc.replace(/['"]/g,'');
+        return '<button style="padding:5px 12px;border:1.5px solid #e8e8e8;border-radius:99px;font-size:11.5px;font-weight:600;color:#555;cursor:pointer;background:#fff;font-family:inherit" '
+          +'onclick="var inp=document.getElementById('ai-sim-input');if(inp){inp.value=''+safe+'';}">'
+          +sc+'</button>';
+      }).join('');
+  }
+}
+
+function applyRec(idx) {
+  var rec = window._aiRecs && window._aiRecs[idx];
+  if (!rec || !rec.action || !rec.action.field) return;
+  var newCfg = JSON.parse(JSON.stringify(_simCfg));
+  newCfg[rec.action.field] = parseFloat(rec.action.newValue);
+  var newUe = calcUnitEconomics(newCfg);
+  var newMonths = buildMonths(newCfg);
+  S.aiInsight = rec.text || '';
+  showDashboard({cfg:newCfg, months:newMonths, ue:newUe, title: newCfg.productName + ' (ajustado)'});
+}
+
+async function runAISim() {
+  var inp = document.getElementById('ai-sim-input');
+  var query = inp ? inp.value.trim() : '';
+  if (!query) return;
+  var btn = document.getElementById('btn-ai-sim');
+  if (btn) { btn.disabled = true; btn.textContent = 'Calculando...'; }
+  var thinking = document.getElementById('ai-thinking');
+  var area = document.getElementById('ai-recs-area');
+  if (thinking) { thinking.style.display = 'flex'; thinking.innerHTML = '<div class="ai-thinking-dots"><span></span><span></span><span></span></div> Calculando escenario...'; }
+  if (area) area.style.display = 'none';
+
+  var cfg = _simCfg || (S.currentPlan && S.currentPlan.cfg);
+  if (!cfg) { if(btn){btn.disabled=false;btn.textContent='Simular';} return; }
+
+  var prompt = 'Eres experto Amazon FBA. El usuario quiere simular un escenario.'
+    + '\nPlan actual: precio=$' + cfg.sellingPrice + ', costo=$' + cfg.supplierCost
+    + ', FBA=$' + cfg.fbaFee + ', marketing=' + (cfg.mktgPct*100).toFixed(0) + '%'
+    + ', uds mes1=' + cfg.unitsM1 + ', crecimiento=' + (cfg.growthRate*100).toFixed(0) + '%'
+    + '\nSolicitud: "' + query + '"'
+    + '\nResponde SOLO con JSON (sin markdown):'
+    + '\n{"explanation":"que cambio se aplica","newCfg":{"sellingPrice":' + cfg.sellingPrice
+    + ',"supplierCost":' + cfg.supplierCost + ',"fbaFee":' + cfg.fbaFee
+    + ',"amzFeePct":' + cfg.amzFeePct + ',"mktgPct":' + cfg.mktgPct
+    + ',"unitsM1":' + cfg.unitsM1 + ',"growthRate":' + cfg.growthRate
+    + ',"taxRate":' + cfg.taxRate + ',"agencyFee":' + (cfg.agencyFee||0)
+    + ',"membership":' + (cfg.membership||0) + ',"priceIncrementPerMonth":0}'
+    + ',"scenarioName":"nombre escenario"}';
+
+  try {
+    var raw = await callAI([{role:'user',content:prompt}]);
+    var m = raw.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('no JSON');
+    var data = JSON.parse(m[0]);
+    var newCfg = Object.assign({}, cfg, data.newCfg);
+    newCfg.productName = cfg.productName;
+    var newMonths;
+    var inc = parseFloat(data.newCfg.priceIncrementPerMonth) || 0;
+    if (inc !== 0) {
+      newMonths = Array.from({length:12}, function(_,i){
+        var g = Math.pow(1+newCfg.growthRate, i);
+        var price = newCfg.sellingPrice + (inc*i);
+        var units = newCfg.unitsM1*g;
+        var rev = units*price;
+        var mktg = rev*newCfg.mktgPct, amzFee = rev*newCfg.amzFeePct;
+        var fba = units*newCfg.fbaFee;
+        var costs = mktg+amzFee+fba+(newCfg.agencyFee||0)+(newCfg.membership||0);
+        var cogs = units*newCfg.supplierCost;
+        var net = rev-costs-cogs, tax = Math.max(0,net*newCfg.taxRate);
+        return {m:i+1,label:'Mes '+(i+1),rev:rev,units:Math.round(units),mktg:mktg,amzFee:amzFee,fba:fba,cogs:cogs,costs:costs+cogs,net:net,tax:tax,netTax:net-tax};
+      });
+    } else {
+      newMonths = buildMonths(newCfg);
+    }
+    var newUe = calcUnitEconomics(newCfg);
+    _simCfg = newCfg;
+    S.aiInsight = data.explanation || '';
+    if (inp) inp.value = '';
+    showDashboard({cfg:newCfg, months:newMonths, ue:newUe, title:(data.scenarioName||cfg.productName)+' (simulado)'});
+  } catch(e) {
+    if (thinking) thinking.textContent = 'Error al simular: '+e.message;
+    if (area) area.style.display = 'block';
+  }
+  if (btn) { btn.disabled=false; btn.textContent='Simular'; }
+}
+
+/* SAVE / LOAD */
+function savePlanToStorage() {
+  if (!S.currentPlan) { alert('No hay plan activo.'); return; }
+  var plans = JSON.parse(localStorage.getItem('sp_plans')||'[]');
+  var idx = plans.findIndex(function(p){return p.id===S.currentPlan.id;});
+  var entry = Object.assign({}, S.currentPlan, {savedAt:new Date().toISOString()});
+  if (idx>=0) plans[idx]=entry; else plans.unshift(entry);
+  if (plans.length>20) plans.length=20;
+  localStorage.setItem('sp_plans', JSON.stringify(plans));
+  var btn = document.getElementById('btn-save-plan');
+  if (btn) {
+    var orig = btn.innerHTML;
+    btn.textContent = 'Guardado!';
+    btn.style.background = 'rgba(16,185,129,.2)'; btn.style.color = '#10b981';
+    setTimeout(function(){ btn.innerHTML=orig; btn.style.background=''; btn.style.color=''; }, 2000);
+  }
+}
+
+function openSavedPanel() {
+  renderSavedList();
+  var p = document.getElementById('saved-panel');
+  var o = document.getElementById('panel-overlay');
+  if (p) p.classList.add('open');
+  if (o) o.style.display = 'block';
+}
+function closeSavedPanel() {
+  var p = document.getElementById('saved-panel');
+  var o = document.getElementById('panel-overlay');
+  if (p) p.classList.remove('open');
+  if (o) o.style.display = 'none';
+}
+function renderSavedList() {
+  var plans = JSON.parse(localStorage.getItem('sp_plans')||'[]');
+  var list = document.getElementById('saved-list');
+  if (!list) return;
+  if (!plans.length) { list.innerHTML='<div style="text-align:center;padding:40px 20px;color:#bbb;font-size:13px">No tienes planes guardados.<br><br>Genera un plan y haz clic en Guardar.</div>'; return; }
+  list.innerHTML = plans.map(function(p,i){
+    return '<div style="background:#f8f8f8;border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;border:2px solid transparent;transition:all .15s" onclick="loadSavedPlan('+i+')" onmouseover="this.style.borderColor=\'#f97316\'" onmouseout="this.style.borderColor=\'transparent\'">'
+      +'<div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:2px">' + (p.title||'Plan sin nombre') + '</div>'
+      +'<div style="font-size:11px;color:#999">' + new Date(p.savedAt).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) + '</div>'
+      +'<div style="font-size:11px;color:#f97316;font-weight:600;margin-top:2px">' + (p.summary||'') + '</div>'
+      +'<div style="display:flex;gap:6px;margin-top:8px">'
+      +'<button style="flex:1;padding:5px 10px;background:rgba(16,185,129,.15);color:#10b981;border:none;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();downloadExcelFromPlan('+i+')">Descargar Excel</button>'
+      +'<button style="padding:5px 10px;background:#fee2e2;color:#dc2626;border:none;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();deleteSavedPlan('+i+')">Borrar</button>'
+      +'</div></div>';
+  }).join('');
+}
+function loadSavedPlan(idx) {
+  var plans = JSON.parse(localStorage.getItem('sp_plans')||'[]');
+  var p = plans[idx]; if(!p) return;
+  closeSavedPanel(); S.currentPlan=p;
+  showDashboard({cfg:p.cfg,months:p.months,ue:p.ue,title:p.title});
+}
+function deleteSavedPlan(idx) {
+  if (!confirm('Eliminar este plan?')) return;
+  var plans = JSON.parse(localStorage.getItem('sp_plans')||'[]');
+  plans.splice(idx,1);
+  localStorage.setItem('sp_plans',JSON.stringify(plans));
+  renderSavedList();
+}
+
+/* EXCEL EXPORT */
+function downloadExcel() { if(S.currentPlan) downloadExcelFromData(S.currentPlan); else alert('No hay plan activo.'); }
+function downloadExcelFromPlan(idx) { var plans=JSON.parse(localStorage.getItem('sp_plans')||'[]'); if(plans[idx]) downloadExcelFromData(plans[idx]); }
+function downloadExcelFromData(plan) {
+  var cfg=plan.cfg, months=plan.months, ue=plan.ue, title=plan.title;
+  var f=function(n){return parseFloat((n||0).toFixed(2));};
+  var rows=[
+    ['SELLERPLUS FORECAST - PLAN DE NEGOCIO AMAZON'],[],
+    ['PRODUCTO',title],['Fecha',new Date().toLocaleDateString('es-CO')],[],
+    ['ECONOMIA POR UNIDAD'],
+    ['Precio de Venta',f(cfg.sellingPrice)],['Costo Proveedor',f(cfg.supplierCost)],
+    ['FBA Fee',f(cfg.fbaFee)],['Comision Amazon',f(cfg.sellingPrice*cfg.amzFeePct)],
+    ['Marketing',f(cfg.sellingPrice*cfg.mktgPct)],
+    ['GANANCIA POR UNIDAD',f(ue.profit)],['MARGEN NETO',(ue.margin*100).toFixed(1)+'%'],
+    ['ROI',(ue.roi*100).toFixed(0)+'%'],[],
+    ['PROYECCION 12 MESES'],
+    ['Mes','Ingresos','Unidades','Marketing','Fee Amazon','Logistica','Costo Producto','Ganancia Neta','Impuestos','Ganancia Final']
+  ];
+  months.forEach(function(m){rows.push([m.label,f(m.rev),m.units,f(m.mktg),f(m.amzFee),f(m.fba),f(m.cogs),f(m.net),f(m.tax),f(m.netTax)]);});
+  var T=months.reduce(function(a,m){return{rev:a.rev+m.rev,units:a.units+m.units,net:a.net+m.net,netTax:a.netTax+m.netTax};},{rev:0,units:0,net:0,netTax:0});
+  rows.push([],[' TOTAL ANUAL',f(T.rev),Math.round(T.units),'','','','',f(T.net),'',f(T.netTax)],[],
+    ['RESUMEN'],['Total Ingresos',f(T.rev)],['Ganancia Final',f(T.netTax)],
+    ['Margen',T.rev>0?(T.netTax/T.rev*100).toFixed(1)+'%':'0%'],
+    ['Rentable',T.netTax>0?'SI':'NO']);
+  var csv=rows.map(function(r){return r.map(function(c){var s=String(c);return s.includes(',')||s.includes('"')?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');}).join('\n');
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a'); a.href=url;
+  a.download='SellerPlus_'+((title||'plan').replace(/[^a-z0-9]/gi,'_'))+'_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function showURLBtn(visible){ var b=document.getElementById('btn-url-float'); if(b) b.style.display=visible?'flex':'none'; }
+
+
+/* ===========================================
+   SAVE / LOAD PLANS (localStorage)
+=========================================== */
+</script>
+
+<div id="saved-panel" style="position:fixed;right:0;top:0;bottom:0;width:300px;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.1);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s ease">
+  <div style="padding:16px 18px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between">
+    <span style="font-size:15px;font-weight:800;color:#1a1a1a">Mis Planes Guardados</span>
+    <button onclick="closeSavedPanel()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1">&times;</button>
+  </div>
+  <div id="saved-list" style="flex:1;overflow-y:auto;padding:12px"></div>
+</div>
+<div id="panel-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199" onclick="closeSavedPanel()"></div>
+<button id="btn-url-float" style="display:none;position:fixed;bottom:20px;right:20px;background:#ff6a00;border:none;border-radius:50%;width:46px;height:46px;cursor:pointer;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(255,106,0,.4);z-index:50" onclick="triggerURLInput()" title="Pegar URLs de Alibaba/AliExpress">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+</button>
+<style>
+#saved-panel.open{transform:translateX(0)!important}
+.ai-rec{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid #f0f0f0;background:#fafafa;font-size:12.5px;color:#333;line-height:1.5}
+.ai-rec-icon{flex-shrink:0;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.ai-rec-apply{margin-left:auto;flex-shrink:0;padding:4px 12px;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;background:#f97316;color:#fff;font-family:inherit;white-space:nowrap}
+.ai-scenario-btn{padding:5px 12px;border:1.5px solid #e8e8e8;border-radius:99px;font-size:11.5px;font-weight:600;color:#555;cursor:pointer;background:#fff;font-family:inherit;transition:all .15s}
+.ai-scenario-btn:hover{border-color:#f97316;color:#f97316;background:#fff7ed}
+</style>
+
+
+<div class="saved-panel" id="saved-panel">
+  <div class="saved-panel-header">
+    <h3>Mis Planes Guardados</h3>
+    <button class="btn-close-panel" onclick="closeSavedPanel()">x</button>
+  </div>
+  <div class="saved-list" id="saved-list"></div>
+</div>
+<div id="panel-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199" onclick="closeSavedPanel()"></div>
+<button class="btn-url-float" id="btn-url-float" onclick="triggerURLInput()" title="Pegar URLs de Alibaba">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+</button>
+</body>
+</html>
