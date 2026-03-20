@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SellerPlus Forecast</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;font-size:14px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#475569;border-radius:10px}
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+#sidebar{width:220px;min-width:220px;background:#0f172a;display:flex;flex-direction:column;overflow:hidden}
+.brand{padding:16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.brand svg{flex-shrink:0}
+.brand-title{color:#fff;font-size:15px;font-weight:800;line-height:1.1}
+.brand-title span{color:#f97316}
+.brand-sub{color:#475569;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.sim-info{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.05)}
+.sim-info small{color:#475569;font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+.sim-info-name{color:#94a3b8;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+nav{flex:1;padding:8px;overflow-y:auto}
+.nav-btn{width:100%;display:flex;align-items:center;gap:9px;padding:9px 11px;border:none;background:none;color:#64748b;font-size:11.5px;font-weight:600;border-radius:10px;cursor:pointer;text-align:left;transition:all .15s;position:relative}
+.nav-btn:hover{background:rgba(255,255,255,.05);color:#cbd5e1}
+.nav-btn.active{background:#f97316;color:#fff}
+.nav-badge{margin-left:auto;font-size:8px;background:rgba(251,191,36,.2);color:#fbbf24;padding:1px 5px;border-radius:99px;text-transform:uppercase;font-weight:700}
+.sidebar-footer{padding:8px;border-top:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;gap:5px}
+.btn-save{width:100%;padding:9px;background:rgba(249,115,22,.15);color:#fb923c;border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+.btn-save:hover{background:rgba(249,115,22,.28)}
+.btn-save.saved{background:rgba(16,185,129,.15);color:#34d399}
+.btn-small{width:100%;padding:6px;background:none;border:none;color:#475569;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:color .15s;border-radius:8px}
+.btn-small:hover{color:#94a3b8;background:rgba(255,255,255,.04)}
+.btn-small.key-set{color:#34d399}
+
+/* MAIN */
+#main{flex:1;overflow-y:auto;padding:24px 28px}
+.page{display:none;animation:fadeUp .25s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HEADERS */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.page-header h1{font-size:22px;font-weight:800;color:#0f172a}
+.page-header p{font-size:12px;color:#64748b;margin-top:2px}
+.status-badge{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;flex-shrink:0}
+.status-ok{background:#f0fdf4;color:#166534;border:1.5px solid #bbf7d0}
+.status-bad{background:#fef2f2;color:#991b1b;border:1.5px solid #fecaca}
+.dot{width:7px;height:7px;border-radius:50%;animation:pulse 2s infinite}
+.dot-ok{background:#22c55e}
+.dot-bad{background:#ef4444}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+.kpi-card{background:#fff;border-radius:16px;padding:18px;border:1px solid #e2e8f0;transition:box-shadow .2s}
+.kpi-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.07)}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.kpi-icon.blue{background:#dbeafe;color:#2563eb}
+.kpi-icon.green{background:#dcfce7;color:#16a34a}
+.kpi-icon.orange{background:#ffedd5;color:#ea580c}
+.kpi-icon.purple{background:#ede9fe;color:#7c3aed}
+.kpi-icon.red{background:#fee2e2;color:#dc2626}
+.kpi-value{font-size:24px;font-weight:800;color:#0f172a;line-height:1}
+.kpi-value.negative{color:#dc2626}
+.kpi-label{font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.kpi-sub{font-size:10px;color:#cbd5e1;margin-top:2px}
+
+/* CHART */
+.chart-card{background:#fff;border-radius:16px;padding:18px;border:1px solid #e2e8f0;margin-bottom:20px}
+.chart-title{font-size:12px;font-weight:700;color:#64748b;margin-bottom:14px}
+.chart-wrap{position:relative;height:220px;overflow:hidden}
+svg.chart{width:100%;height:100%}
+
+/* TABLE CARD */
+.table-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:16px}
+.table-card-header{padding:14px 18px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#475569}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th{background:#f8fafc;padding:9px 12px;text-align:right;font-weight:700;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #f1f5f9}
+th:first-child{text-align:left;position:sticky;left:0;background:#f8fafc;z-index:2;min-width:240px}
+td{padding:8px 12px;text-align:right;border-top:1px solid #f8fafc;white-space:nowrap;font-variant-numeric:tabular-nums}
+td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:1;font-size:11px}
+tr:hover td{background:#fafafa}
+tr:hover td:first-child{background:#fafafa}
+.row-revenue td{color:#1d4ed8;font-weight:700;background:#eff6ff!important}
+.row-revenue td:first-child{background:#eff6ff!important}
+.row-net td{color:#15803d;font-weight:700;background:#f0fdf4!important}
+.row-net td:first-child{background:#f0fdf4!important}
+.row-final td{color:#166534;font-weight:800;background:#dcfce7!important}
+.row-final td:first-child{background:#dcfce7!important}
+.row-total{background:#f8fafc;font-weight:700}
+.col-total{background:#f1f5f9!important;font-weight:800}
+
+/* FORMS */
+.form-card{background:#fff;border-radius:16px;padding:18px;border:1.5px solid #fed7aa;margin-bottom:16px}
+.form-card h3{font-size:13px;font-weight:700;color:#0f172a;margin-bottom:14px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.form-grid .full{grid-column:1/-1}
+label{display:block;font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+input[type=text],input[type=number],input[type=password]{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;background:#fff}
+input[type=text]:focus,input[type=number]:focus,input[type=password]:focus{border-color:#f97316}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn-primary{background:#f97316;color:#fff}
+.btn-primary:hover{background:#ea580c}
+.btn-secondary{background:#f1f5f9;color:#475569}
+.btn-secondary:hover{background:#e2e8f0}
+.btn-danger{background:#fee2e2;color:#dc2626}
+.btn-danger:hover{background:#fecaca}
+.btn-sm{padding:5px 12px;font-size:11px;border-radius:8px}
+.btn-xs{padding:3px 8px;font-size:10.5px;border-radius:7px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* TOGGLE */
+.toggle{position:relative;width:38px;height:20px;border-radius:99px;border:none;cursor:pointer;transition:background .2s;flex-shrink:0;background:#cbd5e1}
+.toggle.on{background:#f97316}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
+.toggle.on::after{transform:translateX(18px)}
+
+/* PRODUCTS TABLE */
+.prod-table th{font-size:10.5px;padding:8px 10px}
+.prod-table td{padding:7px 10px;font-size:11px}
+.tag-margin{display:inline-block;padding:1px 7px;border-radius:99px;font-size:10px;font-weight:700}
+.tag-green{background:#dcfce7;color:#15803d}
+.tag-amber{background:#fef9c3;color:#854d0e}
+.tag-red{background:#fee2e2;color:#dc2626}
+
+/* SUPPLIER */
+.url-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.url-row input{flex:1}
+.url-icon{color:#cbd5e1}
+.result-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;margin-bottom:12px;animation:fadeUp .3s ease}
+.result-card h3{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:4px}
+.result-url{font-size:10px;color:#94a3b8;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.metric-box{background:#f8fafc;border-radius:10px;padding:10px}
+.metric-box.blue{background:#eff6ff}
+.metric-box.green{background:#f0fdf4}
+.metric-box.purple{background:#faf5ff}
+.metric-label{font-size:9.5px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.metric-box.blue .metric-label{color:#60a5fa}
+.metric-box.green .metric-label{color:#4ade80}
+.metric-box.purple .metric-label{color:#c084fc}
+.metric-value{font-size:16px;font-weight:800;color:#0f172a}
+.tip-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px;font-size:11.5px;color:#92400e;margin-bottom:10px}
+.competitors{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.competitor-tag{background:#f1f5f9;color:#475569;font-size:10.5px;padding:3px 10px;border-radius:99px}
+.potential-badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:800;flex-shrink:0}
+.pot-alto{background:#dcfce7;color:#15803d}
+.pot-medio{background:#fef9c3;color:#854d0e}
+.pot-bajo{background:#fee2e2;color:#dc2626}
+
+/* AI CHAT */
+.chat-container{background:#fff;border-radius:16px;border:1px solid #e2e8f0;display:flex;flex-direction:column;height:calc(100vh - 160px);min-height:500px}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{display:flex;gap:10px;animation:fadeUp .2s ease}
+.msg.user{flex-direction:row-reverse}
+.msg-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.msg-avatar.ai{background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff}
+.msg-avatar.user{background:#f97316;color:#fff}
+.msg-bubble{max-width:75%;padding:10px 14px;border-radius:14px;font-size:12.5px;line-height:1.6}
+.msg-bubble.ai{background:#f1f5f9;color:#1e293b;border-top-left-radius:4px}
+.msg-bubble.user{background:#f97316;color:#fff;border-top-right-radius:4px}
+.msg-bubble strong{font-weight:700}
+.typing{display:flex;gap:4px;align-items:center;padding:2px 0}
+.typing span{width:7px;height:7px;background:#94a3b8;border-radius:50%;animation:bounce 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+.suggestions-panel{border-top:1px solid #f1f5f9;padding:12px;background:#f8fafc}
+.suggestions-panel h4{font-size:11.5px;font-weight:700;color:#475569;margin-bottom:8px}
+.sug-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;padding-right:4px}
+.sug-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all .15s}
+.sug-item:hover,.sug-item.selected{border-color:#f97316;background:#fff7ed}
+.sug-check{width:18px;height:18px;border:2px solid #cbd5e1;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.sug-item.selected .sug-check{background:#f97316;border-color:#f97316}
+.sug-name{flex:1;font-size:11px;font-weight:700;color:#0f172a}
+.sug-desc{font-size:10px;color:#94a3b8;margin-top:1px}
+.sug-margin{font-size:11px;font-weight:800;color:#15803d;flex-shrink:0}
+.btn-build-plan{width:100%;margin-top:8px;padding:11px;background:linear-gradient(135deg,#f97316,#f59e0b);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+.btn-build-plan:hover{box-shadow:0 4px 15px rgba(249,115,22,.35)}
+.btn-build-plan:disabled{opacity:.45;cursor:not-allowed}
+.chat-input-row{border-top:1px solid #f1f5f9;padding:12px;display:flex;gap:8px}
+.chat-input-row input{flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 14px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
+.chat-input-row input:focus{border-color:#f97316}
+.btn-send{background:#f97316;color:#fff;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;display:flex;align-items:center;transition:background .15s}
+.btn-send:hover{background:#ea580c}
+.btn-send:disabled{opacity:.45;cursor:not-allowed}
+
+/* SETTINGS */
+.settings-group{background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:14px}
+.settings-row{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid #f8fafc;gap:16px}
+.settings-row:last-child{border-bottom:none}
+.settings-info{flex:1}
+.settings-info strong{font-size:13px;font-weight:700;color:#0f172a;display:block}
+.settings-info small{font-size:11px;color:#94a3b8}
+.settings-input-wrap{display:flex;align-items:center;gap:6px}
+.settings-input-wrap input{width:90px;text-align:right;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;transition:border-color .15s}
+.settings-input-wrap input:focus{border-color:#f97316}
+.settings-unit{font-size:12px;color:#94a3b8;width:18px}
+
+/* SIMULATIONS */
+.sim-grid{display:grid;gap:12px}
+.sim-card{background:#fff;border-radius:16px;padding:16px;border:2px solid #e2e8f0;transition:all .2s}
+.sim-card.current{border-color:#f97316}
+.sim-card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.sim-card-name{font-size:15px;font-weight:800;color:#0f172a;flex:1}
+.sim-card-meta{font-size:10.5px;color:#94a3b8;margin-top:2px}
+.sim-card-rev{text-align:right;flex-shrink:0}
+.sim-card-rev strong{font-size:14px;font-weight:800;color:#0f172a;display:block}
+.sim-card-rev span{font-size:11px;font-weight:700}
+.sim-actions{display:flex;gap:6px}
+.badge-current{background:#fff7ed;color:#ea580c;font-size:9.5px;font-weight:800;padding:2px 8px;border-radius:99px;border:1px solid #fed7aa}
+
+/* ALERT BOX */
+.alert{padding:10px 14px;border-radius:10px;font-size:11.5px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px}
+.alert-info{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+.alert-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.alert-error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.alert-success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}
+.modal{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:fadeUp .25s ease}
+.modal h2{font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px}
+.modal p{font-size:12px;color:#64748b;margin-bottom:16px}
+.modal-icon{width:44px;height:44px;border-radius:12px;background:#fff7ed;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+
+/* RENAME INLINE */
+.rename-input{border:1.5px solid #f97316;border-radius:7px;padding:3px 8px;font-size:13px;font-weight:700;font-family:inherit;outline:none;width:100%;max-width:280px}
+
+/* MINI CHART */
+.sparkline{display:flex;align-items:flex-end;gap:2px;height:32px}
+.spark-bar{background:#f97316;border-radius:2px;min-width:4px;transition:opacity .2s}
+.spark-bar:hover{opacity:.7}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  #sidebar{display:none}
+  #main{padding:14px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 100 100">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFC107"/>
+            <stop offset="55%" stop-color="#F97316"/>
+            <stop offset="100%" stop-color="#EA4C0A"/>
+          </linearGradient>
+        </defs>
+        <path d="M62 16 C82 16 88 33 83 46 C78 57 64 61 50 66 C36 71 25 75 24 84 C23 93 36 90 50 90 C64 90 75 84 80 79" stroke="url(#g1)" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <path d="M38 16 C18 16 12 33 17 46 C22 57 36 61 50 66 C64 71 75 75 76 84 C77 93 64 90 50 90 C36 90 25 84 20 79" stroke="url(#g1)" stroke-width="12" fill="none" stroke-linecap="round" opacity="0.5"/>
+        <polygon points="76,38 93,50 76,62" fill="url(#g1)"/>
+      </svg>
+      <div>
+        <div class="brand-title">Seller<span>Plus</span></div>
+        <div class="brand-sub">Forecast</div>
+      </div>
+    </div>
+
+    <div class="sim-info">
+      <small>Simulación activa</small>
+      <div class="sim-info-name" id="sidebar-sim-name">Cargando...</div>
+    </div>
+
+    <nav>
+      <button class="nav-btn active" onclick="showPage('dashboard')" id="nav-dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-btn" onclick="showPage('products')" id="nav-products">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Productos
+      </button>
+      <button class="nav-btn" onclick="showPage('supplier')" id="nav-supplier">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Proveedores IA
+      </button>
+      <button class="nav-btn" onclick="showPage('ai')" id="nav-ai">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.5 7H22l-6 4.5 2.5 7L12 17l-6.5 3.5 2.5-7L2 9h7.5z" fill="currentColor" stroke="none"/></svg>
+        Iniciar con IA
+        <span class="nav-badge">IA</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('settings')" id="nav-settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Configuración
+      </button>
+      <button class="nav-btn" onclick="showPage('simulations')" id="nav-simulations">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Simulaciones
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-save" id="btn-save" onclick="saveSim()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <span id="save-text">Guardar</span>
+      </button>
+      <button class="btn-small" onclick="newSim()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nueva simulación
+      </button>
+      <button class="btn-small" id="btn-apikey" onclick="openApiModal()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        <span id="apikey-label">Configurar API Key</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main">
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 id="dash-title">Plan de Negocio</h1>
+          <p>Proyección financiera · 12 meses</p>
+        </div>
+        <div id="dash-status" class="status-badge status-ok">
+          <div class="dot dot-ok"></div>
+          Negocio Rentable
+        </div>
+      </div>
+      <div class="kpi-grid" id="kpi-grid"></div>
+      <div class="chart-card">
+        <div class="chart-title">Proyección Mensual — Ingresos, Costos y Ganancia Neta</div>
+        <div class="chart-wrap" id="chart-wrap"></div>
+      </div>
+      <div class="table-card">
+        <div class="table-card-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Caso de Negocio · 12 Meses
+        </div>
+        <div class="table-wrap" id="finance-table"></div>
+      </div>
+      <div class="alert alert-info" style="margin-top:0">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>ROAS proyectado: <strong>4.0x</strong> con 25% de inversión publicitaria sobre ventas. Ajusta el % de marketing en Configuración para simular diferentes escenarios.</span>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="page" id="page-products">
+      <div class="page-header">
+        <div>
+          <h1>Productos</h1>
+          <p>Administra catálogo, costos y precios de venta</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddProduct()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agregar Producto
+        </button>
+      </div>
+      <div id="add-product-form" style="display:none"></div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table class="prod-table" id="products-table"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPPLIER -->
+    <div class="page" id="page-supplier">
+      <div class="page-header">
+        <div>
+          <h1>Analizador de Proveedores IA</h1>
+          <p>Analiza productos de Alibaba / AliExpress y calcula precio óptimo en Amazon</p>
+        </div>
+      </div>
+      <div class="table-card" style="padding:18px;overflow:visible">
+        <p style="font-size:12px;color:#64748b;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Ingresa hasta 5 URLs de productos de proveedores:
+        </p>
+        <div id="url-list"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:8px">
+          <button class="btn btn-secondary btn-sm" id="btn-add-url" onclick="addUrlField()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar URL
+          </button>
+          <button class="btn btn-primary" id="btn-analyze" onclick="analyzeSupplier()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Analizar con IA
+          </button>
+        </div>
+        <div id="supplier-error" style="display:none"></div>
+      </div>
+      <div id="supplier-results"></div>
+    </div>
+
+    <!-- AI FINDER -->
+    <div class="page" id="page-ai">
+      <div class="page-header">
+        <div>
+          <h1>Iniciar con IA</h1>
+          <p>Encuentra productos ganadores y genera tu plan de negocio automáticamente</p>
+        </div>
+      </div>
+      <div class="chat-container" id="chat-container">
+        <div class="chat-messages" id="chat-messages"></div>
+        <div id="suggestions-area"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Escribe qué quieres vender en Amazon..." onkeydown="if(event.key==='Enter')sendChat()"/>
+          <button class="btn-send" id="btn-send-chat" onclick="sendChat()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div>
+          <h1>Configuración</h1>
+          <p>Variables financieras globales del plan de negocio</p>
+        </div>
+      </div>
+      <div class="settings-group" id="settings-form"></div>
+      <div class="alert alert-info">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Los cambios se reflejan en tiempo real en el Dashboard.
+      </div>
+    </div>
+
+    <!-- SIMULATIONS -->
+    <div class="page" id="page-simulations">
+      <div class="page-header">
+        <div>
+          <h1>Simulaciones</h1>
+          <p>Guarda, compara y gestiona tus planes de negocio</p>
+        </div>
+        <button class="btn btn-primary" onclick="newSim()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nueva Simulación
+        </button>
+      </div>
+      <div class="sim-grid" id="sim-list"></div>
+    </div>
+  </main>
+</div>
+
+<!-- API MODAL -->
+<div class="modal-overlay" id="api-modal" style="display:none" onclick="if(event.target===this)closeApiModal()">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+    </div>
+    <h2>API Key de Anthropic</h2>
+    <p>Necesaria para el Analizador de Proveedores y el módulo "Iniciar con IA". Se guarda solo en tu navegador.</p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." style="margin-bottom:10px"/>
+    <p style="font-size:11px;color:#94a3b8;margin-bottom:16px">
+      Obtén tu clave gratis en <a href="https://console.anthropic.com" target="_blank" style="color:#f97316">console.anthropic.com</a>
+    </p>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveApiKey()">Guardar</button>
+      <button class="btn btn-secondary" onclick="closeApiModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+const DEFAULT_CFG = {
+  growthRate:0.10, mktgPct:0.25, amzFeePct:0.15,
+  agencyFee:450, membership:40, taxRate:0.08
+};
+const DEFAULT_PRODS = [
+  {id:1, name:'SWEET BOOST 250 GRS - 8.8 OZ MOLIDO',    cost:5.75,  unitsM1:10, fbaFee:4.59, price:16.99, active:true},
+  {id:2, name:'SWEET BOOST 500 GRS - 17.6 OZ MOLIDO',   cost:11.50, unitsM1:10, fbaFee:5.58, price:26.99, active:true},
+  {id:3, name:'SWEET BOOST 500 GRS - 17.6 OZ EN GRANO', cost:11.50, unitsM1:15, fbaFee:5.58, price:26.99, active:true},
+  {id:4, name:'HARD WORK 250 GRS - 8.8 OZ MOLIDO',      cost:5.75,  unitsM1:10, fbaFee:4.59, price:16.99, active:true},
+  {id:5, name:'HARD WORK 500 GRS - 17.6 OZ MOLIDO',     cost:11.50, unitsM1:10, fbaFee:5.58, price:26.99, active:true},
+  {id:6, name:'HARD WORK 500 GRS - 17.6 OZ EN GRANO',   cost:11.50, unitsM1:15, fbaFee:5.58, price:26.99, active:true},
+  {id:7, name:'GOOD ALLURE 250 GRS - 8.8 OZ MOLIDO',    cost:5.75,  unitsM1:10, fbaFee:4.59, price:16.99, active:true},
+  {id:8, name:'GOOD ALLURE 500 GRS - 17.6 OZ MOLIDO',   cost:11.50, unitsM1:10, fbaFee:5.58, price:26.99, active:true},
+  {id:9, name:'GOOD ALLURE 500 GRS - 17.6 OZ EN GRANO', cost:11.50, unitsM1:15, fbaFee:5.58, price:26.99, active:true},
+  {id:10,name:'TASTY CHARM 250 GRS - 8.8 OZ MOLIDO',    cost:5.75,  unitsM1:10, fbaFee:4.59, price:16.99, active:true},
+  {id:11,name:'TASTY CHARM 500 GRS - 17.6 OZ MOLIDO',   cost:11.50, unitsM1:10, fbaFee:5.58, price:26.99, active:true},
+  {id:12,name:'TASTY CHARM 500 GRS - 17.6 OZ EN GRANO', cost:11.50, unitsM1:15, fbaFee:5.58, price:26.99, active:true},
+];
+
+function mkSim(name='Nueva Simulación'){
+  return {id:uid(), name, products:DEFAULT_PRODS.map(p=>({...p})), cfg:{...DEFAULT_CFG},
+    createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()};
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
+let state = {
+  sims: [],
+  cur: null,
+  apiKey: ''
+};
+
+function loadState(){
+  try{ state.sims = JSON.parse(localStorage.getItem('sp_sims')||'[]') }catch{}
+  try{ const c=JSON.parse(localStorage.getItem('sp_cur')); if(c&&c.id) state.cur=c; }catch{}
+  if(!state.cur){ state.cur=mkSim('Mi Primer Plan de Negocio'); state.sims=[state.cur]; persistSims(); }
+  state.apiKey = localStorage.getItem('sp_apikey')||'';
+}
+function persistSims(){ try{localStorage.setItem('sp_sims',JSON.stringify(state.sims))}catch{} }
+function persistCur(){  try{localStorage.setItem('sp_cur',JSON.stringify(state.cur))}catch{} }
+
+/* ═══════════════════════════════════════
+   FINANCIAL ENGINE
+═══════════════════════════════════════ */
+function buildMonths(products, cfg){
+  const active = products.filter(p=>p.active);
+  return Array.from({length:12},(_,i)=>{
+    const g = Math.pow(1+cfg.growthRate, i);
+    let rev=0, units=0, fba=0;
+    active.forEach(p=>{ const u=p.unitsM1*g; rev+=u*p.price; units+=u; fba+=u*p.fbaFee; });
+    const mktg=rev*cfg.mktgPct, amzFee=rev*cfg.amzFeePct, agency=cfg.agencyFee, memb=cfg.membership;
+    const costs=mktg+amzFee+fba+agency+memb, net=rev-costs;
+    const tax=Math.max(0,net*cfg.taxRate), netTax=net-tax;
+    return {m:i+1,label:`Mes ${i+1}`,rev,units:Math.round(units),mktg,amzFee,fba,agency,memb,costs,net,tax,netTax,margin:rev>0?net/rev:0};
+  });
+}
+function calcUnitMargin(p,cfg){
+  if(!p.price||!p.cost) return null;
+  const mktg=p.price*cfg.mktgPct, amzFee=p.price*cfg.amzFeePct;
+  const totalC=p.cost+p.fbaFee+mktg+amzFee, profit=p.price-totalC;
+  return {profit, margin:profit/p.price, roi:p.cost>0?profit/p.cost:0};
+}
+
+/* ═══════════════════════════════════════
+   FORMATTERS
+═══════════════════════════════════════ */
+const $  = n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0}).format(n||0);
+const $d = n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0);
+const pct= n=>`${((n||0)*100).toFixed(1)}%`;
+const num= n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(n||0));
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+let currentPage = 'dashboard';
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page).classList.add('active');
+  currentPage=page;
+  if(page==='dashboard')   renderDashboard();
+  if(page==='products')    renderProducts();
+  if(page==='settings')    renderSettings();
+  if(page==='simulations') renderSimulations();
+  if(page==='supplier')    initSupplier();
+  if(page==='ai')          initChat();
+}
+
+/* ═══════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════ */
+function renderDashboard(){
+  const {cur}=state;
+  document.getElementById('dash-title').textContent=cur.name;
+  document.getElementById('sidebar-sim-name').textContent=cur.name;
+  const months=buildMonths(cur.products,cur.cfg);
+  const T=months.reduce((a,m)=>({rev:a.rev+m.rev,units:a.units+m.units,mktg:a.mktg+m.mktg,amzFee:a.amzFee+m.amzFee,fba:a.fba+m.fba,agency:a.agency+m.agency,memb:a.memb+m.memb,costs:a.costs+m.costs,net:a.net+m.net,tax:a.tax+m.tax,netTax:a.netTax+m.netTax}),{rev:0,units:0,mktg:0,amzFee:0,fba:0,agency:0,memb:0,costs:0,net:0,tax:0,netTax:0});
+  const ok=T.netTax>0;
+  const sb=document.getElementById('dash-status');
+  sb.className='status-badge '+(ok?'status-ok':'status-bad');
+  sb.innerHTML=`<div class="dot ${ok?'dot-ok':'dot-bad'}"></div>${ok?'✓ Negocio Rentable':'⚠ No Rentable'}`;
+
+  // KPIs
+  const kpis=[
+    {label:'Ingresos Totales',value:$(T.rev),sub:'12 meses acumulados',icon:trendIcon(),cls:'blue'},
+    {label:'Unidades Vendidas',value:num(T.units),sub:'Total del período',icon:boxIcon(),cls:'purple'},
+    {label:'Ganancia Neta',value:$(T.net),sub:'Antes de impuestos',icon:chartIcon(),cls:T.net>0?'green':'red',neg:T.net<0},
+    {label:'Ganancia Después Imp.',value:$(T.netTax),sub:`Margen: ${pct(T.rev?T.netTax/T.rev:0)}`,icon:starIcon(),cls:T.netTax>0?'green':'red',neg:T.netTax<0},
+  ];
+  document.getElementById('kpi-grid').innerHTML=kpis.map(k=>`
+    <div class="kpi-card">
+      <div class="kpi-icon ${k.cls}">${k.icon}</div>
+      <div class="kpi-value ${k.neg?'negative':''}">${k.value}</div>
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join('');
+
+  // SVG Chart
+  renderSVGChart(months);
+
+  // Table
+  const rows=[
+    {key:'rev',    label:'INGRESOS POR VENTAS',            cls:'row-revenue', fmt:$d},
+    {key:'units',  label:'UNIDADES VENDIDAS',              cls:'',            fmt:num},
+    {key:'mktg',   label:'GASTOS DE MARKETING (25%)',      cls:'',            fmt:$d},
+    {key:'amzFee', label:'FEE AMAZON (15%)',               cls:'',            fmt:$d},
+    {key:'fba',    label:'LOGÍSTICA FBA',                  cls:'',            fmt:$d},
+    {key:'agency', label:'FEE AGENCIA SELLER PLUS',        cls:'',            fmt:$d},
+    {key:'memb',   label:'MEMBRESÍA AMAZON',               cls:'',            fmt:$d},
+    {key:'net',    label:'GANANCIAS NETAS',                cls:'row-net',     fmt:$d},
+    {key:'tax',    label:'IMPUESTOS (8%)',                 cls:'',            fmt:$d},
+    {key:'netTax', label:'GANANCIAS DESPUÉS DE IMPUESTOS', cls:'row-final',   fmt:$d},
+  ];
+  let html=`<table><thead><tr><th>Métrica</th>`;
+  months.forEach(m=>{ html+=`<th>${m.label}</th>`; });
+  html+=`<th class="col-total">TOTAL</th></tr></thead><tbody>`;
+  rows.forEach(row=>{
+    html+=`<tr class="${row.cls}"><td>${row.label}</td>`;
+    months.forEach(m=>{ html+=`<td>${row.fmt(m[row.key])}</td>`; });
+    const total=months.reduce((s,m)=>s+m[row.key],0);
+    html+=`<td class="col-total">${row.fmt(total)}</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('finance-table').innerHTML=html;
+}
+
+function renderSVGChart(months){
+  const W=800,H=200,PAD={t:10,r:20,b:30,l:60};
+  const plotW=W-PAD.l-PAD.r, plotH=H-PAD.t-PAD.b;
+  const maxV=Math.max(...months.map(m=>m.rev))*1.1;
+  const minV=0;
+  const xStep=plotW/(months.length-1);
+  const scaleY=v=>PAD.t+plotH-(((v-minV)/(maxV-minV))*plotH);
+  const scaleX=i=>PAD.l+i*xStep;
+
+  const polyline=(arr,col,dashed=false)=>{
+    const pts=arr.map((v,i)=>`${scaleX(i)},${scaleY(v)}`).join(' ');
+    return `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" ${dashed?'stroke-dasharray="6 3"':''}/>`;
+  };
+  const area=(arr,col)=>{
+    const pts=arr.map((v,i)=>`${scaleX(i)},${scaleY(v)}`).join(' ');
+    const first=`${scaleX(0)},${scaleY(minV)}`, last=`${scaleX(arr.length-1)},${scaleY(minV)}`;
+    return `<polygon points="${first} ${pts} ${last}" fill="${col}" opacity="0.08"/>`;
+  };
+
+  const revVals=months.map(m=>m.rev);
+  const costVals=months.map(m=>m.costs);
+  const netVals=months.map(m=>m.netTax);
+
+  // Y axis labels
+  let yLabels='';
+  for(let i=0;i<=4;i++){
+    const v=minV+(maxV-minV)*i/4;
+    const y=scaleY(v);
+    yLabels+=`<text x="${PAD.l-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#94a3b8">$${(v/1000).toFixed(0)}k</text>`;
+    yLabels+=`<line x1="${PAD.l}" y1="${y}" x2="${PAD.l+plotW}" y2="${y}" stroke="#f1f5f9" stroke-width="1"/>`;
+  }
+
+  // X labels (every 2 months)
+  let xLabels='';
+  months.forEach((m,i)=>{
+    if(i%2===0||i===11)
+      xLabels+=`<text x="${scaleX(i)}" y="${H-5}" text-anchor="middle" font-size="10" fill="#94a3b8">${m.label}</text>`;
+  });
+
+  const svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+    ${yLabels}${xLabels}
+    ${area(revVals,'#3b82f6')}${area(netVals,'#10b981')}
+    ${polyline(revVals,'#3b82f6')}
+    ${polyline(costVals,'#f97316',true)}
+    ${polyline(netVals,'#10b981')}
+    <rect x="20" y="8" width="8" height="8" rx="2" fill="#3b82f6"/>
+    <text x="32" y="16" font-size="10" fill="#64748b">Ingresos</text>
+    <rect x="100" y="8" width="8" height="8" rx="2" fill="#f97316" opacity="0.7"/>
+    <text x="112" y="16" font-size="10" fill="#64748b">Costos</text>
+    <rect x="165" y="8" width="8" height="8" rx="2" fill="#10b981"/>
+    <text x="177" y="16" font-size="10" fill="#64748b">Ganancia Neta</text>
+  </svg>`;
+  document.getElementById('chart-wrap').innerHTML=svg;
+}
+
+/* ═══════════════════════════════════════
+   PRODUCTS
+═══════════════════════════════════════ */
+function renderProducts(){
+  const {cur}=state;
+  let html=`<thead><tr>
+    <th style="text-align:left">Producto</th>
+    <th>Costo</th><th>Precio Amazon</th><th>FBA Fee</th>
+    <th>Uds/Mes1</th><th>Margen</th><th>ROI</th><th>Activo</th><th></th>
+  </tr></thead><tbody>`;
+  cur.products.forEach(p=>{
+    const m=calcUnitMargin(p,cur.cfg);
+    const marginTag=m?`<span class="tag-margin ${m.margin>0.15?'tag-green':m.margin>0?'tag-amber':'tag-red'}">${pct(m.margin)}</span>`:'-';
+    const roiTag=m?`<span style="font-weight:700;color:${m.roi>0?'#15803d':'#dc2626'}">${(m.roi*100).toFixed(0)}%</span>`:'-';
+    html+=`<tr style="${!p.active?'opacity:.4':''}">
+      <td style="text-align:left;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.name}"><strong>${p.name}</strong></td>
+      <td>${$d(p.cost)}</td>
+      <td><strong>${$d(p.price)}</strong></td>
+      <td>${$d(p.fbaFee)}</td>
+      <td>${p.unitsM1}</td>
+      <td>${marginTag}</td>
+      <td>${roiTag}</td>
+      <td><button class="toggle ${p.active?'on':''}" onclick="toggleProduct(${p.id})" title="${p.active?'Desactivar':'Activar'}"></button></td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-secondary btn-xs" onclick="editProduct(${p.id})">✏</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteProduct(${p.id})">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  });
+  html+=`</tbody>`;
+  document.getElementById('products-table').innerHTML=html;
+}
+
+function toggleProduct(id){
+  state.cur.products=state.cur.products.map(p=>p.id===id?{...p,active:!p.active}:p);
+  persistCur(); renderProducts();
+  if(currentPage==='dashboard') renderDashboard();
+}
+
+function deleteProduct(id){
+  if(!confirm('¿Eliminar este producto?')) return;
+  state.cur.products=state.cur.products.filter(p=>p.id!==id);
+  persistCur(); renderProducts();
+}
+
+function editProduct(id){
+  const p=state.cur.products.find(x=>x.id===id);
+  if(!p) return;
+  const form=document.getElementById('add-product-form');
+  form.style.display='block';
+  form.innerHTML=`<div class="form-card">
+    <h3>✏️ Editar Producto</h3>
+    <div class="form-grid">
+      <div class="full"><label>Nombre del Producto</label><input type="text" id="ep-name" value="${p.name}"/></div>
+      <div><label>Costo Proveedor (USD)</label><input type="number" id="ep-cost" step="0.01" value="${p.cost}"/></div>
+      <div><label>Precio Venta Amazon (USD)</label><input type="number" id="ep-price" step="0.01" value="${p.price}"/></div>
+      <div><label>FBA Fee (USD)</label><input type="number" id="ep-fba" step="0.01" value="${p.fbaFee}"/></div>
+      <div><label>Unidades Mes 1</label><input type="number" id="ep-units" value="${p.unitsM1}"/></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-primary" onclick="saveEditProduct(${id})">Guardar</button>
+      <button class="btn btn-secondary" onclick="cancelAddProduct()">Cancelar</button>
+    </div>
+  </div>`;
+  form.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function saveEditProduct(id){
+  state.cur.products=state.cur.products.map(p=>p.id===id?{...p,
+    name:document.getElementById('ep-name').value,
+    cost:+document.getElementById('ep-cost').value,
+    price:+document.getElementById('ep-price').value,
+    fbaFee:+document.getElementById('ep-fba').value,
+    unitsM1:+document.getElementById('ep-units').value,
+  }:p);
+  persistCur(); cancelAddProduct(); renderProducts();
+}
+
+function openAddProduct(){
+  const form=document.getElementById('add-product-form');
+  form.style.display='block';
+  form.innerHTML=`<div class="form-card">
+    <h3>➕ Nuevo Producto</h3>
+    <div class="form-grid">
+      <div class="full"><label>Nombre del Producto</label><input type="text" id="np-name" placeholder="Ej: Producto XYZ 500g"/></div>
+      <div><label>Costo Proveedor (USD)</label><input type="number" id="np-cost" step="0.01" placeholder="0.00"/></div>
+      <div><label>Precio Venta Amazon (USD)</label><input type="number" id="np-price" step="0.01" placeholder="0.00"/></div>
+      <div><label>FBA Fee (USD)</label><input type="number" id="np-fba" step="0.01" value="5.58"/></div>
+      <div><label>Unidades Mes 1</label><input type="number" id="np-units" value="10"/></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-primary" onclick="saveNewProduct()">Guardar</button>
+      <button class="btn btn-secondary" onclick="cancelAddProduct()">Cancelar</button>
+    </div>
+  </div>`;
+}
+
+function saveNewProduct(){
+  const p={id:Date.now(), name:document.getElementById('np-name').value||'Nuevo Producto',
+    cost:+document.getElementById('np-cost').value||0,
+    price:+document.getElementById('np-price').value||0,
+    fbaFee:+document.getElementById('np-fba').value||5.58,
+    unitsM1:+document.getElementById('np-units').value||10, active:true};
+  state.cur.products.push(p);
+  persistCur(); cancelAddProduct(); renderProducts();
+}
+
+function cancelAddProduct(){
+  const f=document.getElementById('add-product-form');
+  f.style.display='none'; f.innerHTML='';
+}
+
+/* ═══════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════ */
+function renderSettings(){
+  const c=state.cur.cfg;
+  const fields=[
+    {k:'growthRate',label:'Tasa de Crecimiento Mensual',isPct:true,desc:'Crecimiento en unidades mes a mes'},
+    {k:'mktgPct',  label:'Gastos de Marketing (% ventas)',isPct:true,desc:'Sponsored Products + Brands. ROAS = 1 / este valor'},
+    {k:'amzFeePct',label:'Referral Fee Amazon (% ventas)',isPct:true,desc:'Comisión de Amazon — típicamente 15%'},
+    {k:'agencyFee',label:'Fee Agencia Seller Plus (USD/mes)',isPct:false,desc:'Costo mensual fijo de la agencia'},
+    {k:'membership',label:'Membresía Amazon (USD/mes)',isPct:false,desc:'Plan Professional Seller Central'},
+    {k:'taxRate',  label:'Tasa de Impuestos (% ganancia)',isPct:true,desc:'Impuesto sobre ganancias netas'},
+  ];
+  document.getElementById('settings-form').innerHTML=fields.map(f=>`
+    <div class="settings-row">
+      <div class="settings-info">
+        <strong>${f.label}</strong>
+        <small>${f.desc}</small>
+      </div>
+      <div class="settings-input-wrap">
+        <input type="number" step="${f.isPct?'0.1':'1'}" id="cfg-${f.k}"
+          value="${f.isPct?((c[f.k]||0)*100).toFixed(1):c[f.k]}"
+          oninput="updateCfg('${f.k}',this.value,${f.isPct})"/>
+        <span class="settings-unit">${f.isPct?'%':'$'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function updateCfg(k,v,isPct){
+  state.cur.cfg[k]=isPct?parseFloat(v)/100:parseFloat(v)||0;
+  persistCur();
+  if(currentPage==='dashboard') renderDashboard();
+}
+
+/* ═══════════════════════════════════════
+   SAVE / NEW SIM
+═══════════════════════════════════════ */
+function saveSim(){
+  state.cur.updatedAt=new Date().toISOString();
+  const idx=state.sims.findIndex(s=>s.id===state.cur.id);
+  if(idx>=0) state.sims[idx]={...state.cur};
+  else state.sims.push({...state.cur});
+  persistSims(); persistCur();
+  const btn=document.getElementById('btn-save');
+  const txt=document.getElementById('save-text');
+  btn.classList.add('saved'); txt.textContent='¡Guardado!';
+  setTimeout(()=>{ btn.classList.remove('saved'); txt.textContent='Guardar'; },1800);
+}
+
+function newSim(){
+  const name=prompt('Nombre de la nueva simulación:','Nueva Simulación');
+  if(!name) return;
+  const s=mkSim(name);
+  state.sims.push(s);
+  state.cur=s;
+  persistSims(); persistCur();
+  showPage('dashboard');
+}
+
+/* ═══════════════════════════════════════
+   SIMULATIONS
+═══════════════════════════════════════ */
+function renderSimulations(){
+  if(!state.sims.length){
+    document.getElementById('sim-list').innerHTML=`<div class="table-card" style="padding:48px;text-align:center;color:#94a3b8"><p>No hay simulaciones. Guarda la simulación actual primero.</p></div>`;
+    return;
+  }
+  document.getElementById('sim-list').innerHTML=state.sims.map(sim=>{
+    const months=buildMonths(sim.products.filter(p=>p.active),sim.cfg);
+    const totRev=months.reduce((s,m)=>s+m.rev,0);
+    const totNet=months.reduce((s,m)=>s+m.netTax,0);
+    const isCur=state.cur.id===sim.id;
+    return `<div class="sim-card ${isCur?'current':''}">
+      <div class="sim-card-top">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div class="sim-card-name">${sim.name}</div>
+            ${isCur?'<span class="badge-current">Activa</span>':''}
+          </div>
+          <div class="sim-card-meta">${sim.products.filter(p=>p.active).length} productos activos · ${new Date(sim.updatedAt).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})}</div>
+        </div>
+        <div class="sim-card-rev">
+          <strong>${$(totRev)}</strong>
+          <span style="color:${totNet>0?'#15803d':'#dc2626'}">${$(totNet)} neto</span>
+        </div>
+      </div>
+      <div class="sim-actions">
+        ${!isCur?`<button class="btn btn-primary btn-sm" style="flex:1" onclick="loadSim('${sim.id}')">Abrir</button>`:''}
+        <button class="btn btn-secondary btn-sm" onclick="renameSim('${sim.id}')">✏ Renombrar</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSim('${sim.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadSim(id){
+  const s=state.sims.find(x=>x.id===id);
+  if(!s) return;
+  state.cur=s; persistCur(); showPage('dashboard');
+}
+function renameSim(id){
+  const s=state.sims.find(x=>x.id===id); if(!s) return;
+  const name=prompt('Nuevo nombre:',s.name); if(!name) return;
+  s.name=name; if(state.cur.id===id){state.cur.name=name; document.getElementById('sidebar-sim-name').textContent=name;}
+  persistSims(); persistCur(); renderSimulations();
+}
+function deleteSim(id){
+  if(!confirm('¿Eliminar esta simulación?')) return;
+  state.sims=state.sims.filter(s=>s.id!==id);
+  if(state.cur.id===id){
+    state.cur=state.sims[0]||mkSim(); if(!state.sims.length){state.sims=[state.cur];}
+    persistCur();
+  }
+  persistSims(); renderSimulations();
+}
+
+/* ═══════════════════════════════════════
+   API KEY
+═══════════════════════════════════════ */
+function openApiModal(){
+  document.getElementById('api-key-input').value=state.apiKey||'';
+  document.getElementById('api-modal').style.display='flex';
+}
+function closeApiModal(){ document.getElementById('api-modal').style.display='none'; }
+function saveApiKey(){
+  const k=document.getElementById('api-key-input').value.trim();
+  state.apiKey=k; localStorage.setItem('sp_apikey',k);
+  const lbl=document.getElementById('apikey-label');
+  lbl.textContent=k?'● API Key activa':'Configurar API Key';
+  document.getElementById('btn-apikey').className='btn-small'+(k?' key-set':'');
+  closeApiModal();
+}
+
+/* ═══════════════════════════════════════
+   SUPPLIER ANALYZER
+═══════════════════════════════════════ */
+let urlCount=1;
+function initSupplier(){
+  const list=document.getElementById('url-list');
+  if(list.children.length===0){
+    urlCount=1;
+    list.innerHTML='';
+    addUrlField();
+  }
+}
+function addUrlField(){
+  const list=document.getElementById('url-list');
+  if(urlCount>=5) return;
+  const id='url-'+urlCount++;
+  const div=document.createElement('div');
+  div.className='url-row'; div.id='row-'+id;
+  div.innerHTML=`
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="url-icon"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    <input type="text" id="${id}" placeholder="https://www.alibaba.com/product-detail/..."/>
+    ${urlCount>2?`<button class="btn btn-danger btn-xs" onclick="document.getElementById('row-${id}').remove();urlCount--">✕</button>`:''}
+  `;
+  list.appendChild(div);
+  if(urlCount>=5) document.getElementById('btn-add-url').style.display='none';
+}
+
+async function analyzeSupplier(){
+  if(!state.apiKey){ showSupplierError('Configura tu API Key de Anthropic primero (botón en la barra lateral).','error'); return; }
+  const urls=[];
+  document.querySelectorAll('#url-list input[type=text]').forEach(i=>{ if(i.value.trim()) urls.push(i.value.trim()); });
+  if(!urls.length){ showSupplierError('Agrega al menos una URL de proveedor.','warn'); return; }
+
+  const btn=document.getElementById('btn-analyze');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner"></div> Analizando...';
+  document.getElementById('supplier-error').style.display='none';
+  document.getElementById('supplier-results').innerHTML='';
+
+  const prompt=`Eres experto en Amazon FBA y análisis de productos de Alibaba/AliExpress.
+
+Analiza estos productos de proveedores:
+${urls.map((u,i)=>`${i+1}. ${u}`).join('\n')}
+
+Para CADA URL, proporciona estimaciones basadas en el tipo de producto y mercado Amazon:
+- Nombre específico del producto
+- Precio proveedor rango USD para 100-500 unidades (supplierMin, supplierMax)
+- Categoría
+- FBA fee estimado (pequeño <1lb: 4.59, mediano 1-2lb: 5.58, grande >2lb: 6.80)
+- Precio de venta recomendado Amazon (para lograr 15-25% margen neto)
+- Margen neto estimado (decimal, ej 0.20 = 20%)
+- ROI estimado (decimal)
+- Potencial: "Alto", "Medio" o "Bajo"
+- Justificación 1 frase
+- 3 competidores en Amazon con precios
+- Recomendación 2 frases
+
+Responde SOLO con este JSON sin texto extra ni backticks:
+{"products":[{"url":"","name":"","supplierMin":0,"supplierMax":0,"category":"","fbaFee":0,"recommendedPrice":0,"margin":0,"roi":0,"potential":"","justification":"","competitors":[{"name":"","price":0}],"recommendation":""}]}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const text=data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(text);
+    renderSupplierResults(parsed.products||[]);
+  }catch(e){
+    showSupplierError('Error: '+e.message,'error');
+  }
+  btn.disabled=false;
+  btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Analizar con IA';
+}
+
+function showSupplierError(msg,type){
+  const el=document.getElementById('supplier-error');
+  el.style.display='flex'; el.className=`alert alert-${type}`; el.style.marginTop='10px';
+  el.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${msg}`;
+}
+
+function renderSupplierResults(prods){
+  const potCls={Alto:'pot-alto',Medio:'pot-medio',Bajo:'pot-bajo'};
+  document.getElementById('supplier-results').innerHTML=prods.map((r,i)=>`
+    <div class="result-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px">
+        <h3>${r.name}</h3>
+        <span class="potential-badge ${potCls[r.potential]||'pot-medio'}">${r.potential||'Medio'}</span>
+      </div>
+      <div class="result-url">${r.url}</div>
+      <div class="metrics-row">
+        <div class="metric-box">
+          <div class="metric-label">Precio Proveedor</div>
+          <div class="metric-value">$${(r.supplierMin||0).toFixed(2)}–$${(r.supplierMax||0).toFixed(2)}</div>
+        </div>
+        <div class="metric-box blue">
+          <div class="metric-label">Precio Amazon</div>
+          <div class="metric-value">${$d(r.recommendedPrice)}</div>
+        </div>
+        <div class="metric-box ${(r.margin||0)>0.15?'green':''}">
+          <div class="metric-label">Margen Neto Est.</div>
+          <div class="metric-value">${pct(r.margin||0)}</div>
+        </div>
+        <div class="metric-box purple">
+          <div class="metric-label">FBA Fee</div>
+          <div class="metric-value">${$d(r.fbaFee||5.58)}</div>
+        </div>
+      </div>
+      <div class="tip-box">${r.recommendation||r.justification||''}</div>
+      ${r.competitors?.length?`<div class="competitors">${r.competitors.map(c=>`<span class="competitor-tag">${c.name} · ${$d(c.price)}</span>`).join('')}</div>`:''}
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="addSupplierProduct(${i})">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agregar a Mis Productos
+      </button>
+    </div>`).join('');
+  window._supplierResults=prods;
+}
+
+function addSupplierProduct(i){
+  const r=window._supplierResults[i];
+  const p={id:Date.now(), name:r.name, cost:(r.supplierMin+r.supplierMax)/2,
+    unitsM1:10, fbaFee:r.fbaFee||5.58, price:r.recommendedPrice, active:true};
+  state.cur.products.push(p);
+  persistCur();
+  alert(`✅ "${r.name}" agregado a Productos`);
+}
+
+/* ═══════════════════════════════════════
+   AI CHAT
+═══════════════════════════════════════ */
+let chatHistory=[];
+let chatSuggestions=[];
+let chatInitialized=false;
+
+function initChat(){
+  if(chatInitialized) return;
+  chatInitialized=true;
+  chatHistory=[];
+  addChatMsg('ai','👋 ¡Hola! Soy tu asistente de <strong>SellerPlus</strong>.\n\nEstoy aquí para ayudarte a descubrir <strong>productos ganadores</strong> en Amazon. Analizaré oportunidades de mercado y te ayudaré a construir tu plan de negocio automáticamente.\n\n¿<strong>Qué deseas vender?</strong> Puedes decirme una categoría, tipo de producto, o cualquier idea.');
+}
+
+function addChatMsg(role, html){
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='msg '+(role==='user'?'user':'');
+  const avatar=role==='user'
+    ?'<div class="msg-avatar user">Tú</div>'
+    :'<div class="msg-avatar ai">✦</div>';
+  div.innerHTML=avatar+`<div class="msg-bubble ${role}">${html.replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function showTyping(){
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='msg'; div.id='typing-bubble';
+  div.innerHTML='<div class="msg-avatar ai">✦</div><div class="msg-bubble ai"><div class="typing"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+function removeTyping(){ const t=document.getElementById('typing-bubble'); if(t)t.remove(); }
+
+async function sendChat(){
+  const inp=document.getElementById('chat-input');
+  const txt=inp.value.trim(); if(!txt) return;
+  if(!state.apiKey){ addChatMsg('ai','⚠️ <strong>API Key no configurada.</strong> Haz clic en "Configurar API Key" en la barra lateral.'); return; }
+  inp.value='';
+  addChatMsg('user',txt);
+  chatHistory.push({role:'user',content:txt});
+  document.getElementById('btn-send-chat').disabled=true;
+  document.getElementById('chat-input').disabled=true;
+  showTyping();
+
+  const sys=`Eres experto en Amazon FBA, Alibaba sourcing y ecommerce estratégico hispanohablante. Ayudas a usuarios a encontrar productos ganadores.
+
+Cuando el usuario mencione qué quiere vender, presenta EXACTAMENTE 5 opciones concretas.
+
+Al presentar las 5 sugerencias, incluye AL FINAL este bloque (sin omitirlo):
+<SP_SUGGESTIONS>
+[{"id":1,"name":"Nombre específico","category":"Categoría","supplierPrice":7.50,"amazonPrice":29.99,"margin":0.22,"roi":0.75,"fbaFee":5.58,"unitsM1":15,"potential":"Alto","description":"Por qué es ganador en 1 frase"}]
+</SP_SUGGESTIONS>
+
+Responde SIEMPRE en español. Sé entusiasta, usa emojis ocasionalmente. No menciones el bloque al usuario.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,system:sys,
+        messages:chatHistory.map(m=>({role:m.role,content:m.content}))})
+    });
+    const data=await res.json();
+    if(data.error) throw new Error(data.error.message);
+    let full=data.content.map(c=>c.text||'').join('');
+    const match=full.match(/<SP_SUGGESTIONS>([\s\S]*?)<\/SP_SUGGESTIONS>/);
+    if(match){
+      try{ chatSuggestions=JSON.parse(match[1]); renderSuggestions(); }catch{}
+      full=full.replace(/<SP_SUGGESTIONS>[\s\S]*?<\/SP_SUGGESTIONS>/,'').trim();
+    }
+    removeTyping();
+    addChatMsg('ai',full);
+    chatHistory.push({role:'assistant',content:full});
+  }catch(e){
+    removeTyping(); addChatMsg('ai','❌ Error: '+e.message);
+  }
+  document.getElementById('btn-send-chat').disabled=false;
+  document.getElementById('chat-input').disabled=false;
+  document.getElementById('chat-input').focus();
+}
+
+let selectedSugs=[];
+function renderSuggestions(){
+  const area=document.getElementById('suggestions-area');
+  selectedSugs=[];
+  area.innerHTML=`<div class="suggestions-panel">
+    <h4>Selecciona hasta 5 productos para tu plan de negocio (${selectedSugs.length} seleccionados):</h4>
+    <div class="sug-list" id="sug-list">
+      ${chatSuggestions.map((s,i)=>`
+        <div class="sug-item" id="sug-${i}" onclick="toggleSug(${i})">
+          <div class="sug-check" id="sug-check-${i}">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:none" id="sug-chk-${i}"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div class="sug-name">${s.name}</div>
+            <div class="sug-desc">${s.description} · ${s.category}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div class="sug-margin">${pct(s.margin)}</div>
+            <div><span class="potential-badge pot-${s.potential==='Alto'?'alto':s.potential==='Medio'?'medio':'bajo'}" style="font-size:9px">${s.potential}</span></div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="btn-build-plan" id="btn-build" onclick="buildAIPlan()" disabled>
+      ✦ Crear Plan de Negocio
+    </button>
+  </div>`;
+}
+
+function toggleSug(i){
+  const idx=selectedSugs.indexOf(i);
+  if(idx>=0){ selectedSugs.splice(idx,1); document.getElementById('sug-'+i).classList.remove('selected'); document.getElementById('sug-chk-'+i).style.display='none'; }
+  else if(selectedSugs.length<5){ selectedSugs.push(i); document.getElementById('sug-'+i).classList.add('selected'); document.getElementById('sug-chk-'+i).style.display='block'; }
+  document.getElementById('btn-build').textContent=`✦ Crear Plan de Negocio con ${selectedSugs.length} producto${selectedSugs.length!==1?'s':''}`;
+  document.getElementById('btn-build').disabled=!selectedSugs.length;
+}
+
+function buildAIPlan(){
+  if(!selectedSugs.length) return;
+  const chosen=selectedSugs.map(i=>chatSuggestions[i]);
+  const products=chosen.map((p,i)=>({id:Date.now()+i, name:p.name, cost:p.supplierPrice,
+    unitsM1:p.unitsM1||10, fbaFee:p.fbaFee||5.58, price:p.amazonPrice, active:true}));
+  const s={...mkSim('Plan IA - '+chosen.map(p=>p.name.split(' ')[0]).slice(0,2).join(' & ')), products};
+  state.sims.push(s); state.cur=s;
+  persistSims(); persistCur();
+  document.getElementById('suggestions-area').innerHTML='';
+  addChatMsg('user',`He seleccionado ${chosen.length} producto${chosen.length!==1?'s':''}.`);
+  addChatMsg('ai',`🚀 <strong>¡Plan de negocio creado exitosamente!</strong><br><br>Configuré proyecciones a 12 meses para <strong>${chosen.length} producto${chosen.length!==1?'s':''}</strong>. Ve al <strong>Dashboard</strong> para ver los números y ajusta variables en <strong>Configuración</strong>.<br><br>¡Éxito en tu negocio Amazon! 🎯`);
+  setTimeout(()=>showPage('dashboard'), 1200);
+}
+
+/* ═══════════════════════════════════════
+   SVG ICONS
+═══════════════════════════════════════ */
+function trendIcon(){return`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`}
+function boxIcon(){return`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`}
+function chartIcon(){return`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`}
+function starIcon(){return`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+loadState();
+document.getElementById('sidebar-sim-name').textContent=state.cur.name;
+if(state.apiKey){
+  document.getElementById('apikey-label').textContent='● API Key activa';
+  document.getElementById('btn-apikey').classList.add('key-set');
+}
+renderDashboard();
+</script>
+</body>
+</html>
