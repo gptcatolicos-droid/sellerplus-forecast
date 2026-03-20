@@ -6,1203 +6,936 @@
 <title>SellerPlus Forecast</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;font-size:14px}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#475569;border-radius:10px}
-#app{display:flex;height:100vh;overflow:hidden}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#334155;border-radius:10px}
 
-/* SIDEBAR */
-#sidebar{width:220px;min-width:220px;background:#0f172a;display:flex;flex-direction:column;overflow:hidden}
-.brand{padding:16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
-.brand svg{flex-shrink:0}
-.brand-title{color:#fff;font-size:15px;font-weight:800;line-height:1.1}
-.brand-title span{color:#f97316}
-.brand-sub{color:#475569;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
-.sim-info{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.05)}
-.sim-info small{color:#475569;font-size:9px;text-transform:uppercase;letter-spacing:.06em}
-.sim-info-name{color:#94a3b8;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-nav{flex:1;padding:8px;overflow-y:auto}
-.nav-btn{width:100%;display:flex;align-items:center;gap:9px;padding:9px 11px;border:none;background:none;color:#64748b;font-size:11.5px;font-weight:600;border-radius:10px;cursor:pointer;text-align:left;transition:all .15s;position:relative}
-.nav-btn:hover{background:rgba(255,255,255,.05);color:#cbd5e1}
-.nav-btn.active{background:#f97316;color:#fff}
-.nav-badge{margin-left:auto;font-size:8px;background:rgba(251,191,36,.2);color:#fbbf24;padding:1px 5px;border-radius:99px;text-transform:uppercase;font-weight:700}
-.sidebar-footer{padding:8px;border-top:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;gap:5px}
-.btn-save{width:100%;padding:9px;background:rgba(249,115,22,.15);color:#fb923c;border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
-.btn-save:hover{background:rgba(249,115,22,.28)}
-.btn-save.saved{background:rgba(16,185,129,.15);color:#34d399}
-.btn-small{width:100%;padding:6px;background:none;border:none;color:#475569;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:color .15s;border-radius:8px}
-.btn-small:hover{color:#94a3b8;background:rgba(255,255,255,.04)}
-.btn-small.key-set{color:#34d399}
+/* ── LAYER SYSTEM ── */
+.layer{position:fixed;inset:0;display:none;z-index:10}
+.layer.on{display:flex}
 
-/* MAIN */
-#main{flex:1;overflow-y:auto;padding:24px 28px}
-.page{display:none;animation:fadeUp .25s ease}
-.page.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* ═══════════════════════════════════════
+   WELCOME
+═══════════════════════════════════════ */
+#l-welcome{background:linear-gradient(150deg,#0f172a 0%,#1a2744 50%,#0f172a 100%);
+  align-items:center;justify-content:center;flex-direction:column;padding:20px;
+  animation:fadeUp .5s ease}
 
-/* PAGE HEADERS */
-.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-.page-header h1{font-size:22px;font-weight:800;color:#0f172a}
-.page-header p{font-size:12px;color:#64748b;margin-top:2px}
-.status-badge{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;flex-shrink:0}
-.status-ok{background:#f0fdf4;color:#166534;border:1.5px solid #bbf7d0}
-.status-bad{background:#fef2f2;color:#991b1b;border:1.5px solid #fecaca}
-.dot{width:7px;height:7px;border-radius:50%;animation:pulse 2s infinite}
-.dot-ok{background:#22c55e}
-.dot-bad{background:#ef4444}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.logo-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:36px}
+.logo-title{font-size:36px;font-weight:900;color:#fff;letter-spacing:-.02em}
+.logo-title span{color:#f97316}
+.logo-tagline{font-size:14px;color:#475569;text-align:center}
 
-/* KPI GRID */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:20px}
-.kpi-card{background:#fff;border-radius:16px;padding:18px;border:1px solid #e2e8f0;transition:box-shadow .2s}
-.kpi-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.07)}
-.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
-.kpi-icon.blue{background:#dbeafe;color:#2563eb}
-.kpi-icon.green{background:#dcfce7;color:#16a34a}
-.kpi-icon.orange{background:#ffedd5;color:#ea580c}
-.kpi-icon.purple{background:#ede9fe;color:#7c3aed}
-.kpi-icon.red{background:#fee2e2;color:#dc2626}
-.kpi-value{font-size:24px;font-weight:800;color:#0f172a;line-height:1}
-.kpi-value.negative{color:#dc2626}
-.kpi-label{font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
-.kpi-sub{font-size:10px;color:#cbd5e1;margin-top:2px}
+.welcome-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;padding:36px;width:100%;max-width:400px;backdrop-filter:blur(12px)}
+.welcome-box h2{color:#fff;font-size:19px;font-weight:800;margin-bottom:6px}
+.welcome-box p{color:#64748b;font-size:13px;line-height:1.7;margin-bottom:28px}
 
-/* CHART */
-.chart-card{background:#fff;border-radius:16px;padding:18px;border:1px solid #e2e8f0;margin-bottom:20px}
-.chart-title{font-size:12px;font-weight:700;color:#64748b;margin-bottom:14px}
-.chart-wrap{position:relative;height:220px;overflow:hidden}
-svg.chart{width:100%;height:100%}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:10px;font-weight:700;color:#64748b;
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.field input,.field select{width:100%;background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(255,255,255,.1);border-radius:12px;
+  padding:13px 16px;font-size:14px;color:#fff;font-family:inherit;
+  outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:#f97316}
+.field input::placeholder{color:#334155}
+.field select option{background:#1e293b}
 
-/* TABLE CARD */
-.table-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:16px}
-.table-card-header{padding:14px 18px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#475569}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:11.5px}
-th{background:#f8fafc;padding:9px 12px;text-align:right;font-weight:700;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #f1f5f9}
-th:first-child{text-align:left;position:sticky;left:0;background:#f8fafc;z-index:2;min-width:240px}
-td{padding:8px 12px;text-align:right;border-top:1px solid #f8fafc;white-space:nowrap;font-variant-numeric:tabular-nums}
-td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:1;font-size:11px}
-tr:hover td{background:#fafafa}
-tr:hover td:first-child{background:#fafafa}
-.row-revenue td{color:#1d4ed8;font-weight:700;background:#eff6ff!important}
-.row-revenue td:first-child{background:#eff6ff!important}
-.row-net td{color:#15803d;font-weight:700;background:#f0fdf4!important}
-.row-net td:first-child{background:#f0fdf4!important}
-.row-final td{color:#166534;font-weight:800;background:#dcfce7!important}
-.row-final td:first-child{background:#dcfce7!important}
-.row-total{background:#f8fafc;font-weight:700}
-.col-total{background:#f1f5f9!important;font-weight:800}
+.btn-cta{width:100%;padding:15px;border:none;border-radius:13px;
+  background:linear-gradient(135deg,#f97316,#f59e0b);color:#fff;
+  font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;margin-top:4px}
+.btn-cta:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(249,115,22,.4)}
 
-/* FORMS */
-.form-card{background:#fff;border-radius:16px;padding:18px;border:1.5px solid #fed7aa;margin-bottom:16px}
-.form-card h3{font-size:13px;font-weight:700;color:#0f172a;margin-bottom:14px}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-.form-grid .full{grid-column:1/-1}
-label{display:block;font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-input[type=text],input[type=number],input[type=password]{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;background:#fff}
-input[type=text]:focus,input[type=number]:focus,input[type=password]:focus{border-color:#f97316}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
-.btn-primary{background:#f97316;color:#fff}
-.btn-primary:hover{background:#ea580c}
-.btn-secondary{background:#f1f5f9;color:#475569}
-.btn-secondary:hover{background:#e2e8f0}
-.btn-danger{background:#fee2e2;color:#dc2626}
-.btn-danger:hover{background:#fecaca}
-.btn-sm{padding:5px 12px;font-size:11px;border-radius:8px}
-.btn-xs{padding:3px 8px;font-size:10.5px;border-radius:7px}
-.btn:disabled{opacity:.45;cursor:not-allowed}
+/* ═══════════════════════════════════════
+   PATH SELECTOR
+═══════════════════════════════════════ */
+#l-path{background:linear-gradient(150deg,#0f172a,#1a2744);
+  align-items:center;justify-content:center;flex-direction:column;
+  padding:24px;animation:fadeUp .4s ease}
 
-/* TOGGLE */
-.toggle{position:relative;width:38px;height:20px;border-radius:99px;border:none;cursor:pointer;transition:background .2s;flex-shrink:0;background:#cbd5e1}
-.toggle.on{background:#f97316}
-.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
-.toggle.on::after{transform:translateX(18px)}
+.path-top{text-align:center;margin-bottom:32px}
+.path-hi{font-size:28px;font-weight:900;color:#f97316;margin-bottom:6px}
+.path-top h2{font-size:22px;font-weight:800;color:#fff;margin-bottom:8px}
+.path-top p{font-size:13px;color:#64748b;max-width:380px;margin:0 auto;line-height:1.6}
 
-/* PRODUCTS TABLE */
-.prod-table th{font-size:10.5px;padding:8px 10px}
-.prod-table td{padding:7px 10px;font-size:11px}
-.tag-margin{display:inline-block;padding:1px 7px;border-radius:99px;font-size:10px;font-weight:700}
-.tag-green{background:#dcfce7;color:#15803d}
-.tag-amber{background:#fef9c3;color:#854d0e}
-.tag-red{background:#fee2e2;color:#dc2626}
+.path-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:580px}
+@media(max-width:520px){.path-grid{grid-template-columns:1fr;max-width:340px}}
 
-/* SUPPLIER */
-.url-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
-.url-row input{flex:1}
-.url-icon{color:#cbd5e1}
-.result-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;margin-bottom:12px;animation:fadeUp .3s ease}
-.result-card h3{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:4px}
-.result-url{font-size:10px;color:#94a3b8;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:12px}
-.metric-box{background:#f8fafc;border-radius:10px;padding:10px}
-.metric-box.blue{background:#eff6ff}
-.metric-box.green{background:#f0fdf4}
-.metric-box.purple{background:#faf5ff}
-.metric-label{font-size:9.5px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
-.metric-box.blue .metric-label{color:#60a5fa}
-.metric-box.green .metric-label{color:#4ade80}
-.metric-box.purple .metric-label{color:#c084fc}
-.metric-value{font-size:16px;font-weight:800;color:#0f172a}
-.tip-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px;font-size:11.5px;color:#92400e;margin-bottom:10px}
-.competitors{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.competitor-tag{background:#f1f5f9;color:#475569;font-size:10.5px;padding:3px 10px;border-radius:99px}
-.potential-badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:800;flex-shrink:0}
-.pot-alto{background:#dcfce7;color:#15803d}
-.pot-medio{background:#fef9c3;color:#854d0e}
-.pot-bajo{background:#fee2e2;color:#dc2626}
+.path-card{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:30px 22px;cursor:pointer;transition:all .25s;text-align:center}
+.path-card:hover,.path-card:focus{border-color:#f97316;background:rgba(249,115,22,.08);
+  transform:translateY(-4px);box-shadow:0 16px 40px rgba(249,115,22,.2);outline:none}
+.path-icon{font-size:44px;margin-bottom:14px;display:block}
+.path-card h3{color:#fff;font-size:17px;font-weight:800;margin-bottom:8px}
+.path-card p{color:#64748b;font-size:12px;line-height:1.65}
+.path-tag{display:inline-block;margin-top:12px;background:rgba(249,115,22,.18);
+  color:#fb923c;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;
+  text-transform:uppercase;letter-spacing:.06em}
 
-/* AI CHAT */
-.chat-container{background:#fff;border-radius:16px;border:1px solid #e2e8f0;display:flex;flex-direction:column;height:calc(100vh - 160px);min-height:500px}
-.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.msg{display:flex;gap:10px;animation:fadeUp .2s ease}
+/* ═══════════════════════════════════════
+   CHAT / WIZARD
+═══════════════════════════════════════ */
+#l-chat{background:#f1f5f9;flex-direction:column;align-items:center;animation:fadeUp .3s ease}
+
+.chat-topbar{width:100%;background:#0f172a;padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.chat-topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-logo{font-size:16px;font-weight:900;color:#fff}
+.topbar-logo span{color:#f97316}
+.topbar-mode{background:rgba(249,115,22,.15);color:#fb923c;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;text-transform:uppercase}
+.topbar-user{color:#64748b;font-size:11px}
+.btn-restart{background:none;border:1px solid rgba(255,255,255,.1);color:#64748b;
+  font-size:11px;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-restart:hover{border-color:#f97316;color:#f97316}
+
+.chat-body{flex:1;overflow-y:auto;width:100%;max-width:760px;
+  padding:20px 16px 8px;display:flex;flex-direction:column;gap:14px}
+
+/* messages */
+.msg{display:flex;gap:10px;animation:fadeUp .25s ease}
 .msg.user{flex-direction:row-reverse}
-.msg-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
-.msg-avatar.ai{background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff}
-.msg-avatar.user{background:#f97316;color:#fff}
-.msg-bubble{max-width:75%;padding:10px 14px;border-radius:14px;font-size:12.5px;line-height:1.6}
-.msg-bubble.ai{background:#f1f5f9;color:#1e293b;border-top-left-radius:4px}
-.msg-bubble.user{background:#f97316;color:#fff;border-top-right-radius:4px}
-.msg-bubble strong{font-weight:700}
-.typing{display:flex;gap:4px;align-items:center;padding:2px 0}
-.typing span{width:7px;height:7px;background:#94a3b8;border-radius:50%;animation:bounce 1.2s infinite}
-.typing span:nth-child(2){animation-delay:.15s}
-.typing span:nth-child(3){animation-delay:.3s}
+.avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.avatar.bot{background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff}
+.avatar.usr{background:#3b82f6;color:#fff;font-size:11px}
+.bubble{max-width:82%;padding:12px 16px;border-radius:16px;font-size:13.5px;line-height:1.65}
+.bubble.bot{background:#fff;color:#1e293b;border-top-left-radius:4px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.bubble.usr{background:#3b82f6;color:#fff;border-top-right-radius:4px}
+.bubble strong{font-weight:700}
+.bubble .highlight{color:#f97316;font-weight:700}
+
+/* quick replies */
+.quick-replies{display:flex;flex-wrap:wrap;gap:8px;padding:0 42px 4px;animation:fadeUp .3s ease}
+.qr{background:#fff;border:1.5px solid #e2e8f0;border-radius:99px;
+  padding:8px 18px;font-size:13px;font-weight:600;color:#475569;
+  cursor:pointer;transition:all .15s;font-family:inherit}
+.qr:hover{border-color:#f97316;color:#f97316;background:#fff7ed}
+
+/* product cards in chat */
+.prod-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:10px;padding:0 42px;animation:fadeUp .3s ease;width:100%}
+.prod-pick{background:#fff;border:2px solid #e2e8f0;border-radius:14px;
+  padding:14px;cursor:pointer;transition:all .2s}
+.prod-pick:hover,.prod-pick.sel{border-color:#f97316;background:#fff7ed}
+.prod-pick .pp-name{font-size:12.5px;font-weight:700;color:#0f172a;margin-bottom:4px}
+.prod-pick .pp-sub{font-size:11px;color:#64748b;line-height:1.5}
+.prod-pick .pp-price{font-size:12px;font-weight:800;color:#f97316;margin-top:6px}
+.prod-pick .pp-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.pp-tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px}
+.tag-demand{background:#dcfce7;color:#15803d}
+.tag-comp{background:#dbeafe;color:#1d4ed8}
+.tag-margin{background:#fef9c3;color:#854d0e}
+.check-mark{display:none;color:#f97316;font-size:18px;float:right;margin-top:-2px}
+.prod-pick.sel .check-mark{display:inline}
+.btn-confirm-picks{margin:0 42px;padding:13px 28px;background:#f97316;
+  border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:800;
+  cursor:pointer;font-family:inherit;transition:all .2s;animation:fadeUp .3s ease}
+.btn-confirm-picks:hover{background:#ea580c;transform:translateY(-1px)}
+.btn-confirm-picks:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* typing indicator */
+.typing-bubble{background:#fff;padding:14px 18px;border-radius:16px;border-top-left-radius:4px;
+  display:inline-flex;gap:5px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.typing-bubble span{width:7px;height:7px;background:#cbd5e1;border-radius:50%;animation:bounce 1.2s infinite}
+.typing-bubble span:nth-child(2){animation-delay:.15s}
+.typing-bubble span:nth-child(3){animation-delay:.3s}
 @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
-.suggestions-panel{border-top:1px solid #f1f5f9;padding:12px;background:#f8fafc}
-.suggestions-panel h4{font-size:11.5px;font-weight:700;color:#475569;margin-bottom:8px}
-.sug-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;padding-right:4px}
-.sug-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all .15s}
-.sug-item:hover,.sug-item.selected{border-color:#f97316;background:#fff7ed}
-.sug-check{width:18px;height:18px;border:2px solid #cbd5e1;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.sug-item.selected .sug-check{background:#f97316;border-color:#f97316}
-.sug-name{flex:1;font-size:11px;font-weight:700;color:#0f172a}
-.sug-desc{font-size:10px;color:#94a3b8;margin-top:1px}
-.sug-margin{font-size:11px;font-weight:800;color:#15803d;flex-shrink:0}
-.btn-build-plan{width:100%;margin-top:8px;padding:11px;background:linear-gradient(135deg,#f97316,#f59e0b);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
-.btn-build-plan:hover{box-shadow:0 4px 15px rgba(249,115,22,.35)}
-.btn-build-plan:disabled{opacity:.45;cursor:not-allowed}
-.chat-input-row{border-top:1px solid #f1f5f9;padding:12px;display:flex;gap:8px}
-.chat-input-row input{flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 14px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
-.chat-input-row input:focus{border-color:#f97316}
-.btn-send{background:#f97316;color:#fff;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;display:flex;align-items:center;transition:background .15s}
+
+/* chat input */
+.chat-footer{width:100%;max-width:760px;padding:10px 16px 16px;flex-shrink:0}
+.chat-input-row{display:flex;gap:8px;background:#fff;border:1.5px solid #e2e8f0;
+  border-radius:14px;padding:8px 8px 8px 16px;transition:border-color .2s;
+  box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.chat-input-row:focus-within{border-color:#f97316}
+#chat-input{flex:1;border:none;background:none;font-size:14px;font-family:inherit;
+  outline:none;color:#1e293b;padding:4px 0}
+#chat-input::placeholder{color:#94a3b8}
+#chat-input:disabled{color:#94a3b8}
+.btn-send{background:#f97316;border:none;border-radius:10px;
+  width:40px;height:40px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:background .15s;flex-shrink:0}
 .btn-send:hover{background:#ea580c}
-.btn-send:disabled{opacity:.45;cursor:not-allowed}
-
-/* SETTINGS */
-.settings-group{background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:14px}
-.settings-row{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid #f8fafc;gap:16px}
-.settings-row:last-child{border-bottom:none}
-.settings-info{flex:1}
-.settings-info strong{font-size:13px;font-weight:700;color:#0f172a;display:block}
-.settings-info small{font-size:11px;color:#94a3b8}
-.settings-input-wrap{display:flex;align-items:center;gap:6px}
-.settings-input-wrap input{width:90px;text-align:right;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;transition:border-color .15s}
-.settings-input-wrap input:focus{border-color:#f97316}
-.settings-unit{font-size:12px;color:#94a3b8;width:18px}
-
-/* SIMULATIONS */
-.sim-grid{display:grid;gap:12px}
-.sim-card{background:#fff;border-radius:16px;padding:16px;border:2px solid #e2e8f0;transition:all .2s}
-.sim-card.current{border-color:#f97316}
-.sim-card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
-.sim-card-name{font-size:15px;font-weight:800;color:#0f172a;flex:1}
-.sim-card-meta{font-size:10.5px;color:#94a3b8;margin-top:2px}
-.sim-card-rev{text-align:right;flex-shrink:0}
-.sim-card-rev strong{font-size:14px;font-weight:800;color:#0f172a;display:block}
-.sim-card-rev span{font-size:11px;font-weight:700}
-.sim-actions{display:flex;gap:6px}
-.badge-current{background:#fff7ed;color:#ea580c;font-size:9.5px;font-weight:800;padding:2px 8px;border-radius:99px;border:1px solid #fed7aa}
-
-/* ALERT BOX */
-.alert{padding:10px 14px;border-radius:10px;font-size:11.5px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px}
-.alert-info{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
-.alert-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
-.alert-error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
-.alert-success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
-.spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+.btn-send:disabled{opacity:.4;cursor:not-allowed}
+.spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}
-.modal{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:fadeUp .25s ease}
-.modal h2{font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px}
-.modal p{font-size:12px;color:#64748b;margin-bottom:16px}
-.modal-icon{width:44px;height:44px;border-radius:12px;background:#fff7ed;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
-
-/* RENAME INLINE */
-.rename-input{border:1.5px solid #f97316;border-radius:7px;padding:3px 8px;font-size:13px;font-weight:700;font-family:inherit;outline:none;width:100%;max-width:280px}
-
-/* MINI CHART */
-.sparkline{display:flex;align-items:flex-end;gap:2px;height:32px}
-.spark-bar{background:#f97316;border-radius:2px;min-width:4px;transition:opacity .2s}
-.spark-bar:hover{opacity:.7}
-
-/* RESPONSIVE */
-@media(max-width:768px){
-  #sidebar{display:none}
-  #main{padding:14px}
-}
-</style>
-</head>
-<body>
-<div id="app">
-  <!-- SIDEBAR -->
-  <aside id="sidebar">
-    <div class="brand">
-      <svg width="34" height="34" viewBox="0 0 100 100">
-        <defs>
-          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FFC107"/>
-            <stop offset="55%" stop-color="#F97316"/>
-            <stop offset="100%" stop-color="#EA4C0A"/>
-          </linearGradient>
-        </defs>
-        <path d="M62 16 C82 16 88 33 83 46 C78 57 64 61 50 66 C36 71 25 75 24 84 C23 93 36 90 50 90 C64 90 75 84 80 79" stroke="url(#g1)" stroke-width="12" fill="none" stroke-linecap="round"/>
-        <path d="M38 16 C18 16 12 33 17 46 C22 57 36 61 50 66 C64 71 75 75 76 84 C77 93 64 90 50 90 C36 90 25 84 20 79" stroke="url(#g1)" stroke-width="12" fill="none" stroke-linecap="round" opacity="0.5"/>
-        <polygon points="76,38 93,50 76,62" fill="url(#g1)"/>
-      </svg>
-      <div>
-        <div class="brand-title">Seller<span>Plus</span></div>
-        <div class="brand-sub">Forecast</div>
-      </div>
-    </div>
-
-    <div class="sim-info">
-      <small>Simulación activa</small>
-      <div class="sim-info-name" id="sidebar-sim-name">Cargando...</div>
-    </div>
-
-    <nav>
-      <button class="nav-btn active" onclick="showPage('dashboard')" id="nav-dashboard">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Dashboard
-      </button>
-      <button class="nav-btn" onclick="showPage('products')" id="nav-products">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        Productos
-      </button>
-      <button class="nav-btn" onclick="showPage('supplier')" id="nav-supplier">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        Proveedores IA
-      </button>
-      <button class="nav-btn" onclick="showPage('ai')" id="nav-ai">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.5 7H22l-6 4.5 2.5 7L12 17l-6.5 3.5 2.5-7L2 9h7.5z" fill="currentColor" stroke="none"/></svg>
-        Iniciar con IA
-        <span class="nav-badge">IA</span>
-      </button>
-      <button class="nav-btn" onclick="showPage('settings')" id="nav-settings">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Configuración
-      </button>
-      <button class="nav-btn" onclick="showPage('simulations')" id="nav-simulations">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-        Simulaciones
-      </button>
-    </nav>
-
-    <div class="sidebar-footer">
-      <button class="btn-save" id="btn-save" onclick="saveSim()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        <span id="save-text">Guardar</span>
-      </button>
-      <button class="btn-small" onclick="newSim()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nueva simulación
-      </button>
-      <button class="btn-small" id="btn-apikey" onclick="openApiModal()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-        <span id="apikey-label">Configurar API Key</span>
-      </button>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main id="main">
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-header">
-        <div>
-          <h1 id="dash-title">Plan de Negocio</h1>
-          <p>Proyección financiera · 12 meses</p>
-        </div>
-        <div id="dash-status" class="status-badge status-ok">
-          <div class="dot dot-ok"></div>
-          Negocio Rentable
-        </div>
-      </div>
-      <div class="kpi-grid" id="kpi-grid"></div>
-      <div class="chart-card">
-        <div class="chart-title">Proyección Mensual — Ingresos, Costos y Ganancia Neta</div>
-        <div class="chart-wrap" id="chart-wrap"></div>
-      </div>
-      <div class="table-card">
-        <div class="table-card-header">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          Caso de Negocio · 12 Meses
-        </div>
-        <div class="table-wrap" id="finance-table"></div>
-      </div>
-      <div class="alert alert-info" style="margin-top:0">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span>ROAS proyectado: <strong>4.0x</strong> con 25% de inversión publicitaria sobre ventas. Ajusta el % de marketing en Configuración para simular diferentes escenarios.</span>
-      </div>
-    </div>
-
-    <!-- PRODUCTS -->
-    <div class="page" id="page-products">
-      <div class="page-header">
-        <div>
-          <h1>Productos</h1>
-          <p>Administra catálogo, costos y precios de venta</p>
-        </div>
-        <button class="btn btn-primary" onclick="openAddProduct()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Agregar Producto
-        </button>
-      </div>
-      <div id="add-product-form" style="display:none"></div>
-      <div class="table-card">
-        <div class="table-wrap">
-          <table class="prod-table" id="products-table"></table>
-        </div>
-      </div>
-    </div>
-
-    <!-- SUPPLIER -->
-    <div class="page" id="page-supplier">
-      <div class="page-header">
-        <div>
-          <h1>Analizador de Proveedores IA</h1>
-          <p>Analiza productos de Alibaba / AliExpress y calcula precio óptimo en Amazon</p>
-        </div>
-      </div>
-      <div class="table-card" style="padding:18px;overflow:visible">
-        <p style="font-size:12px;color:#64748b;margin-bottom:12px;display:flex;align-items:center;gap:6px">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          Ingresa hasta 5 URLs de productos de proveedores:
-        </p>
-        <div id="url-list"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:8px">
-          <button class="btn btn-secondary btn-sm" id="btn-add-url" onclick="addUrlField()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Agregar URL
-          </button>
-          <button class="btn btn-primary" id="btn-analyze" onclick="analyzeSupplier()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            Analizar con IA
-          </button>
-        </div>
-        <div id="supplier-error" style="display:none"></div>
-      </div>
-      <div id="supplier-results"></div>
-    </div>
-
-    <!-- AI FINDER -->
-    <div class="page" id="page-ai">
-      <div class="page-header">
-        <div>
-          <h1>Iniciar con IA</h1>
-          <p>Encuentra productos ganadores y genera tu plan de negocio automáticamente</p>
-        </div>
-      </div>
-      <div class="chat-container" id="chat-container">
-        <div class="chat-messages" id="chat-messages"></div>
-        <div id="suggestions-area"></div>
-        <div class="chat-input-row">
-          <input type="text" id="chat-input" placeholder="Escribe qué quieres vender en Amazon..." onkeydown="if(event.key==='Enter')sendChat()"/>
-          <button class="btn-send" id="btn-send-chat" onclick="sendChat()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div class="page" id="page-settings">
-      <div class="page-header">
-        <div>
-          <h1>Configuración</h1>
-          <p>Variables financieras globales del plan de negocio</p>
-        </div>
-      </div>
-      <div class="settings-group" id="settings-form"></div>
-      <div class="alert alert-info">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Los cambios se reflejan en tiempo real en el Dashboard.
-      </div>
-    </div>
-
-    <!-- SIMULATIONS -->
-    <div class="page" id="page-simulations">
-      <div class="page-header">
-        <div>
-          <h1>Simulaciones</h1>
-          <p>Guarda, compara y gestiona tus planes de negocio</p>
-        </div>
-        <button class="btn btn-primary" onclick="newSim()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Nueva Simulación
-        </button>
-      </div>
-      <div class="sim-grid" id="sim-list"></div>
-    </div>
-  </main>
-</div>
-
-<!-- API MODAL -->
-<div class="modal-overlay" id="api-modal" style="display:none" onclick="if(event.target===this)closeApiModal()">
-  <div class="modal">
-    <div class="modal-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-    </div>
-    <h2>API Key de Anthropic</h2>
-    <p>Necesaria para el Analizador de Proveedores y el módulo "Iniciar con IA". Se guarda solo en tu navegador.</p>
-    <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." style="margin-bottom:10px"/>
-    <p style="font-size:11px;color:#94a3b8;margin-bottom:16px">
-      Obtén tu clave gratis en <a href="https://console.anthropic.com" target="_blank" style="color:#f97316">console.anthropic.com</a>
-    </p>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-primary" style="flex:1" onclick="saveApiKey()">Guardar</button>
-      <button class="btn btn-secondary" onclick="closeApiModal()">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ═══════════════════════════════════════
-   STATE
-═══════════════════════════════════════ */
-const DEFAULT_CFG = {
-  growthRate:0.10, mktgPct:0.25, amzFeePct:0.15,
-  agencyFee:450, membership:40, taxRate:0.08
-};
-const DEFAULT_PRODS = [
-  {id:1, name:'SWEET BOOST 250 GRS - 8.8 OZ MOLIDO',    cost:5.75,  unitsM1:10, fbaFee:4.59, price:16.99, active:true},
-  {id:2, name:'SWEET BOOST 500 GRS - 17.6 OZ MOLIDO',   cost:11.50, unitsM1:10, fbaFee:5.58, price:26.99, active:true},
-  {id:3, name:'SWEET BOOST 500 GRS - 17.6 OZ EN GRANO', cost:11.50, unitsM1:15, fbaFee:5.58, price:26.99, active:true},
-  {id:4, name:'HARD WORK 250 GRS - 8.8 OZ MOLIDO',      cost:5.75,  unitsM1:10, fbaFee:4.59, price:16.99, active:true},
-  {id:5, name:'HARD WORK 500 GRS - 17.6 OZ MOLIDO',     cost:11.50, unitsM1:10, fbaFee:5.58, price:26.99, active:true},
-  {id:6, name:'HARD WORK 500 GRS - 17.6 OZ EN GRANO',   cost:11.50, unitsM1:15, fbaFee:5.58, price:26.99, active:true},
-  {id:7, name:'GOOD ALLURE 250 GRS - 8.8 OZ MOLIDO',    cost:5.75,  unitsM1:10, fbaFee:4.59, price:16.99, active:true},
-  {id:8, name:'GOOD ALLURE 500 GRS - 17.6 OZ MOLIDO',   cost:11.50, unitsM1:10, fbaFee:5.58, price:26.99, active:true},
-  {id:9, name:'GOOD ALLURE 500 GRS - 17.6 OZ EN GRANO', cost:11.50, unitsM1:15, fbaFee:5.58, price:26.99, active:true},
-  {id:10,name:'TASTY CHARM 250 GRS - 8.8 OZ MOLIDO',    cost:5.75,  unitsM1:10, fbaFee:4.59, price:16.99, active:true},
-  {id:11,name:'TASTY CHARM 500 GRS - 17.6 OZ MOLIDO',   cost:11.50, unitsM1:10, fbaFee:5.58, price:26.99, active:true},
-  {id:12,name:'TASTY CHARM 500 GRS - 17.6 OZ EN GRANO', cost:11.50, unitsM1:15, fbaFee:5.58, price:26.99, active:true},
-];
-
-function mkSim(name='Nueva Simulación'){
-  return {id:uid(), name, products:DEFAULT_PRODS.map(p=>({...p})), cfg:{...DEFAULT_CFG},
-    createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()};
-}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-
-let state = {
-  sims: [],
-  cur: null,
-  apiKey: ''
-};
-
-function loadState(){
-  try{ state.sims = JSON.parse(localStorage.getItem('sp_sims')||'[]') }catch{}
-  try{ const c=JSON.parse(localStorage.getItem('sp_cur')); if(c&&c.id) state.cur=c; }catch{}
-  if(!state.cur){ state.cur=mkSim('Mi Primer Plan de Negocio'); state.sims=[state.cur]; persistSims(); }
-  state.apiKey = localStorage.getItem('sp_apikey')||'';
-}
-function persistSims(){ try{localStorage.setItem('sp_sims',JSON.stringify(state.sims))}catch{} }
-function persistCur(){  try{localStorage.setItem('sp_cur',JSON.stringify(state.cur))}catch{} }
-
-/* ═══════════════════════════════════════
-   FINANCIAL ENGINE
-═══════════════════════════════════════ */
-function buildMonths(products, cfg){
-  const active = products.filter(p=>p.active);
-  return Array.from({length:12},(_,i)=>{
-    const g = Math.pow(1+cfg.growthRate, i);
-    let rev=0, units=0, fba=0;
-    active.forEach(p=>{ const u=p.unitsM1*g; rev+=u*p.price; units+=u; fba+=u*p.fbaFee; });
-    const mktg=rev*cfg.mktgPct, amzFee=rev*cfg.amzFeePct, agency=cfg.agencyFee, memb=cfg.membership;
-    const costs=mktg+amzFee+fba+agency+memb, net=rev-costs;
-    const tax=Math.max(0,net*cfg.taxRate), netTax=net-tax;
-    return {m:i+1,label:`Mes ${i+1}`,rev,units:Math.round(units),mktg,amzFee,fba,agency,memb,costs,net,tax,netTax,margin:rev>0?net/rev:0};
-  });
-}
-function calcUnitMargin(p,cfg){
-  if(!p.price||!p.cost) return null;
-  const mktg=p.price*cfg.mktgPct, amzFee=p.price*cfg.amzFeePct;
-  const totalC=p.cost+p.fbaFee+mktg+amzFee, profit=p.price-totalC;
-  return {profit, margin:profit/p.price, roi:p.cost>0?profit/p.cost:0};
-}
-
-/* ═══════════════════════════════════════
-   FORMATTERS
-═══════════════════════════════════════ */
-const $  = n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0}).format(n||0);
-const $d = n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0);
-const pct= n=>`${((n||0)*100).toFixed(1)}%`;
-const num= n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(n||0));
-
-/* ═══════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════ */
-let currentPage = 'dashboard';
-function showPage(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.getElementById('nav-'+page).classList.add('active');
-  currentPage=page;
-  if(page==='dashboard')   renderDashboard();
-  if(page==='products')    renderProducts();
-  if(page==='settings')    renderSettings();
-  if(page==='simulations') renderSimulations();
-  if(page==='supplier')    initSupplier();
-  if(page==='ai')          initChat();
-}
 
 /* ═══════════════════════════════════════
    DASHBOARD
 ═══════════════════════════════════════ */
-function renderDashboard(){
-  const {cur}=state;
-  document.getElementById('dash-title').textContent=cur.name;
-  document.getElementById('sidebar-sim-name').textContent=cur.name;
-  const months=buildMonths(cur.products,cur.cfg);
-  const T=months.reduce((a,m)=>({rev:a.rev+m.rev,units:a.units+m.units,mktg:a.mktg+m.mktg,amzFee:a.amzFee+m.amzFee,fba:a.fba+m.fba,agency:a.agency+m.agency,memb:a.memb+m.memb,costs:a.costs+m.costs,net:a.net+m.net,tax:a.tax+m.tax,netTax:a.netTax+m.netTax}),{rev:0,units:0,mktg:0,amzFee:0,fba:0,agency:0,memb:0,costs:0,net:0,tax:0,netTax:0});
-  const ok=T.netTax>0;
-  const sb=document.getElementById('dash-status');
-  sb.className='status-badge '+(ok?'status-ok':'status-bad');
-  sb.innerHTML=`<div class="dot ${ok?'dot-ok':'dot-bad'}"></div>${ok?'✓ Negocio Rentable':'⚠ No Rentable'}`;
+#l-dash{background:#f1f5f9;flex-direction:column;overflow:hidden;animation:fadeUp .4s ease}
 
-  // KPIs
-  const kpis=[
-    {label:'Ingresos Totales',value:$(T.rev),sub:'12 meses acumulados',icon:trendIcon(),cls:'blue'},
-    {label:'Unidades Vendidas',value:num(T.units),sub:'Total del período',icon:boxIcon(),cls:'purple'},
-    {label:'Ganancia Neta',value:$(T.net),sub:'Antes de impuestos',icon:chartIcon(),cls:T.net>0?'green':'red',neg:T.net<0},
-    {label:'Ganancia Después Imp.',value:$(T.netTax),sub:`Margen: ${pct(T.rev?T.netTax/T.rev:0)}`,icon:starIcon(),cls:T.netTax>0?'green':'red',neg:T.netTax<0},
-  ];
-  document.getElementById('kpi-grid').innerHTML=kpis.map(k=>`
-    <div class="kpi-card">
-      <div class="kpi-icon ${k.cls}">${k.icon}</div>
-      <div class="kpi-value ${k.neg?'negative':''}">${k.value}</div>
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-sub">${k.sub}</div>
-    </div>`).join('');
+.dash-topbar{background:#0f172a;padding:12px 24px;display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0;gap:12px;flex-wrap:wrap}
+.dash-topbar-left{display:flex;align-items:center;gap:12px}
+.dash-logo{font-size:16px;font-weight:900;color:#fff}
+.dash-logo span{color:#f97316}
+.dash-plan-name{color:#94a3b8;font-size:12px;font-weight:600}
+.dash-actions{display:flex;gap:8px;align-items:center}
+.btn-dash{padding:7px 16px;border-radius:9px;font-size:11.5px;font-weight:700;
+  cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-new{background:rgba(249,115,22,.15);color:#fb923c}
+.btn-new:hover{background:rgba(249,115,22,.28)}
+.btn-export{background:rgba(255,255,255,.08);color:#94a3b8}
+.btn-export:hover{background:rgba(255,255,255,.15);color:#fff}
+.status-pill{display:flex;align-items:center;gap:6px;padding:6px 14px;
+  border-radius:99px;font-size:11.5px;font-weight:800}
+.pill-ok{background:#f0fdf4;color:#166534;border:1.5px solid #bbf7d0}
+.pill-bad{background:#fef2f2;color:#991b1b;border:1.5px solid #fecaca}
+.dot{width:7px;height:7px;border-radius:50%;animation:pulse 2s infinite}
+.dot-ok{background:#22c55e}.dot-bad{background:#ef4444}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-  // SVG Chart
-  renderSVGChart(months);
+.dash-body{flex:1;overflow-y:auto;padding:20px 24px}
+.dash-inner{max-width:1100px;margin:0 auto}
 
-  // Table
-  const rows=[
-    {key:'rev',    label:'INGRESOS POR VENTAS',            cls:'row-revenue', fmt:$d},
-    {key:'units',  label:'UNIDADES VENDIDAS',              cls:'',            fmt:num},
-    {key:'mktg',   label:'GASTOS DE MARKETING (25%)',      cls:'',            fmt:$d},
-    {key:'amzFee', label:'FEE AMAZON (15%)',               cls:'',            fmt:$d},
-    {key:'fba',    label:'LOGÍSTICA FBA',                  cls:'',            fmt:$d},
-    {key:'agency', label:'FEE AGENCIA SELLER PLUS',        cls:'',            fmt:$d},
-    {key:'memb',   label:'MEMBRESÍA AMAZON',               cls:'',            fmt:$d},
-    {key:'net',    label:'GANANCIAS NETAS',                cls:'row-net',     fmt:$d},
-    {key:'tax',    label:'IMPUESTOS (8%)',                 cls:'',            fmt:$d},
-    {key:'netTax', label:'GANANCIAS DESPUÉS DE IMPUESTOS', cls:'row-final',   fmt:$d},
-  ];
-  let html=`<table><thead><tr><th>Métrica</th>`;
-  months.forEach(m=>{ html+=`<th>${m.label}</th>`; });
-  html+=`<th class="col-total">TOTAL</th></tr></thead><tbody>`;
-  rows.forEach(row=>{
-    html+=`<tr class="${row.cls}"><td>${row.label}</td>`;
-    months.forEach(m=>{ html+=`<td>${row.fmt(m[row.key])}</td>`; });
-    const total=months.reduce((s,m)=>s+m[row.key],0);
-    html+=`<td class="col-total">${row.fmt(total)}</td></tr>`;
-  });
-  html+=`</tbody></table>`;
-  document.getElementById('finance-table').innerHTML=html;
-}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:12px;margin-bottom:18px}
+.kpi{background:#fff;border-radius:16px;padding:18px;border:1px solid #e2e8f0;
+  transition:box-shadow .2s}
+.kpi:hover{box-shadow:0 4px 20px rgba(0,0,0,.07)}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:20px;margin-bottom:10px}
+.ki-b{background:#dbeafe}.ki-g{background:#dcfce7}.ki-o{background:#ffedd5}.ki-p{background:#ede9fe}.ki-r{background:#fee2e2}
+.kpi-val{font-size:24px;font-weight:800;color:#0f172a;line-height:1}
+.kpi-val.neg{color:#dc2626}
+.kpi-lbl{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.kpi-hint{font-size:10px;color:#cbd5e1;margin-top:2px}
 
-function renderSVGChart(months){
-  const W=800,H=200,PAD={t:10,r:20,b:30,l:60};
-  const plotW=W-PAD.l-PAD.r, plotH=H-PAD.t-PAD.b;
-  const maxV=Math.max(...months.map(m=>m.rev))*1.1;
-  const minV=0;
-  const xStep=plotW/(months.length-1);
-  const scaleY=v=>PAD.t+plotH-(((v-minV)/(maxV-minV))*plotH);
-  const scaleX=i=>PAD.l+i*xStep;
+/* chart */
+.chart-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:18px;margin-bottom:18px}
+.chart-title{font-size:12px;font-weight:700;color:#64748b;margin-bottom:14px}
+.chart-area{position:relative;height:200px}
 
-  const polyline=(arr,col,dashed=false)=>{
-    const pts=arr.map((v,i)=>`${scaleX(i)},${scaleY(v)}`).join(' ');
-    return `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" ${dashed?'stroke-dasharray="6 3"':''}/>`;
-  };
-  const area=(arr,col)=>{
-    const pts=arr.map((v,i)=>`${scaleX(i)},${scaleY(v)}`).join(' ');
-    const first=`${scaleX(0)},${scaleY(minV)}`, last=`${scaleX(arr.length-1)},${scaleY(minV)}`;
-    return `<polygon points="${first} ${pts} ${last}" fill="${col}" opacity="0.08"/>`;
-  };
+/* table */
+.table-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:16px}
+.table-head{padding:12px 18px;border-bottom:1px solid #f1f5f9;font-size:12px;font-weight:700;color:#475569;display:flex;align-items:center;gap:8px}
+.table-scroll{overflow-x:auto}
+.fin-table{width:100%;border-collapse:collapse;font-size:11px}
+.fin-table th{background:#f8fafc;padding:8px 11px;text-align:right;font-weight:700;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #f1f5f9}
+.fin-table th.lft{text-align:left;position:sticky;left:0;background:#f8fafc;z-index:2;min-width:210px}
+.fin-table td{padding:7px 11px;text-align:right;border-top:1px solid #f8fafc;white-space:nowrap;font-variant-numeric:tabular-nums}
+.fin-table td.lft{text-align:left;position:sticky;left:0;background:#fff;z-index:1;font-size:11px}
+.fin-table tr:hover td{background:#fafafa}.fin-table tr:hover td.lft{background:#fafafa}
+.tr-rev td{color:#1d4ed8;font-weight:700;background:#eff6ff!important}.tr-rev td.lft{background:#eff6ff!important}
+.tr-net td{color:#15803d;font-weight:700;background:#f0fdf4!important}.tr-net td.lft{background:#f0fdf4!important}
+.tr-fin td{color:#166534;font-weight:800;background:#dcfce7!important}.tr-fin td.lft{background:#dcfce7!important}
+.tc{background:#f1f5f9!important;font-weight:800!important}
 
-  const revVals=months.map(m=>m.rev);
-  const costVals=months.map(m=>m.costs);
-  const netVals=months.map(m=>m.netTax);
+/* profitability insight */
+.insight{padding:14px 18px;border-radius:14px;font-size:12.5px;line-height:1.6;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.ins-ok{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.ins-bad{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.ins-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
 
-  // Y axis labels
-  let yLabels='';
-  for(let i=0;i<=4;i++){
-    const v=minV+(maxV-minV)*i/4;
-    const y=scaleY(v);
-    yLabels+=`<text x="${PAD.l-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#94a3b8">$${(v/1000).toFixed(0)}k</text>`;
-    yLabels+=`<line x1="${PAD.l}" y1="${y}" x2="${PAD.l+plotW}" y2="${y}" stroke="#f1f5f9" stroke-width="1"/>`;
-  }
+/* unit economics */
+.econ-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+@media(max-width:600px){.econ-grid{grid-template-columns:1fr}}
+.econ-card{background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:16px}
+.econ-title{font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.econ-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f8fafc;font-size:12px}
+.econ-row:last-child{border-bottom:none;font-weight:700;color:#0f172a}
+.econ-row span:first-child{color:#64748b}
+.econ-row span:last-child{font-weight:600}
+.econ-pos{color:#15803d}
+.econ-neg{color:#dc2626}
 
-  // X labels (every 2 months)
-  let xLabels='';
-  months.forEach((m,i)=>{
-    if(i%2===0||i===11)
-      xLabels+=`<text x="${scaleX(i)}" y="${H-5}" text-anchor="middle" font-size="10" fill="#94a3b8">${m.label}</text>`;
-  });
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
 
-  const svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
-    ${yLabels}${xLabels}
-    ${area(revVals,'#3b82f6')}${area(netVals,'#10b981')}
-    ${polyline(revVals,'#3b82f6')}
-    ${polyline(costVals,'#f97316',true)}
-    ${polyline(netVals,'#10b981')}
-    <rect x="20" y="8" width="8" height="8" rx="2" fill="#3b82f6"/>
-    <text x="32" y="16" font-size="10" fill="#64748b">Ingresos</text>
-    <rect x="100" y="8" width="8" height="8" rx="2" fill="#f97316" opacity="0.7"/>
-    <text x="112" y="16" font-size="10" fill="#64748b">Costos</text>
-    <rect x="165" y="8" width="8" height="8" rx="2" fill="#10b981"/>
-    <text x="177" y="16" font-size="10" fill="#64748b">Ganancia Neta</text>
-  </svg>`;
-  document.getElementById('chart-wrap').innerHTML=svg;
-}
-
-/* ═══════════════════════════════════════
-   PRODUCTS
-═══════════════════════════════════════ */
-function renderProducts(){
-  const {cur}=state;
-  let html=`<thead><tr>
-    <th style="text-align:left">Producto</th>
-    <th>Costo</th><th>Precio Amazon</th><th>FBA Fee</th>
-    <th>Uds/Mes1</th><th>Margen</th><th>ROI</th><th>Activo</th><th></th>
-  </tr></thead><tbody>`;
-  cur.products.forEach(p=>{
-    const m=calcUnitMargin(p,cur.cfg);
-    const marginTag=m?`<span class="tag-margin ${m.margin>0.15?'tag-green':m.margin>0?'tag-amber':'tag-red'}">${pct(m.margin)}</span>`:'-';
-    const roiTag=m?`<span style="font-weight:700;color:${m.roi>0?'#15803d':'#dc2626'}">${(m.roi*100).toFixed(0)}%</span>`:'-';
-    html+=`<tr style="${!p.active?'opacity:.4':''}">
-      <td style="text-align:left;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.name}"><strong>${p.name}</strong></td>
-      <td>${$d(p.cost)}</td>
-      <td><strong>${$d(p.price)}</strong></td>
-      <td>${$d(p.fbaFee)}</td>
-      <td>${p.unitsM1}</td>
-      <td>${marginTag}</td>
-      <td>${roiTag}</td>
-      <td><button class="toggle ${p.active?'on':''}" onclick="toggleProduct(${p.id})" title="${p.active?'Desactivar':'Activar'}"></button></td>
-      <td>
-        <div style="display:flex;gap:4px">
-          <button class="btn btn-secondary btn-xs" onclick="editProduct(${p.id})">✏</button>
-          <button class="btn btn-danger btn-xs" onclick="deleteProduct(${p.id})">🗑</button>
-        </div>
-      </td>
-    </tr>`;
-  });
-  html+=`</tbody>`;
-  document.getElementById('products-table').innerHTML=html;
-}
-
-function toggleProduct(id){
-  state.cur.products=state.cur.products.map(p=>p.id===id?{...p,active:!p.active}:p);
-  persistCur(); renderProducts();
-  if(currentPage==='dashboard') renderDashboard();
-}
-
-function deleteProduct(id){
-  if(!confirm('¿Eliminar este producto?')) return;
-  state.cur.products=state.cur.products.filter(p=>p.id!==id);
-  persistCur(); renderProducts();
-}
-
-function editProduct(id){
-  const p=state.cur.products.find(x=>x.id===id);
-  if(!p) return;
-  const form=document.getElementById('add-product-form');
-  form.style.display='block';
-  form.innerHTML=`<div class="form-card">
-    <h3>✏️ Editar Producto</h3>
-    <div class="form-grid">
-      <div class="full"><label>Nombre del Producto</label><input type="text" id="ep-name" value="${p.name}"/></div>
-      <div><label>Costo Proveedor (USD)</label><input type="number" id="ep-cost" step="0.01" value="${p.cost}"/></div>
-      <div><label>Precio Venta Amazon (USD)</label><input type="number" id="ep-price" step="0.01" value="${p.price}"/></div>
-      <div><label>FBA Fee (USD)</label><input type="number" id="ep-fba" step="0.01" value="${p.fbaFee}"/></div>
-      <div><label>Unidades Mes 1</label><input type="number" id="ep-units" value="${p.unitsM1}"/></div>
+<!-- ══════════════════════════════
+     LAYER 1: WELCOME
+══════════════════════════════ -->
+<div class="layer on" id="l-welcome">
+  <div class="logo-wrap">
+    <svg width="52" height="52" viewBox="0 0 100 100">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFC107"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#EA4C0A"/>
+      </linearGradient></defs>
+      <path d="M62 16C82 16 88 33 83 46 78 57 64 61 50 66 36 71 25 75 24 84 23 93 36 90 50 90 64 90 75 84 80 79" stroke="url(#lg)" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <path d="M38 16C18 16 12 33 17 46 22 57 36 61 50 66 64 71 75 75 76 84 77 93 64 90 50 90 36 90 25 84 20 79" stroke="url(#lg)" stroke-width="12" fill="none" stroke-linecap="round" opacity=".5"/>
+      <polygon points="76,38 94,50 76,62" fill="url(#lg)"/>
+    </svg>
+    <div class="logo-title">Seller<span>Plus</span> Forecast</div>
+    <div class="logo-tagline">Planifica tu negocio en Amazon en minutos</div>
+  </div>
+  <div class="welcome-box">
+    <h2>¡Bienvenido! 👋</h2>
+    <p>Tu asistente para tomar decisiones inteligentes antes de invertir en Amazon. <strong style="color:#f97316">Gratis. Sin complicaciones.</strong></p>
+    <div class="field">
+      <label>¿Cómo te llamamos?</label>
+      <input type="text" id="inp-name" placeholder="Ej: Carlos, Mariana..." maxlength="30" autocomplete="off"/>
     </div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn btn-primary" onclick="saveEditProduct(${id})">Guardar</button>
-      <button class="btn btn-secondary" onclick="cancelAddProduct()">Cancelar</button>
+    <div class="field">
+      <label>¿Cuál es tu perfil?</label>
+      <select id="inp-profile">
+        <option value="">Selecciona una opción...</option>
+        <option value="emprendedor">🚀 Emprendedor / Quiero empezar</option>
+        <option value="vendedor">📦 Ya vendo en Amazon</option>
+        <option value="estudiante">🎓 Estudiante / Investigando</option>
+        <option value="inversion">💼 Inversionista / Analizo negocios</option>
+      </select>
     </div>
-  </div>`;
-  form.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-function saveEditProduct(id){
-  state.cur.products=state.cur.products.map(p=>p.id===id?{...p,
-    name:document.getElementById('ep-name').value,
-    cost:+document.getElementById('ep-cost').value,
-    price:+document.getElementById('ep-price').value,
-    fbaFee:+document.getElementById('ep-fba').value,
-    unitsM1:+document.getElementById('ep-units').value,
-  }:p);
-  persistCur(); cancelAddProduct(); renderProducts();
-}
-
-function openAddProduct(){
-  const form=document.getElementById('add-product-form');
-  form.style.display='block';
-  form.innerHTML=`<div class="form-card">
-    <h3>➕ Nuevo Producto</h3>
-    <div class="form-grid">
-      <div class="full"><label>Nombre del Producto</label><input type="text" id="np-name" placeholder="Ej: Producto XYZ 500g"/></div>
-      <div><label>Costo Proveedor (USD)</label><input type="number" id="np-cost" step="0.01" placeholder="0.00"/></div>
-      <div><label>Precio Venta Amazon (USD)</label><input type="number" id="np-price" step="0.01" placeholder="0.00"/></div>
-      <div><label>FBA Fee (USD)</label><input type="number" id="np-fba" step="0.01" value="5.58"/></div>
-      <div><label>Unidades Mes 1</label><input type="number" id="np-units" value="10"/></div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn btn-primary" onclick="saveNewProduct()">Guardar</button>
-      <button class="btn btn-secondary" onclick="cancelAddProduct()">Cancelar</button>
-    </div>
-  </div>`;
-}
-
-function saveNewProduct(){
-  const p={id:Date.now(), name:document.getElementById('np-name').value||'Nuevo Producto',
-    cost:+document.getElementById('np-cost').value||0,
-    price:+document.getElementById('np-price').value||0,
-    fbaFee:+document.getElementById('np-fba').value||5.58,
-    unitsM1:+document.getElementById('np-units').value||10, active:true};
-  state.cur.products.push(p);
-  persistCur(); cancelAddProduct(); renderProducts();
-}
-
-function cancelAddProduct(){
-  const f=document.getElementById('add-product-form');
-  f.style.display='none'; f.innerHTML='';
-}
-
-/* ═══════════════════════════════════════
-   SETTINGS
-═══════════════════════════════════════ */
-function renderSettings(){
-  const c=state.cur.cfg;
-  const fields=[
-    {k:'growthRate',label:'Tasa de Crecimiento Mensual',isPct:true,desc:'Crecimiento en unidades mes a mes'},
-    {k:'mktgPct',  label:'Gastos de Marketing (% ventas)',isPct:true,desc:'Sponsored Products + Brands. ROAS = 1 / este valor'},
-    {k:'amzFeePct',label:'Referral Fee Amazon (% ventas)',isPct:true,desc:'Comisión de Amazon — típicamente 15%'},
-    {k:'agencyFee',label:'Fee Agencia Seller Plus (USD/mes)',isPct:false,desc:'Costo mensual fijo de la agencia'},
-    {k:'membership',label:'Membresía Amazon (USD/mes)',isPct:false,desc:'Plan Professional Seller Central'},
-    {k:'taxRate',  label:'Tasa de Impuestos (% ganancia)',isPct:true,desc:'Impuesto sobre ganancias netas'},
-  ];
-  document.getElementById('settings-form').innerHTML=fields.map(f=>`
-    <div class="settings-row">
-      <div class="settings-info">
-        <strong>${f.label}</strong>
-        <small>${f.desc}</small>
-      </div>
-      <div class="settings-input-wrap">
-        <input type="number" step="${f.isPct?'0.1':'1'}" id="cfg-${f.k}"
-          value="${f.isPct?((c[f.k]||0)*100).toFixed(1):c[f.k]}"
-          oninput="updateCfg('${f.k}',this.value,${f.isPct})"/>
-        <span class="settings-unit">${f.isPct?'%':'$'}</span>
-      </div>
-    </div>`).join('');
-}
-
-function updateCfg(k,v,isPct){
-  state.cur.cfg[k]=isPct?parseFloat(v)/100:parseFloat(v)||0;
-  persistCur();
-  if(currentPage==='dashboard') renderDashboard();
-}
-
-/* ═══════════════════════════════════════
-   SAVE / NEW SIM
-═══════════════════════════════════════ */
-function saveSim(){
-  state.cur.updatedAt=new Date().toISOString();
-  const idx=state.sims.findIndex(s=>s.id===state.cur.id);
-  if(idx>=0) state.sims[idx]={...state.cur};
-  else state.sims.push({...state.cur});
-  persistSims(); persistCur();
-  const btn=document.getElementById('btn-save');
-  const txt=document.getElementById('save-text');
-  btn.classList.add('saved'); txt.textContent='¡Guardado!';
-  setTimeout(()=>{ btn.classList.remove('saved'); txt.textContent='Guardar'; },1800);
-}
-
-function newSim(){
-  const name=prompt('Nombre de la nueva simulación:','Nueva Simulación');
-  if(!name) return;
-  const s=mkSim(name);
-  state.sims.push(s);
-  state.cur=s;
-  persistSims(); persistCur();
-  showPage('dashboard');
-}
-
-/* ═══════════════════════════════════════
-   SIMULATIONS
-═══════════════════════════════════════ */
-function renderSimulations(){
-  if(!state.sims.length){
-    document.getElementById('sim-list').innerHTML=`<div class="table-card" style="padding:48px;text-align:center;color:#94a3b8"><p>No hay simulaciones. Guarda la simulación actual primero.</p></div>`;
-    return;
-  }
-  document.getElementById('sim-list').innerHTML=state.sims.map(sim=>{
-    const months=buildMonths(sim.products.filter(p=>p.active),sim.cfg);
-    const totRev=months.reduce((s,m)=>s+m.rev,0);
-    const totNet=months.reduce((s,m)=>s+m.netTax,0);
-    const isCur=state.cur.id===sim.id;
-    return `<div class="sim-card ${isCur?'current':''}">
-      <div class="sim-card-top">
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <div class="sim-card-name">${sim.name}</div>
-            ${isCur?'<span class="badge-current">Activa</span>':''}
-          </div>
-          <div class="sim-card-meta">${sim.products.filter(p=>p.active).length} productos activos · ${new Date(sim.updatedAt).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})}</div>
-        </div>
-        <div class="sim-card-rev">
-          <strong>${$(totRev)}</strong>
-          <span style="color:${totNet>0?'#15803d':'#dc2626'}">${$(totNet)} neto</span>
-        </div>
-      </div>
-      <div class="sim-actions">
-        ${!isCur?`<button class="btn btn-primary btn-sm" style="flex:1" onclick="loadSim('${sim.id}')">Abrir</button>`:''}
-        <button class="btn btn-secondary btn-sm" onclick="renameSim('${sim.id}')">✏ Renombrar</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteSim('${sim.id}')">🗑</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function loadSim(id){
-  const s=state.sims.find(x=>x.id===id);
-  if(!s) return;
-  state.cur=s; persistCur(); showPage('dashboard');
-}
-function renameSim(id){
-  const s=state.sims.find(x=>x.id===id); if(!s) return;
-  const name=prompt('Nuevo nombre:',s.name); if(!name) return;
-  s.name=name; if(state.cur.id===id){state.cur.name=name; document.getElementById('sidebar-sim-name').textContent=name;}
-  persistSims(); persistCur(); renderSimulations();
-}
-function deleteSim(id){
-  if(!confirm('¿Eliminar esta simulación?')) return;
-  state.sims=state.sims.filter(s=>s.id!==id);
-  if(state.cur.id===id){
-    state.cur=state.sims[0]||mkSim(); if(!state.sims.length){state.sims=[state.cur];}
-    persistCur();
-  }
-  persistSims(); renderSimulations();
-}
-
-/* ═══════════════════════════════════════
-   API KEY
-═══════════════════════════════════════ */
-function openApiModal(){
-  document.getElementById('api-key-input').value=state.apiKey||'';
-  document.getElementById('api-modal').style.display='flex';
-}
-function closeApiModal(){ document.getElementById('api-modal').style.display='none'; }
-function saveApiKey(){
-  const k=document.getElementById('api-key-input').value.trim();
-  state.apiKey=k; localStorage.setItem('sp_apikey',k);
-  const lbl=document.getElementById('apikey-label');
-  lbl.textContent=k?'● API Key activa':'Configurar API Key';
-  document.getElementById('btn-apikey').className='btn-small'+(k?' key-set':'');
-  closeApiModal();
-}
-
-/* ═══════════════════════════════════════
-   SUPPLIER ANALYZER
-═══════════════════════════════════════ */
-let urlCount=1;
-function initSupplier(){
-  const list=document.getElementById('url-list');
-  if(list.children.length===0){
-    urlCount=1;
-    list.innerHTML='';
-    addUrlField();
-  }
-}
-function addUrlField(){
-  const list=document.getElementById('url-list');
-  if(urlCount>=5) return;
-  const id='url-'+urlCount++;
-  const div=document.createElement('div');
-  div.className='url-row'; div.id='row-'+id;
-  div.innerHTML=`
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="url-icon"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-    <input type="text" id="${id}" placeholder="https://www.alibaba.com/product-detail/..."/>
-    ${urlCount>2?`<button class="btn btn-danger btn-xs" onclick="document.getElementById('row-${id}').remove();urlCount--">✕</button>`:''}
-  `;
-  list.appendChild(div);
-  if(urlCount>=5) document.getElementById('btn-add-url').style.display='none';
-}
-
-async function analyzeSupplier(){
-  if(!state.apiKey){ showSupplierError('Configura tu API Key de Anthropic primero (botón en la barra lateral).','error'); return; }
-  const urls=[];
-  document.querySelectorAll('#url-list input[type=text]').forEach(i=>{ if(i.value.trim()) urls.push(i.value.trim()); });
-  if(!urls.length){ showSupplierError('Agrega al menos una URL de proveedor.','warn'); return; }
-
-  const btn=document.getElementById('btn-analyze');
-  btn.disabled=true;
-  btn.innerHTML='<div class="spinner"></div> Analizando...';
-  document.getElementById('supplier-error').style.display='none';
-  document.getElementById('supplier-results').innerHTML='';
-
-  const prompt=`Eres experto en Amazon FBA y análisis de productos de Alibaba/AliExpress.
-
-Analiza estos productos de proveedores:
-${urls.map((u,i)=>`${i+1}. ${u}`).join('\n')}
-
-Para CADA URL, proporciona estimaciones basadas en el tipo de producto y mercado Amazon:
-- Nombre específico del producto
-- Precio proveedor rango USD para 100-500 unidades (supplierMin, supplierMax)
-- Categoría
-- FBA fee estimado (pequeño <1lb: 4.59, mediano 1-2lb: 5.58, grande >2lb: 6.80)
-- Precio de venta recomendado Amazon (para lograr 15-25% margen neto)
-- Margen neto estimado (decimal, ej 0.20 = 20%)
-- ROI estimado (decimal)
-- Potencial: "Alto", "Medio" o "Bajo"
-- Justificación 1 frase
-- 3 competidores en Amazon con precios
-- Recomendación 2 frases
-
-Responde SOLO con este JSON sin texto extra ni backticks:
-{"products":[{"url":"","name":"","supplierMin":0,"supplierMax":0,"category":"","fbaFee":0,"recommendedPrice":0,"margin":0,"roi":0,"potential":"","justification":"","competitors":[{"name":"","price":0}],"recommendation":""}]}`;
-
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})
-    });
-    const data=await res.json();
-    if(data.error) throw new Error(data.error.message);
-    const text=data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
-    const parsed=JSON.parse(text);
-    renderSupplierResults(parsed.products||[]);
-  }catch(e){
-    showSupplierError('Error: '+e.message,'error');
-  }
-  btn.disabled=false;
-  btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Analizar con IA';
-}
-
-function showSupplierError(msg,type){
-  const el=document.getElementById('supplier-error');
-  el.style.display='flex'; el.className=`alert alert-${type}`; el.style.marginTop='10px';
-  el.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${msg}`;
-}
-
-function renderSupplierResults(prods){
-  const potCls={Alto:'pot-alto',Medio:'pot-medio',Bajo:'pot-bajo'};
-  document.getElementById('supplier-results').innerHTML=prods.map((r,i)=>`
-    <div class="result-card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px">
-        <h3>${r.name}</h3>
-        <span class="potential-badge ${potCls[r.potential]||'pot-medio'}">${r.potential||'Medio'}</span>
-      </div>
-      <div class="result-url">${r.url}</div>
-      <div class="metrics-row">
-        <div class="metric-box">
-          <div class="metric-label">Precio Proveedor</div>
-          <div class="metric-value">$${(r.supplierMin||0).toFixed(2)}–$${(r.supplierMax||0).toFixed(2)}</div>
-        </div>
-        <div class="metric-box blue">
-          <div class="metric-label">Precio Amazon</div>
-          <div class="metric-value">${$d(r.recommendedPrice)}</div>
-        </div>
-        <div class="metric-box ${(r.margin||0)>0.15?'green':''}">
-          <div class="metric-label">Margen Neto Est.</div>
-          <div class="metric-value">${pct(r.margin||0)}</div>
-        </div>
-        <div class="metric-box purple">
-          <div class="metric-label">FBA Fee</div>
-          <div class="metric-value">${$d(r.fbaFee||5.58)}</div>
-        </div>
-      </div>
-      <div class="tip-box">${r.recommendation||r.justification||''}</div>
-      ${r.competitors?.length?`<div class="competitors">${r.competitors.map(c=>`<span class="competitor-tag">${c.name} · ${$d(c.price)}</span>`).join('')}</div>`:''}
-      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="addSupplierProduct(${i})">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Agregar a Mis Productos
-      </button>
-    </div>`).join('');
-  window._supplierResults=prods;
-}
-
-function addSupplierProduct(i){
-  const r=window._supplierResults[i];
-  const p={id:Date.now(), name:r.name, cost:(r.supplierMin+r.supplierMax)/2,
-    unitsM1:10, fbaFee:r.fbaFee||5.58, price:r.recommendedPrice, active:true};
-  state.cur.products.push(p);
-  persistCur();
-  alert(`✅ "${r.name}" agregado a Productos`);
-}
-
-/* ═══════════════════════════════════════
-   AI CHAT
-═══════════════════════════════════════ */
-let chatHistory=[];
-let chatSuggestions=[];
-let chatInitialized=false;
-
-function initChat(){
-  if(chatInitialized) return;
-  chatInitialized=true;
-  chatHistory=[];
-  addChatMsg('ai','👋 ¡Hola! Soy tu asistente de <strong>SellerPlus</strong>.\n\nEstoy aquí para ayudarte a descubrir <strong>productos ganadores</strong> en Amazon. Analizaré oportunidades de mercado y te ayudaré a construir tu plan de negocio automáticamente.\n\n¿<strong>Qué deseas vender?</strong> Puedes decirme una categoría, tipo de producto, o cualquier idea.');
-}
-
-function addChatMsg(role, html){
-  const msgs=document.getElementById('chat-messages');
-  const div=document.createElement('div');
-  div.className='msg '+(role==='user'?'user':'');
-  const avatar=role==='user'
-    ?'<div class="msg-avatar user">Tú</div>'
-    :'<div class="msg-avatar ai">✦</div>';
-  div.innerHTML=avatar+`<div class="msg-bubble ${role}">${html.replace(/\n/g,'<br>')}</div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop=msgs.scrollHeight;
-}
-
-function showTyping(){
-  const msgs=document.getElementById('chat-messages');
-  const div=document.createElement('div');
-  div.className='msg'; div.id='typing-bubble';
-  div.innerHTML='<div class="msg-avatar ai">✦</div><div class="msg-bubble ai"><div class="typing"><span></span><span></span><span></span></div></div>';
-  msgs.appendChild(div);
-  msgs.scrollTop=msgs.scrollHeight;
-}
-function removeTyping(){ const t=document.getElementById('typing-bubble'); if(t)t.remove(); }
-
-async function sendChat(){
-  const inp=document.getElementById('chat-input');
-  const txt=inp.value.trim(); if(!txt) return;
-  if(!state.apiKey){ addChatMsg('ai','⚠️ <strong>API Key no configurada.</strong> Haz clic en "Configurar API Key" en la barra lateral.'); return; }
-  inp.value='';
-  addChatMsg('user',txt);
-  chatHistory.push({role:'user',content:txt});
-  document.getElementById('btn-send-chat').disabled=true;
-  document.getElementById('chat-input').disabled=true;
-  showTyping();
-
-  const sys=`Eres experto en Amazon FBA, Alibaba sourcing y ecommerce estratégico hispanohablante. Ayudas a usuarios a encontrar productos ganadores.
-
-Cuando el usuario mencione qué quiere vender, presenta EXACTAMENTE 5 opciones concretas.
-
-Al presentar las 5 sugerencias, incluye AL FINAL este bloque (sin omitirlo):
-<SP_SUGGESTIONS>
-[{"id":1,"name":"Nombre específico","category":"Categoría","supplierPrice":7.50,"amazonPrice":29.99,"margin":0.22,"roi":0.75,"fbaFee":5.58,"unitsM1":15,"potential":"Alto","description":"Por qué es ganador en 1 frase"}]
-</SP_SUGGESTIONS>
-
-Responde SIEMPRE en español. Sé entusiasta, usa emojis ocasionalmente. No menciones el bloque al usuario.`;
-
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,system:sys,
-        messages:chatHistory.map(m=>({role:m.role,content:m.content}))})
-    });
-    const data=await res.json();
-    if(data.error) throw new Error(data.error.message);
-    let full=data.content.map(c=>c.text||'').join('');
-    const match=full.match(/<SP_SUGGESTIONS>([\s\S]*?)<\/SP_SUGGESTIONS>/);
-    if(match){
-      try{ chatSuggestions=JSON.parse(match[1]); renderSuggestions(); }catch{}
-      full=full.replace(/<SP_SUGGESTIONS>[\s\S]*?<\/SP_SUGGESTIONS>/,'').trim();
-    }
-    removeTyping();
-    addChatMsg('ai',full);
-    chatHistory.push({role:'assistant',content:full});
-  }catch(e){
-    removeTyping(); addChatMsg('ai','❌ Error: '+e.message);
-  }
-  document.getElementById('btn-send-chat').disabled=false;
-  document.getElementById('chat-input').disabled=false;
-  document.getElementById('chat-input').focus();
-}
-
-let selectedSugs=[];
-function renderSuggestions(){
-  const area=document.getElementById('suggestions-area');
-  selectedSugs=[];
-  area.innerHTML=`<div class="suggestions-panel">
-    <h4>Selecciona hasta 5 productos para tu plan de negocio (${selectedSugs.length} seleccionados):</h4>
-    <div class="sug-list" id="sug-list">
-      ${chatSuggestions.map((s,i)=>`
-        <div class="sug-item" id="sug-${i}" onclick="toggleSug(${i})">
-          <div class="sug-check" id="sug-check-${i}">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:none" id="sug-chk-${i}"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div style="flex:1;min-width:0">
-            <div class="sug-name">${s.name}</div>
-            <div class="sug-desc">${s.description} · ${s.category}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div class="sug-margin">${pct(s.margin)}</div>
-            <div><span class="potential-badge pot-${s.potential==='Alto'?'alto':s.potential==='Medio'?'medio':'bajo'}" style="font-size:9px">${s.potential}</span></div>
-          </div>
-        </div>`).join('')}
-    </div>
-    <button class="btn-build-plan" id="btn-build" onclick="buildAIPlan()" disabled>
-      ✦ Crear Plan de Negocio
+    <button class="btn-cta" onclick="startApp()">
+      Comenzar →
     </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LAYER 2: PATH SELECTOR
+══════════════════════════════ -->
+<div class="layer" id="l-path">
+  <div class="path-top">
+    <div class="path-hi" id="path-hi">¡Hola!</div>
+    <h2>¿Qué quieres hacer hoy?</h2>
+    <p>Elige tu punto de partida. Te guiaremos paso a paso.</p>
+  </div>
+  <div class="path-grid">
+    <div class="path-card" tabindex="0" onclick="startPath('simulate')" onkeydown="if(event.key==='Enter')startPath('simulate')">
+      <span class="path-icon">📊</span>
+      <h3>Simular mi inversión</h3>
+      <p>Ya tienes un producto en mente. Te ayudamos a calcular si es rentable y cuánto puedes ganar.</p>
+      <span class="path-tag">Te preguntamos todo</span>
+    </div>
+    <div class="path-card" tabindex="0" onclick="startPath('discover')" onkeydown="if(event.key==='Enter')startPath('discover')">
+      <span class="path-icon">🔍</span>
+      <h3>Buscar productos ganadores</h3>
+      <p>No sabes qué vender. La IA busca productos con bajo costo, alta demanda y buen margen.</p>
+      <span class="path-tag">IA busca por ti</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LAYER 3: CHAT / WIZARD
+══════════════════════════════ -->
+<div class="layer" id="l-chat">
+  <div class="chat-topbar">
+    <div class="chat-topbar-left">
+      <div class="topbar-logo">Seller<span>Plus</span></div>
+      <span class="topbar-mode" id="topbar-mode">Simulador</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button class="btn-restart" onclick="goHome()">← Inicio</button>
+    </div>
+  </div>
+  <div class="chat-body" id="chat-body"></div>
+  <div id="quick-area"></div>
+  <div class="chat-footer">
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="Escribe tu respuesta aquí..." autocomplete="off"/>
+      <button class="btn-send" id="btn-send" onclick="sendUserMsg()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LAYER 4: DASHBOARD
+══════════════════════════════ -->
+<div class="layer" id="l-dash">
+  <div class="dash-topbar">
+    <div class="dash-topbar-left">
+      <div class="dash-logo">Seller<span>Plus</span></div>
+      <span class="dash-plan-name" id="dash-plan-name"></span>
+    </div>
+    <div class="dash-actions">
+      <div class="status-pill" id="dash-status"></div>
+      <button class="btn-dash btn-new" onclick="goHome()">+ Nueva simulación</button>
+    </div>
+  </div>
+  <div class="dash-body">
+    <div class="dash-inner" id="dash-inner"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+const S = {
+  user: { name:'', profile:'' },
+  path: '',           // 'simulate' | 'discover'
+  step: 0,
+  data: {},           // collected answers
+  products: [],       // for discover path
+  selectedProducts: [],
+  chatLocked: false,
+};
+
+/* ═══════════════════════════════════════════
+   LAYER SWITCHER
+═══════════════════════════════════════════ */
+function show(id){ document.querySelectorAll('.layer').forEach(l=>l.classList.remove('on')); document.getElementById(id).classList.add('on'); }
+
+/* ═══════════════════════════════════════════
+   WELCOME
+═══════════════════════════════════════════ */
+function startApp(){
+  const name = document.getElementById('inp-name').value.trim();
+  const profile = document.getElementById('inp-profile').value;
+  if(!name){ document.getElementById('inp-name').focus(); return; }
+  if(!profile){ document.getElementById('inp-profile').focus(); return; }
+  S.user = { name, profile };
+  // persist per-user data namespace
+  S.userKey = 'sp_' + name.toLowerCase().replace(/\s+/g,'_');
+  document.getElementById('path-hi').textContent = `¡Hola, ${name}! 👋`;
+  document.getElementById('topbar-user').textContent = name;
+  show('l-path');
+}
+
+document.getElementById('inp-name').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('inp-profile').focus(); });
+
+/* ═══════════════════════════════════════════
+   PATH SELECT
+═══════════════════════════════════════════ */
+function startPath(path){
+  S.path = path;
+  S.step = 0;
+  S.data = {};
+  S.chatLocked = false;
+  document.getElementById('chat-body').innerHTML = '';
+  document.getElementById('quick-area').innerHTML = '';
+  document.getElementById('topbar-mode').textContent = path==='simulate' ? '📊 Simulador' : '🔍 Buscador IA';
+  show('l-chat');
+  setTimeout(()=>{ path==='simulate' ? runSimulateStep(0) : runDiscoverStep(0); }, 300);
+}
+
+function goHome(){ show('l-path'); }
+
+/* ═══════════════════════════════════════════
+   CHAT HELPERS
+═══════════════════════════════════════════ */
+function botMsg(html, delay=0){
+  return new Promise(res=>{
+    const body = document.getElementById('chat-body');
+    // typing indicator
+    const t = document.createElement('div');
+    t.className='msg'; t.id='typing-row';
+    t.innerHTML=`<div class="avatar bot">✦</div><div class="typing-bubble"><span></span><span></span><span></span></div>`;
+    body.appendChild(t); scrollBot();
+    setTimeout(()=>{
+      t.remove();
+      const d=document.createElement('div'); d.className='msg';
+      d.innerHTML=`<div class="avatar bot">✦</div><div class="bubble bot">${html}</div>`;
+      body.appendChild(d); scrollBot(); res();
+    }, delay||650 + html.length*1.2);
+  });
+}
+
+function userMsg(text){
+  const body=document.getElementById('chat-body');
+  const initials=(S.user.name||'?').slice(0,2).toUpperCase();
+  const d=document.createElement('div'); d.className='msg user';
+  d.innerHTML=`<div class="bubble usr">${esc(text)}</div><div class="avatar usr">${initials}</div>`;
+  body.appendChild(d); scrollBot();
+}
+
+function scrollBot(){ const b=document.getElementById('chat-body'); b.scrollTop=b.scrollHeight; }
+function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showQuickReplies(options, onPick){
+  clearQuick();
+  const area=document.getElementById('quick-area');
+  const wrap=document.createElement('div'); wrap.className='quick-replies'; wrap.id='qr-wrap';
+  options.forEach(opt=>{
+    const b=document.createElement('button'); b.className='qr'; b.textContent=opt;
+    b.onclick=()=>{ clearQuick(); onPick(opt); };
+    wrap.appendChild(b);
+  });
+  area.appendChild(wrap); scrollBot();
+}
+
+function clearQuick(){ document.getElementById('quick-area').innerHTML=''; }
+
+function lockInput(){ S.chatLocked=true; document.getElementById('chat-input').disabled=true; document.getElementById('btn-send').disabled=true; }
+function unlockInput(){ S.chatLocked=false; document.getElementById('chat-input').disabled=false; document.getElementById('btn-send').disabled=false; document.getElementById('chat-input').focus(); }
+
+async function callAI(messages, system){
+  const body = { model:'claude-sonnet-4-20250514', max_tokens:2000, messages };
+  if(system) body.system = system;
+  const r = await fetch('/api/ai',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  const d = await r.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.content.map(c=>c.text||'').join('');
+}
+
+/* ═══════════════════════════════════════════
+   SIMULATE PATH — step-by-step wizard
+═══════════════════════════════════════════ */
+const SIM_STEPS = [
+  // step 0 — product name
+  {
+    ask: async ()=> {
+      await botMsg(`Perfecto ${S.user.name}, vamos a construir tu plan de negocio juntos. 🚀<br><br>Primero lo primero: <strong>¿Qué producto quieres vender en Amazon?</strong><br><small style="color:#94a3b8">Puedes ser específico o general, por ejemplo: "audífonos bluetooth", "café molido 250g", "suplemento proteína"</small>`);
+      unlockInput();
+    },
+    collect: (v)=>{ S.data.productName = v; }
+  },
+  // step 1 — supplier cost
+  {
+    ask: async ()=>{
+      await botMsg(`Excelente, <span class="highlight">${S.data.productName}</span> 👍<br><br>¿<strong>Cuánto te cuesta el producto al proveedor</strong> por unidad? (en USD 💵)<br><small style="color:#94a3b8">Ej: si compras en Alibaba a $5 por unidad, escribe 5</small>`);
+      unlockInput();
+    },
+    collect:(v)=>{ const n=parseNum(v); if(!n||n<=0) return 'Por favor ingresa un número válido mayor a 0'; S.data.supplierCost=n; }
+  },
+  // step 2 — initial units
+  {
+    ask: async ()=>{
+      await botMsg(`Perfecto. ¿<strong>Cuántas unidades</strong> planeas comprar para tu primer pedido?<br><small style="color:#94a3b8">Ej: 100, 200, 500. Esto determina tu inversión inicial.</small>`);
+      unlockInput();
+    },
+    collect:(v)=>{ const n=parseNum(v); if(!n||n<1) return 'Ingresa un número entero mayor a 0'; S.data.initialUnits=Math.round(n); }
+  },
+  // step 3 — selling price
+  {
+    ask: async ()=>{
+      const suggested = Math.round(S.data.supplierCost * 4.5);
+      await botMsg(`¿A qué <strong>precio piensas venderlo en Amazon</strong>? (USD 💵)<br><small style="color:#94a3b8">Tip: basado en tu costo de ${fmt$(S.data.supplierCost)}, un precio competitivo estaría entre ${fmt$(S.data.supplierCost*3)} y ${fmt$(S.data.supplierCost*6)}. Te sugerimos ${fmt$(suggested)}.</small>`);
+      showQuickReplies([fmt$(suggested), fmt$(S.data.supplierCost*3.5), fmt$(S.data.supplierCost*5)], (v)=>{
+        userMsg(v); clearQuick();
+        const n=parseNum(v.replace('$',''));
+        S.data.sellingPrice=n;
+        nextSimStep();
+      });
+      unlockInput();
+    },
+    collect:(v)=>{ const n=parseNum(v.replace(/[$,]/g,'')); if(!n||n<=0) return 'Ingresa un precio válido mayor a 0'; S.data.sellingPrice=n; }
+  },
+  // step 4 — marketplace
+  {
+    ask: async ()=>{
+      await botMsg(`¿En qué <strong>mercado de Amazon</strong> vas a vender?`);
+      showQuickReplies(['🇺🇸 Amazon USA', '🇲🇽 Amazon México', '🇪🇸 Amazon España', '🇨🇦 Amazon Canadá'], (v)=>{
+        userMsg(v); clearQuick();
+        S.data.marketplace = v;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 5 — category / fees
+  {
+    ask: async ()=>{
+      await botMsg(`¿A qué <strong>categoría</strong> pertenece tu producto?<br><small style="color:#94a3b8">Esto afecta el % de comisión de Amazon</small>`);
+      showQuickReplies(['Electrónica','Salud / Belleza','Hogar y Cocina','Ropa / Moda','Alimentos','Juguetes','Deportes','Otra'], (v)=>{
+        userMsg(v); clearQuick();
+        S.data.category = v;
+        // referral fee by category
+        const fees={'Electrónica':0.08,'Ropa / Moda':0.17,'Alimentos':0.08,'Otra':0.15};
+        S.data.amzFeePct = fees[v] || 0.15;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 6 — estimated weight (for FBA)
+  {
+    ask: async ()=>{
+      await botMsg(`¿Cuánto pesa aproximadamente <strong>cada unidad</strong> (con embalaje)?`);
+      showQuickReplies(['Menos de 250g','250g – 500g','500g – 1kg','1kg – 2kg','Más de 2kg'], (v)=>{
+        userMsg(v); clearQuick();
+        S.data.weight = v;
+        const fbaFees={'Menos de 250g':3.22,'250g – 500g':4.59,'500g – 1kg':5.58,'1kg – 2kg':6.80,'Más de 2kg':8.25};
+        S.data.fbaFee = fbaFees[v] || 5.58;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 7 — growth expectation
+  {
+    ask: async ()=>{
+      await botMsg(`¡Casi listo! ¿Cuántas <strong>unidades esperas vender el primer mes</strong>?<br><small style="color:#94a3b8">Sé conservador/a para empezar. Puedes ajustarlo después.</small>`);
+      showQuickReplies(['10–20 unidades','20–50 unidades','50–100 unidades','100+ unidades'], (v)=>{
+        userMsg(v); clearQuick();
+        const map={'10–20 unidades':15,'20–50 unidades':35,'50–100 unidades':75,'100+ unidades':120};
+        S.data.unitsM1 = map[v] || 20;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 8 — GENERATE PLAN
+  {
+    ask: async ()=>{
+      lockInput();
+      await botMsg(`Perfecto. Tengo todo lo que necesito. 🎯<br><br>Déjame calcular tu <strong>plan de negocio completo a 12 meses</strong>...`);
+      await generateSimPlan();
+    },
+    collect:()=>{}
+  }
+];
+
+let simStepIdx = 0;
+
+async function runSimulateStep(idx){
+  simStepIdx = idx;
+  const step = SIM_STEPS[idx];
+  if(!step) return;
+  lockInput();
+  await step.ask();
+}
+
+function nextSimStep(){ runSimulateStep(simStepIdx+1); }
+
+document.getElementById('chat-input').addEventListener('keydown', e=>{ if(e.key==='Enter') sendUserMsg(); });
+
+function sendUserMsg(){
+  if(S.chatLocked) return;
+  const inp=document.getElementById('chat-input');
+  const val=inp.value.trim(); if(!val) return;
+  inp.value='';
+  userMsg(val);
+  lockInput(); clearQuick();
+
+  if(S.path==='simulate'){
+    const step=SIM_STEPS[simStepIdx];
+    if(!step){return;}
+    const err=step.collect(val);
+    if(err){ botMsg(`⚠️ ${err}`).then(()=>unlockInput()); return; }
+    nextSimStep();
+  } else {
+    // discover path free text handling
+    handleDiscoverInput(val);
+  }
+}
+
+function parseNum(v){ return parseFloat(String(v).replace(/[^0-9.]/g,'')); }
+function fmt$(n){ return '$'+Number(n).toFixed(2); }
+
+/* ═══════════════════════════════════════════
+   SIMULATE — GENERATE PLAN
+═══════════════════════════════════════════ */
+async function generateSimPlan(){
+  const d=S.data;
+  // build financial model
+  const cfg={
+    productName: d.productName,
+    supplierCost: d.supplierCost,
+    sellingPrice: d.sellingPrice,
+    fbaFee: d.fbaFee||5.58,
+    amzFeePct: d.amzFeePct||0.15,
+    mktgPct: 0.25,
+    agencyFee: 0,
+    membership: 39.99/12, // monthly amortized
+    taxRate: 0.08,
+    growthRate: 0.10,
+    unitsM1: d.unitsM1||20,
+  };
+
+  // unit economics
+  const ue = calcUnitEconomics(cfg);
+
+  if(ue.margin < 0){
+    await botMsg(`⚠️ <strong>Atención:</strong> Con los datos que me diste, este producto <strong>no sería rentable</strong> con el precio actual.<br><br>Tu costo total por unidad es ${fmt$(ue.totalCostPerUnit)} y estás vendiendo a ${fmt$(d.sellingPrice)}. <strong>Estás perdiendo ${fmt$(Math.abs(ue.profit))} por unidad.</strong><br><br>Opciones: 1) Subir el precio de venta, 2) Conseguir proveedor más barato, 3) Reducir peso del paquete para bajar FBA.`);
+  }
+
+  const months = buildMonths(cfg);
+
+  // AI insight
+  try{
+    const insight = await callAI([{role:'user',content:`Analiza este negocio Amazon en español (2-3 oraciones máximo, directo, útil):
+Producto: ${d.productName}
+Precio venta: $${d.sellingPrice}
+Costo proveedor: $${d.supplierCost}
+Margen neto por unidad: ${(ue.margin*100).toFixed(1)}%
+ROI: ${(ue.roi*100).toFixed(0)}%
+Ganancia total 12 meses: $${months.reduce((s,m)=>s+m.netTax,0).toFixed(0)}
+Categoría: ${d.category||'General'}
+Da una recomendación clave de 1 oración.`}]);
+    S.aiInsight = insight.trim();
+  } catch(e){ S.aiInsight=''; }
+
+  await botMsg(`✅ <strong>¡Plan listo!</strong> Aquí está tu análisis completo 👇`);
+  setTimeout(()=> showDashboard({ cfg, months, ue, title: d.productName }), 800);
+}
+
+/* ═══════════════════════════════════════════
+   DISCOVER PATH
+═══════════════════════════════════════════ */
+let discoverStep=0;
+let discoverCategory='';
+
+async function runDiscoverStep(step){
+  discoverStep=step;
+  if(step===0){
+    await botMsg(`¡Vamos a encontrar tu producto ganador! 🏆<br><br>Mi criterio de selección: <strong>bajo costo al proveedor</strong> + <strong>alta demanda</strong> + <strong>buen margen en Amazon</strong>.<br><br>¿Tienes alguna <strong>categoría o idea</strong> de lo que quieres vender? O dime tu presupuesto y te doy opciones.`);
+    showQuickReplies(['No sé aún, sugiere tú','Hogar y cocina','Belleza y cuidado personal','Fitness y deporte','Electrónica / Gadgets','Mascotas','Bebés y niños'], (v)=>{
+      userMsg(v); clearQuick(); discoverCategory=v; searchWinningProducts(v);
+    });
+    unlockInput();
+  }
+}
+
+function handleDiscoverInput(val){
+  if(discoverStep===0){ clearQuick(); discoverCategory=val; searchWinningProducts(val); }
+}
+
+async function searchWinningProducts(category){
+  lockInput(); clearQuick();
+  await botMsg(`Buscando productos ganadores en Alibaba para <strong>${category}</strong>...<br><small style="color:#94a3b8">Analizando precio, demanda y competencia 🔍</small>`);
+
+  const sys=`Eres experto en Amazon FBA y sourcing en Alibaba/AliExpress. Buscas productos ganadores con: bajo costo proveedor, alta demanda en Amazon, competencia manejable y buen margen.
+Responde SOLO con JSON válido, sin markdown ni texto extra.`;
+  const prompt=`Sugiere exactamente 5 productos ganadores para vender en Amazon FBA en la categoría: "${category}".
+Criterios: precio proveedor Alibaba bajo (idealmente <$15), alta demanda comprobada, margen neto >20%.
+
+Responde SOLO con este JSON:
+{"products":[{"name":"nombre específico del producto","supplierPrice":5.50,"amazonPrice":24.99,"fbaFee":4.59,"amzFeePct":0.15,"margin":0.22,"demand":"Alta","competition":"Media","description":"por qué es ganador en 1 frase","whyNow":"tendencia o razón de oportunidad"}]}`;
+
+  try{
+    const raw=await callAI([{role:'user',content:prompt}],sys);
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(clean);
+    S.products=parsed.products||[];
+    S.selectedProducts=[];
+    await showProductCards(S.products);
+  } catch(e){
+    await botMsg(`❌ Error al buscar: ${e.message}. Intenta de nuevo.`);
+    unlockInput();
+  }
+}
+
+async function showProductCards(prods){
+  await botMsg(`Encontré <strong>${prods.length} productos con alto potencial</strong>. Selecciona hasta <strong>3</strong> que te interesen y te armo el plan financiero completo: 👇`);
+
+  const body=document.getElementById('chat-body');
+  const grid=document.createElement('div'); grid.className='prod-cards'; grid.id='prod-grid';
+
+  prods.forEach((p,i)=>{
+    const card=document.createElement('div'); card.className='prod-pick'; card.id='pc-'+i;
+    const demTag=`<span class="pp-tag tag-demand">📈 Demanda ${p.demand}</span>`;
+    const compTag=`<span class="pp-tag tag-comp">🏆 Comp. ${p.competition}</span>`;
+    const mrgTag=`<span class="pp-tag tag-margin">💰 ${(p.margin*100).toFixed(0)}% margen</span>`;
+    card.innerHTML=`
+      <span class="check-mark">✓</span>
+      <div class="pp-name">${p.name}</div>
+      <div class="pp-sub">${p.description}</div>
+      <div class="pp-price">Proveedor: ~$${p.supplierPrice} · Venta: $${p.amazonPrice}</div>
+      <div class="pp-tags">${demTag}${compTag}${mrgTag}</div>
+      <div style="font-size:10px;color:#94a3b8;margin-top:5px;font-style:italic">${p.whyNow||''}</div>`;
+    card.onclick=()=>toggleProductPick(i);
+    grid.appendChild(card);
+  });
+
+  body.appendChild(grid);
+
+  const confirmBtn=document.createElement('button');
+  confirmBtn.className='btn-confirm-picks'; confirmBtn.id='btn-confirm-picks';
+  confirmBtn.textContent='Crear mi plan de negocio →'; confirmBtn.disabled=true;
+  confirmBtn.onclick=()=>buildDiscoverPlan();
+  body.appendChild(confirmBtn);
+  scrollBot();
+}
+
+function toggleProductPick(i){
+  const idx=S.selectedProducts.indexOf(i);
+  if(idx>=0){ S.selectedProducts.splice(idx,1); document.getElementById('pc-'+i).classList.remove('sel'); }
+  else if(S.selectedProducts.length<3){ S.selectedProducts.push(i); document.getElementById('pc-'+i).classList.add('sel'); }
+  const btn=document.getElementById('btn-confirm-picks');
+  if(btn){ btn.disabled=S.selectedProducts.length===0; btn.textContent=S.selectedProducts.length>0?`Crear plan con ${S.selectedProducts.length} producto${S.selectedProducts.length>1?'s':''} →`:'Crear mi plan de negocio →'; }
+}
+
+async function buildDiscoverPlan(){
+  if(!S.selectedProducts.length) return;
+  document.getElementById('prod-grid')?.remove();
+  document.getElementById('btn-confirm-picks')?.remove();
+  const chosen=S.selectedProducts.map(i=>S.products[i]);
+  userMsg(`Seleccioné ${chosen.length} producto${chosen.length>1?'s':''}: ${chosen.map(p=>p.name).join(', ')}`);
+  lockInput(); clearQuick();
+  await botMsg(`¡Perfecto! Construyendo tu plan de negocio para <strong>${chosen.map(p=>p.name).join(' + ')}</strong>... 📊`);
+
+  // build combined plan
+  const cfg={
+    productName: chosen.map(p=>p.name).join(' / '),
+    supplierCost: chosen.reduce((s,p)=>s+p.supplierPrice,0)/chosen.length,
+    sellingPrice: chosen.reduce((s,p)=>s+p.amazonPrice,0)/chosen.length,
+    fbaFee: chosen.reduce((s,p)=>s+(p.fbaFee||5.58),0)/chosen.length,
+    amzFeePct: chosen.reduce((s,p)=>s+(p.amzFeePct||0.15),0)/chosen.length,
+    mktgPct:0.25, agencyFee:0, membership:3.33, taxRate:0.08,
+    growthRate:0.10, unitsM1:20,
+  };
+  const ue=calcUnitEconomics(cfg);
+  const months=buildMonths(cfg);
+
+  try{
+    const insight=await callAI([{role:'user',content:`Analiza en 2 oraciones (español, directo): Productos: ${cfg.productName}. Margen: ${(ue.margin*100).toFixed(1)}%. Ganancia 12m: $${months.reduce((s,m)=>s+m.netTax,0).toFixed(0)}. Da la recomendación más importante.`}]);
+    S.aiInsight=insight.trim();
+  } catch(e){ S.aiInsight=''; }
+
+  await botMsg(`✅ <strong>¡Plan listo!</strong> Aquí está tu análisis:`);
+  setTimeout(()=>showDashboard({cfg,months,ue,title:cfg.productName}),800);
+}
+
+/* ═══════════════════════════════════════════
+   FINANCIAL ENGINE
+═══════════════════════════════════════════ */
+function calcUnitEconomics(cfg){
+  const amzFee=cfg.sellingPrice*cfg.amzFeePct;
+  const mktg=cfg.sellingPrice*cfg.mktgPct;
+  const totalCost=cfg.supplierCost+cfg.fbaFee+amzFee+mktg;
+  const profit=cfg.sellingPrice-totalCost;
+  const margin=cfg.sellingPrice>0?profit/cfg.sellingPrice:0;
+  const roi=cfg.supplierCost>0?profit/cfg.supplierCost:0;
+  return {amzFee,mktg,totalCostPerUnit:totalCost,profit,margin,roi};
+}
+
+function buildMonths(cfg){
+  return Array.from({length:12},(_,i)=>{
+    const g=Math.pow(1+cfg.growthRate,i);
+    const units=cfg.unitsM1*g;
+    const rev=units*cfg.sellingPrice;
+    const mktg=rev*cfg.mktgPct;
+    const amzFee=rev*cfg.amzFeePct;
+    const fba=units*cfg.fbaFee;
+    const agency=cfg.agencyFee||0;
+    const memb=cfg.membership||0;
+    const costs=mktg+amzFee+fba+agency+memb;
+    const cogs=units*cfg.supplierCost;
+    const net=rev-costs-cogs;
+    const tax=Math.max(0,net*cfg.taxRate);
+    return {m:i+1,label:`Mes ${i+1}`,rev,units:Math.round(units),mktg,amzFee,fba,cogs,costs:costs+cogs,net,tax,netTax:net-tax};
+  });
+}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD RENDERER
+═══════════════════════════════════════════ */
+const C$=(n)=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0);
+const C=(n)=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0}).format(n||0);
+const N=(n)=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(n||0));
+const PCT=(n)=>`${((n||0)*100).toFixed(1)}%`;
+
+function showDashboard({cfg,months,ue,title}){
+  show('l-dash');
+  document.getElementById('dash-plan-name').textContent=title;
+
+  const T=months.reduce((a,m)=>({rev:a.rev+m.rev,units:a.units+m.units,mktg:a.mktg+m.mktg,amzFee:a.amzFee+m.amzFee,fba:a.fba+m.fba,cogs:a.cogs+m.cogs,costs:a.costs+m.costs,net:a.net+m.net,tax:a.tax+m.tax,netTax:a.netTax+m.netTax}),{rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0});
+  const ok=T.netTax>0;
+
+  const status=document.getElementById('dash-status');
+  status.className='status-pill '+(ok?'pill-ok':'pill-bad');
+  status.innerHTML=`<div class="dot ${ok?'dot-ok':'dot-bad'}"></div>${ok?'✅ Negocio Rentable':'⚠️ Revisar Números'}`;
+
+  // ─ insight
+  let insightHTML='';
+  if(S.aiInsight){
+    const cls=ok?'ins-ok':ue.margin>0?'ins-warn':'ins-bad';
+    insightHTML=`<div class="insight ${cls}">💡 <span>${S.aiInsight}</span></div>`;
+  }
+
+  // ─ KPIs
+  const kpis=[
+    {icon:'💰',cls:'ki-b',val:C(T.rev),lbl:'Ingresos 12 meses',hint:'Ventas brutas totales'},
+    {icon:'📦',cls:'ki-p',val:N(T.units),lbl:'Unidades vendidas',hint:'Total del período'},
+    {icon:'📈',cls:ok?'ki-g':'ki-r',val:C(T.net),lbl:'Ganancia neta',hint:'Antes de impuestos',neg:T.net<0},
+    {icon:'🏆',cls:ok?'ki-g':'ki-r',val:C(T.netTax),lbl:'Ganancia después imp.',hint:`Margen: ${PCT(T.rev?T.netTax/T.rev:0)}`,neg:T.netTax<0},
+  ];
+  const kpiHTML=`<div class="kpi-grid">${kpis.map(k=>`<div class="kpi"><div class="kpi-icon ${k.cls}">${k.icon}</div><div class="kpi-val ${k.neg?'neg':''}">${k.val}</div><div class="kpi-lbl">${k.lbl}</div><div class="kpi-hint">${k.hint}</div></div>`).join('')}</div>`;
+
+  // ─ Unit economics
+  const econHTML=`<div class="econ-grid">
+    <div class="econ-card">
+      <div class="econ-title">💵 Economía por Unidad</div>
+      <div class="econ-row"><span>Precio de venta</span><span>${C$(cfg.sellingPrice)}</span></div>
+      <div class="econ-row"><span>Costo proveedor</span><span class="econ-neg">− ${C$(cfg.supplierCost)}</span></div>
+      <div class="econ-row"><span>FBA (logística)</span><span class="econ-neg">− ${C$(cfg.fbaFee)}</span></div>
+      <div class="econ-row"><span>Comisión Amazon (${PCT(cfg.amzFeePct)})</span><span class="econ-neg">− ${C$(cfg.sellingPrice*cfg.amzFeePct)}</span></div>
+      <div class="econ-row"><span>Marketing (${PCT(cfg.mktgPct)})</span><span class="econ-neg">− ${C$(cfg.sellingPrice*cfg.mktgPct)}</span></div>
+      <div class="econ-row"><span><strong>Ganancia por unidad</strong></span><span class="${ue.profit>=0?'econ-pos':'econ-neg'}">${C$(ue.profit)}</span></div>
+    </div>
+    <div class="econ-card">
+      <div class="econ-title">📊 Indicadores Clave</div>
+      <div class="econ-row"><span>Margen neto</span><span class="${ue.margin>=0.15?'econ-pos':ue.margin>0?'':'econ-neg'}">${PCT(ue.margin)}</span></div>
+      <div class="econ-row"><span>ROI sobre costo</span><span class="${ue.roi>0?'econ-pos':'econ-neg'}">${PCT(ue.roi)}</span></div>
+      <div class="econ-row"><span>ROAS publicitario</span><span>${(1/cfg.mktgPct).toFixed(1)}x</span></div>
+      <div class="econ-row"><span>Inversión inicial</span><span>${C(cfg.supplierCost*(S.data.initialUnits||50))}</span></div>
+      <div class="econ-row"><span>Punto de equilibrio</span><span>${Math.ceil(cfg.membership/(ue.profit||.01))} uds/mes</span></div>
+      <div class="econ-row"><span><strong>¿Es rentable?</strong></span><span class="${ue.margin>0.15?'econ-pos':ue.margin>0?'':'econ-neg'}">${ue.margin>0.2?'✅ Sí, muy bien':ue.margin>0.1?'⚠️ Sí, pero ajustado':ue.margin>0?'⚠️ Apenas':'❌ No rentable'}</span></div>
+    </div>
   </div>`;
+
+  // ─ SVG Chart
+  const chartHTML=`<div class="chart-card"><div class="chart-title">📈 Proyección de Ingresos, Costos y Ganancia — 12 meses</div><div class="chart-area" id="chart-svg"></div></div>`;
+
+  // ─ Financial table
+  const rows=[
+    {key:'rev',   label:'INGRESOS POR VENTAS',          cls:'tr-rev', fmt:C$},
+    {key:'units', label:'UNIDADES VENDIDAS',             cls:'',       fmt:N},
+    {key:'cogs',  label:'COSTO DEL PRODUCTO (COGS)',     cls:'',       fmt:C$},
+    {key:'mktg',  label:'GASTOS DE MARKETING (25%)',     cls:'',       fmt:C$},
+    {key:'amzFee',label:'COMISIÓN AMAZON',               cls:'',       fmt:C$},
+    {key:'fba',   label:'LOGÍSTICA FBA',                 cls:'',       fmt:C$},
+    {key:'net',   label:'GANANCIAS NETAS',               cls:'tr-net', fmt:C$},
+    {key:'tax',   label:'IMPUESTOS (8%)',                cls:'',       fmt:C$},
+    {key:'netTax',label:'GANANCIAS DESPUÉS DE IMPUESTOS',cls:'tr-fin', fmt:C$},
+  ];
+  let tbl=`<div class="table-card"><div class="table-head">📋 Plan Financiero Detallado · 12 Meses</div><div class="table-scroll"><table class="fin-table"><thead><tr><th class="lft">Métrica</th>${months.map(m=>`<th>${m.label}</th>`).join('')}<th class="tc">TOTAL</th></tr></thead><tbody>`;
+  rows.forEach(row=>{
+    tbl+=`<tr class="${row.cls}"><td class="lft">${row.label}</td>`;
+    months.forEach(m=>{ tbl+=`<td>${row.fmt(m[row.key])}</td>`; });
+    const total=months.reduce((s,m)=>s+m[row.key],0);
+    tbl+=`<td class="tc">${row.fmt(total)}</td></tr>`;
+  });
+  tbl+=`</tbody></table></div></div>`;
+
+  document.getElementById('dash-inner').innerHTML=insightHTML+kpiHTML+econHTML+chartHTML+tbl;
+
+  // Render SVG chart after DOM
+  setTimeout(()=>renderChart(months), 50);
 }
 
-function toggleSug(i){
-  const idx=selectedSugs.indexOf(i);
-  if(idx>=0){ selectedSugs.splice(idx,1); document.getElementById('sug-'+i).classList.remove('selected'); document.getElementById('sug-chk-'+i).style.display='none'; }
-  else if(selectedSugs.length<5){ selectedSugs.push(i); document.getElementById('sug-'+i).classList.add('selected'); document.getElementById('sug-chk-'+i).style.display='block'; }
-  document.getElementById('btn-build').textContent=`✦ Crear Plan de Negocio con ${selectedSugs.length} producto${selectedSugs.length!==1?'s':''}`;
-  document.getElementById('btn-build').disabled=!selectedSugs.length;
+function renderChart(months){
+  const wrap=document.getElementById('chart-svg'); if(!wrap) return;
+  const W=800,H=180,PL=55,PR=15,PT=10,PB=28;
+  const pw=W-PL-PR, ph=H-PT-PB;
+  const maxV=Math.max(...months.map(m=>Math.max(m.rev,m.costs)))*1.1||1;
+  const sx=i=>PL+i*(pw/(months.length-1));
+  const sy=v=>PT+ph-(v/maxV)*ph;
+  const poly=(vals,col,dash=false)=>{
+    const pts=vals.map((v,i)=>`${sx(i)},${sy(v)}`).join(' ');
+    return `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" ${dash?'stroke-dasharray="6 3"':''}/>`;
+  };
+  const area=(vals,col)=>{
+    const pts=vals.map((v,i)=>`${sx(i)},${sy(v)}`).join(' ');
+    return `<polygon points="${sx(0)},${sy(0)} ${pts} ${sx(months.length-1)},${sy(0)}" fill="${col}" opacity="0.07"/>`;
+  };
+  const revV=months.map(m=>m.rev), costV=months.map(m=>m.costs), netV=months.map(m=>m.netTax);
+  let grid='',xl='';
+  for(let i=0;i<=3;i++){
+    const v=maxV*i/3, y=sy(v);
+    grid+=`<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="#f1f5f9" stroke-width="1"/>`;
+    grid+=`<text x="${PL-6}" y="${y+4}" text-anchor="end" font-size="10" fill="#94a3b8">$${(v/1000).toFixed(0)}k</text>`;
+  }
+  months.forEach((m,i)=>{ if(i%2===0||i===11) xl+=`<text x="${sx(i)}" y="${H-4}" text-anchor="middle" font-size="9.5" fill="#94a3b8">${m.label}</text>`; });
+  const svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%" xmlns="http://www.w3.org/2000/svg">
+    ${grid}${xl}
+    ${area(revV,'#3b82f6')}${area(netV,'#10b981')}
+    ${poly(revV,'#3b82f6')}${poly(costV,'#f97316',true)}${poly(netV,'#10b981')}
+    <rect x="20" y="6" width="8" height="8" rx="2" fill="#3b82f6"/>
+    <text x="32" y="14" font-size="10" fill="#64748b">Ingresos</text>
+    <rect x="100" y="6" width="8" height="8" rx="2" fill="#f97316" opacity=".7"/>
+    <text x="112" y="14" font-size="10" fill="#64748b">Costos</text>
+    <rect x="165" y="6" width="8" height="8" rx="2" fill="#10b981"/>
+    <text x="177" y="14" font-size="10" fill="#64748b">Ganancia Neta</text>
+  </svg>`;
+  wrap.innerHTML=svg;
 }
-
-function buildAIPlan(){
-  if(!selectedSugs.length) return;
-  const chosen=selectedSugs.map(i=>chatSuggestions[i]);
-  const products=chosen.map((p,i)=>({id:Date.now()+i, name:p.name, cost:p.supplierPrice,
-    unitsM1:p.unitsM1||10, fbaFee:p.fbaFee||5.58, price:p.amazonPrice, active:true}));
-  const s={...mkSim('Plan IA - '+chosen.map(p=>p.name.split(' ')[0]).slice(0,2).join(' & ')), products};
-  state.sims.push(s); state.cur=s;
-  persistSims(); persistCur();
-  document.getElementById('suggestions-area').innerHTML='';
-  addChatMsg('user',`He seleccionado ${chosen.length} producto${chosen.length!==1?'s':''}.`);
-  addChatMsg('ai',`🚀 <strong>¡Plan de negocio creado exitosamente!</strong><br><br>Configuré proyecciones a 12 meses para <strong>${chosen.length} producto${chosen.length!==1?'s':''}</strong>. Ve al <strong>Dashboard</strong> para ver los números y ajusta variables en <strong>Configuración</strong>.<br><br>¡Éxito en tu negocio Amazon! 🎯`);
-  setTimeout(()=>showPage('dashboard'), 1200);
-}
-
-/* ═══════════════════════════════════════
-   SVG ICONS
-═══════════════════════════════════════ */
-function trendIcon(){return`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`}
-function boxIcon(){return`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`}
-function chartIcon(){return`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`}
-function starIcon(){return`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`}
-
-/* ═══════════════════════════════════════
-   INIT
-═══════════════════════════════════════ */
-loadState();
-document.getElementById('sidebar-sim-name').textContent=state.cur.name;
-if(state.apiKey){
-  document.getElementById('apikey-label').textContent='● API Key activa';
-  document.getElementById('btn-apikey').classList.add('key-set');
-}
-renderDashboard();
 </script>
 </body>
 </html>
