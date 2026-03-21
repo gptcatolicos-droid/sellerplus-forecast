@@ -1290,6 +1290,15 @@ function buildMonths(cfg){
   });
 }
 
+
+/* ===========================================
+   FORMATTERS
+=========================================== */
+function C$(n){ return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0); }
+function C(n){ return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0}).format(n||0); }
+function N(n){ return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(n||0)); }
+function PCT(n){ return ((n||0)*100).toFixed(1)+'%'; }
+
 function showDashboard({cfg,months,ue,title,productPlans}){
   show('l-dash');
   document.getElementById('dash-plan-name').textContent=title;
