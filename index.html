@@ -1304,7 +1304,10 @@ function showDashboard({cfg,months,ue,title,productPlans}){
   document.getElementById('dash-plan-name').textContent=title;
   var _Ts=months.reduce(function(a,m){return{rev:a.rev+m.rev,netTax:a.netTax+m.netTax};},{rev:0,netTax:0});
   S.currentPlan={id:(S.currentPlan&&S.currentPlan.id)||Date.now().toString(36),cfg:cfg,months:months,ue:ue,title:title,
+    productPlans:productPlans||null,
     summary:'$'+Math.round(_Ts.rev/1000)+'k ingresos | $'+Math.round(_Ts.netTax/1000)+'k ganancia',savedAt:new Date().toISOString()};
+  // Store productPlans globally for per-product simulation
+  window._productPlans = productPlans ? JSON.parse(JSON.stringify(productPlans)) : null;
   showURLBtn(false);
   _simCfg=JSON.parse(JSON.stringify(cfg));
   var T=months.reduce(function(a,m){return{rev:a.rev+m.rev,units:a.units+m.units,mktg:a.mktg+m.mktg,
@@ -1474,7 +1477,7 @@ function showDashboard({cfg,months,ue,title,productPlans}){
     +'</div>'
     +'<div style="display:flex;gap:8px;border-top:1px solid #f5f5f5;padding:11px 16px;background:#fafafa;flex-wrap:wrap">'
     +'<input id="ai-sim-input" style="flex:1;min-width:180px;border:1.5px solid #e0e0e0;border-radius:10px;padding:8px 13px;font-size:13px;font-family:inherit;outline:none;background:#fff" '
-    +'placeholder="Ej: aumenta unidades mes 3 a 50, baja marketing a 15%..."/>'
+    +'placeholder="Ej: aumenta unidades del producto 2 a 40 mes 1 · sube precio del purificador $5 · baja marketing al 20%..."/>'
     +'<button onclick="runAISim()" style="padding:8px 18px;background:#f97316;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">Simular</button>'
     +'</div></div>';
 
@@ -1705,16 +1708,17 @@ async function runAISim() {
   var query = inp ? inp.value.trim() : '';
   if (!query) return;
   var btn = document.getElementById('btn-ai-sim');
-  if (btn) { btn.disabled = true; btn.textContent = 'Calculando...'; }
+  if (btn) { btn.disabled=true; btn.textContent='Calculando...'; }
   var thinking = document.getElementById('ai-thinking');
   var area = document.getElementById('ai-recs-area');
-  if (thinking) { thinking.style.display = 'flex'; thinking.innerHTML = '<div class="ai-thinking-dots"><span></span><span></span><span></span></div> Calculando escenario...'; }
-  if (area) area.style.display = 'none';
+  if (thinking) { thinking.style.display='flex'; thinking.innerHTML='<span style="display:inline-flex;gap:4px"><span style="width:5px;height:5px;background:#f97316;border-radius:50%;display:inline-block;animation:bounce 1.2s infinite"></span><span style="width:5px;height:5px;background:#f97316;border-radius:50%;display:inline-block;animation:bounce 1.2s .15s infinite"></span><span style="width:5px;height:5px;background:#f97316;border-radius:50%;display:inline-block;animation:bounce 1.2s .3s infinite"></span></span> Calculando ajuste...'; }
+  if (area) area.style.display='none';
 
   var cfg = _simCfg || (S.currentPlan && S.currentPlan.cfg);
+  var currentProductPlans = window._productPlans || (S.currentPlan && S.currentPlan.productPlans);
   if (!cfg) { if(btn){btn.disabled=false;btn.textContent='Simular';} return; }
 
-  // Check if user wants to remove a product from portfolio
+  // ── REMOVE PRODUCT ──
   var qLow = query.toLowerCase();
   var removeWords = ['quita','elimina','retira','borra','saca','sin '];
   if(S.confirmedProducts && S.confirmedProducts.length > 1 && removeWords.some(function(w){return qLow.includes(w);})){
@@ -1722,71 +1726,133 @@ async function runAISim() {
     S.confirmedProducts.forEach(function(p,i){
       var nameLow = p.name.toLowerCase();
       if(qLow.includes(nameLow.substring(0,8))) matchIdx=i;
-      if(qLow.includes('producto '+(i+1)) || qLow.includes('el '+(i+1))) matchIdx=i;
+      if(qLow.includes('producto '+(i+1)) || qLow.includes('el '+(i+1)) || qLow.includes('#'+(i+1))) matchIdx=i;
     });
     if(matchIdx>=0){
-      var removedName = S.confirmedProducts[matchIdx].name;
+      var removedName=S.confirmedProducts[matchIdx].name;
       S.confirmedProducts.splice(matchIdx,1);
+      if(currentProductPlans) currentProductPlans.splice(matchIdx,1);
       if(inp) inp.value='';
       if(btn){btn.disabled=false;btn.textContent='Simular';}
-      await botMsg('Listo! Eliminé <strong>'+removedName+'</strong> del portafolio. Recalculando con <strong>'+S.confirmedProducts.length+' producto'+(S.confirmedProducts.length>1?'s':'')+'</strong>...');
-      setTimeout(function(){buildDiscoverPlan();},500);
+      await botMsg('Listo! Eliminé <strong>'+removedName+'</strong>. Recalculando...');
+      setTimeout(function(){
+        if(currentProductPlans && currentProductPlans.length){
+          window._productPlans=currentProductPlans;
+          rebuildWithOverrides(currentProductPlans);
+        } else { buildDiscoverPlan(); }
+      },400);
       return;
     }
   }
 
-  var prompt = 'Eres experto Amazon FBA. El usuario quiere simular un escenario.'
-    + '\nPlan actual: precio=$' + cfg.sellingPrice + ', costo=$' + cfg.supplierCost
-    + ', FBA=$' + cfg.fbaFee + ', marketing=' + (cfg.mktgPct*100).toFixed(0) + '%'
-    + ', uds mes1=' + cfg.unitsM1 + ', crecimiento=' + (cfg.growthRate*100).toFixed(0) + '%'
-    + '\nSolicitud: "' + query + '"'
-    + '\nResponde SOLO con JSON (sin markdown):'
-    + '\n{"explanation":"que cambio se aplica","newCfg":{"sellingPrice":' + cfg.sellingPrice
-    + ',"supplierCost":' + cfg.supplierCost + ',"fbaFee":' + cfg.fbaFee
-    + ',"amzFeePct":' + cfg.amzFeePct + ',"mktgPct":' + cfg.mktgPct
-    + ',"unitsM1":' + cfg.unitsM1 + ',"growthRate":' + cfg.growthRate
-    + ',"taxRate":' + cfg.taxRate + ',"agencyFee":' + (cfg.agencyFee||0)
-    + ',"membership":' + (cfg.membership||0) + ',"priceIncrementPerMonth":0}'
-    + ',"scenarioName":"nombre escenario"}';
+  // ── BUILD CONTEXT FOR AI ──
+  var productContext = '';
+  if(currentProductPlans && currentProductPlans.length > 1){
+    productContext = '\nPRODUCTOS EN EL PORTAFOLIO:'
+      + currentProductPlans.map(function(pp,i){
+          return '\n  Producto '+(i+1)+': '+pp.cfg.productName
+            +' | Precio: $'+pp.cfg.sellingPrice
+            +' | Costo: $'+pp.cfg.supplierCost
+            +' | Uds mes1: '+pp.cfg.unitsM1
+            +' | Crecimiento: '+(pp.cfg.growthRate*100).toFixed(0)+'%/mes';
+        }).join('');
+  }
+
+  var prompt = 'Eres experto Amazon FBA. El usuario quiere ajustar su plan.'
+    + '\nPlan actual: precio_promedio=$'+cfg.sellingPrice.toFixed(2)
+    + ', uds_mes1_total='+cfg.unitsM1
+    + ', crecimiento='+(cfg.growthRate*100).toFixed(0)+'%/mes'
+    + productContext
+    + '\n\nSOLICITUD: "'+query+'"'
+    + '\n\nResponde SOLO con JSON (sin markdown). Debes interpretar la solicitud y devolver LOS CAMBIOS necesarios.'
+    + '\nSi la solicitud es sobre TODOS los productos: modifica "globalCfgChanges"'
+    + '\nSi es sobre UN PRODUCTO específico: usa "productChanges" con el índice (0=primero)'
+    + '\nSi es sobre UN MES específico de un producto: usa "monthOverrides"'
+    + '\n\nJSON:'
+    + '\n{"explanation":"qué cambio se aplica y por qué",'
+    + '"globalCfgChanges":{"unitsM1":null,"growthRate":null,"mktgPct":null,"sellingPrice":null},'
+    + '"productChanges":[{"productIndex":0,"unitsM1":null,"growthRate":null,"mktgPct":null,"sellingPrice":null}],'
+    + '"monthOverrides":[{"productIndex":0,"monthIndex":2,"units":50}],'
+    + '"scenarioName":"nombre del escenario"}';
 
   try {
     var raw = await callAI([{role:'user',content:prompt}]);
-    var m = raw.match(/\{[\s\S]*\}/);
+    var m = raw.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
     if (!m) throw new Error('no JSON');
     var data = JSON.parse(m[0]);
-    var newCfg = Object.assign({}, cfg, data.newCfg);
-    newCfg.productName = cfg.productName;
-    var newMonths;
-    var inc = parseFloat(data.newCfg.priceIncrementPerMonth) || 0;
-    if (inc !== 0) {
-      newMonths = Array.from({length:12}, function(_,i){
-        var g = Math.pow(1+newCfg.growthRate, i);
-        var price = newCfg.sellingPrice + (inc*i);
-        var units = newCfg.unitsM1*g;
-        var rev = units*price;
-        var mktg = rev*newCfg.mktgPct, amzFee = rev*newCfg.amzFeePct;
-        var fba = units*newCfg.fbaFee;
-        var costs = mktg+amzFee+fba+(newCfg.agencyFee||0)+(newCfg.membership||0);
-        var cogs = units*newCfg.supplierCost;
-        var net = rev-costs-cogs, tax = Math.max(0,net*newCfg.taxRate);
-        return {m:i+1,label:'Mes '+(i+1),rev:rev,units:Math.round(units),mktg:mktg,amzFee:amzFee,fba:fba,cogs:cogs,costs:costs+cogs,net:net,tax:tax,netTax:net-tax};
+
+    // Apply changes
+    var hasPortfolio = currentProductPlans && currentProductPlans.length > 0;
+
+    if(hasPortfolio){
+      // Apply globalCfgChanges to ALL products
+      var gc = data.globalCfgChanges || {};
+      currentProductPlans.forEach(function(pp){
+        if(gc.unitsM1 != null) pp.cfg.unitsM1 = parseFloat(gc.unitsM1);
+        if(gc.growthRate != null) pp.cfg.growthRate = parseFloat(gc.growthRate);
+        if(gc.mktgPct != null) pp.cfg.mktgPct = parseFloat(gc.mktgPct);
+        if(gc.sellingPrice != null) pp.cfg.sellingPrice = parseFloat(gc.sellingPrice);
       });
+
+      // Apply productChanges to specific products
+      (data.productChanges || []).forEach(function(pc){
+        var pp = currentProductPlans[pc.productIndex];
+        if(!pp) return;
+        if(pc.unitsM1 != null) pp.cfg.unitsM1 = parseFloat(pc.unitsM1);
+        if(pc.growthRate != null) pp.cfg.growthRate = parseFloat(pc.growthRate);
+        if(pc.mktgPct != null) pp.cfg.mktgPct = parseFloat(pc.mktgPct);
+        if(pc.sellingPrice != null) pp.cfg.sellingPrice = parseFloat(pc.sellingPrice);
+      });
+
+      // Apply monthOverrides
+      (data.monthOverrides || []).forEach(function(mo){
+        var pp = currentProductPlans[mo.productIndex];
+        if(!pp) return;
+        if(!pp.unitOverrides) pp.unitOverrides = {};
+        pp.unitOverrides[mo.monthIndex] = parseInt(mo.units);
+      });
+
+      S.aiInsight = data.explanation || '';
+      if(inp) inp.value='';
+      await botMsg('Aplicado: <strong>'+data.explanation+'</strong> ✓');
+      setTimeout(function(){ rebuildWithOverrides(currentProductPlans); }, 300);
+
     } else {
-      newMonths = buildMonths(newCfg);
+      // Single product - apply globalCfgChanges
+      var newCfg = Object.assign({}, cfg);
+      var gc2 = data.globalCfgChanges || {};
+      if(gc2.unitsM1 != null) newCfg.unitsM1 = parseFloat(gc2.unitsM1);
+      if(gc2.growthRate != null) newCfg.growthRate = parseFloat(gc2.growthRate);
+      if(gc2.mktgPct != null) newCfg.mktgPct = parseFloat(gc2.mktgPct);
+      if(gc2.sellingPrice != null) newCfg.sellingPrice = parseFloat(gc2.sellingPrice);
+
+      // Month overrides for single product
+      var overrides = {};
+      (data.monthOverrides || []).forEach(function(mo){
+        overrides[mo.monthIndex] = parseInt(mo.units);
+      });
+
+      var newMonths = Object.keys(overrides).length > 0
+        ? buildMonthsWithOverrides(newCfg, overrides)
+        : buildMonths(newCfg);
+      var newUe = calcUnitEconomics(newCfg);
+      _simCfg = newCfg;
+      S.aiInsight = data.explanation || '';
+      if(inp) inp.value='';
+      await botMsg('Aplicado: <strong>'+data.explanation+'</strong> ✓');
+      setTimeout(function(){
+        showDashboard({cfg:newCfg,months:newMonths,ue:newUe,
+          title:(data.scenarioName||cfg.productName)+' (ajustado)'});
+      }, 300);
     }
-    var newUe = calcUnitEconomics(newCfg);
-    _simCfg = newCfg;
-    S.aiInsight = data.explanation || '';
-    if (inp) inp.value = '';
-    showDashboard({cfg:newCfg, months:newMonths, ue:newUe, title:(data.scenarioName||cfg.productName)+' (simulado)'});
-  } catch(e) {
-    if (thinking) thinking.textContent = 'Error al simular: '+e.message;
-    if (area) area.style.display = 'block';
+
+  } catch(err) {
+    if(thinking) thinking.innerHTML='<span style="color:#dc2626;font-size:12px">Error: '+err.message+'</span>';
+    if(area) area.style.display='block';
   }
-  if (btn) { btn.disabled=false; btn.textContent='Simular'; }
+  if(btn){ btn.disabled=false; btn.textContent='Simular'; }
 }
 
-/* SAVE / LOAD */
 function savePlanToStorage() {
   if (!S.currentPlan) { alert('No hay plan activo.'); return; }
   var plans = JSON.parse(localStorage.getItem('sp_plans')||'[]');
@@ -1896,6 +1962,80 @@ function suggestMoreProducts(){
   });
 }
 
+
+/* ===========================================
+   REBUILD WITH UNIT OVERRIDES
+   Supports: global change, per-product, per-month
+=========================================== */
+function rebuildWithOverrides(productPlans){
+  // Recalculate months for each product with their current cfg + overrides
+  var updated = productPlans.map(function(pp){
+    var months = pp.unitOverrides
+      ? buildMonthsWithOverrides(pp.cfg, pp.unitOverrides)
+      : buildMonths(pp.cfg);
+    var ue = calcUnitEconomics(pp.cfg);
+    return Object.assign({}, pp, {months: months, ue: ue});
+  });
+
+  // Consolidate
+  var consolidated = Array.from({length:12}, function(_,i){
+    return updated.reduce(function(acc, pp){
+      var m = pp.months[i];
+      return {m:i+1,label:'Mes '+(i+1),
+        rev:acc.rev+m.rev, units:acc.units+m.units,
+        mktg:acc.mktg+m.mktg, amzFee:acc.amzFee+m.amzFee,
+        fba:acc.fba+m.fba, cogs:acc.cogs+m.cogs,
+        costs:acc.costs+m.costs, net:acc.net+m.net,
+        tax:acc.tax+m.tax, netTax:acc.netTax+m.netTax, roas:0};
+    }, {m:i+1,label:'Mes '+(i+1),rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0,roas:0});
+  });
+  consolidated.forEach(function(m){ m.roas=m.mktg>0?m.rev/m.mktg:0; });
+
+  var totalUnitsM1 = updated.reduce(function(s,pp){return s+pp.cfg.unitsM1;},0);
+  var consolidatedCfg = Object.assign({}, (window._productPlans||updated)[0].cfg, {
+    productName: S.currentPlan ? S.currentPlan.title : 'Portafolio',
+    unitsM1: totalUnitsM1
+  });
+  var consolidatedUe = calcUnitEconomics(consolidatedCfg);
+
+  window._productPlans = updated;
+  S.currentPlan = Object.assign({}, S.currentPlan, {
+    productPlans: updated, months: consolidated, cfg: consolidatedCfg, ue: consolidatedUe
+  });
+
+  showDashboard({
+    cfg: consolidatedCfg,
+    months: consolidated,
+    ue: consolidatedUe,
+    title: consolidatedCfg.productName,
+    productPlans: updated
+  });
+}
+
+function buildMonthsWithOverrides(cfg, overrides){
+  // overrides: {0: 25, 2: 30, 5: 45} — month index → forced units
+  var base = buildMonths(cfg);
+  return base.map(function(m, i){
+    if(overrides && overrides[i] !== undefined){
+      var forcedUnits = overrides[i];
+      var rev = forcedUnits * cfg.sellingPrice * 0.95;
+      var mktgCurve = [0.45,0.44,0.40,0.38,0.35,0.33,0.31,0.29,0.28,0.27,0.26,0.25];
+      var mktgPct = mktgCurve[i];
+      var mktg = rev * mktgPct;
+      var amzFee = rev * (cfg.amzFeePct||0.15);
+      var fba = forcedUnits * (cfg.fbaFee||5.58);
+      var cogs = forcedUnits * cfg.supplierCost;
+      var memb = cfg.membership||39.99;
+      var net = rev - mktg - amzFee - fba - memb - cogs;
+      var tax = Math.max(0, net*(cfg.taxRate||0.08));
+      return {m:i+1,label:'Mes '+(i+1),rev:rev,units:forcedUnits,
+        mktg:mktg,mktgPct:mktgPct,amzFee:amzFee,fba:fba,cogs:cogs,
+        costs:mktg+amzFee+fba+memb+cogs,net:net,tax:tax,netTax:net-tax,
+        roas:mktg>0?rev/mktg:0};
+    }
+    return m;
+  });
+}
 function removePortfolioProduct(idx){
   if(S.confirmedProducts.length <= 1){
     alert('No puedes eliminar el único producto del portafolio.');
