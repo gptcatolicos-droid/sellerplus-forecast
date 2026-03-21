@@ -2086,8 +2086,35 @@ async function runAISim() {
   var currentProductPlans = window._productPlans || (S.currentPlan && S.currentPlan.productPlans);
   if (!cfg) { if(btn){btn.disabled=false;btn.textContent='Simular';} return; }
 
-  // ── REMOVE PRODUCT ──
+  // ── ADD MORE PRODUCTS ──
   var qLow = query.toLowerCase();
+  var addWords = ['añadir','agregar','añade','agrega','mas productos','más productos','nuevo producto','nuevos productos','buscar mas','buscar más','otro producto','otros productos'];
+  if(addWords.some(function(w){return qLow.includes(w);})){
+    if(inp) inp.value='';
+    if(btn){btn.disabled=false;btn.textContent='Simular';}
+    // Save current plan state before going to chat
+    var savedPlan = S.currentPlan ? JSON.parse(JSON.stringify(S.currentPlan)) : null;
+    var savedProductPlans = window._productPlans ? JSON.parse(JSON.stringify(window._productPlans)) : null;
+    var savedConfirmed = S.confirmedProducts ? S.confirmedProducts.slice() : [];
+    // Go to chat in discover mode
+    show('l-chat');
+    document.getElementById('chat-body').innerHTML='';
+    document.getElementById('quick-area').innerHTML='';
+    S.path='discover'; S.products=[]; S.currentBatchPicks=[]; S.chatLocked=false;
+    document.getElementById('topbar-mode').textContent='Buscador IA';
+    showURLBtn(true);
+    // Restore confirmed so new picks merge
+    S.confirmedProducts = savedConfirmed;
+    var n = savedConfirmed.length;
+    setTimeout(function(){
+      botMsg('Perfecto! Tienes <strong>'+(n||0)+' producto'+(n!==1?'s':'')+' en tu plan actual</strong>. Busquemos los que quieres añadir 🔍').then(function(){
+        setTimeout(function(){ showAISearchOptions(); }, 400);
+      });
+    }, 200);
+    return;
+  }
+
+  // ── REMOVE PRODUCT ──
   var removeWords = ['quita','elimina','retira','borra','saca','sin '];
   if(S.confirmedProducts && S.confirmedProducts.length > 1 && removeWords.some(function(w){return qLow.includes(w);})){
     var matchIdx = -1;
