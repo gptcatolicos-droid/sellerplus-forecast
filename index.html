@@ -1268,7 +1268,7 @@ async function analyzeURLs(){
     S.products.push.apply(S.products,prods);
     S.currentBatchPicks=[];
     if(hasAmazon){
-      await botMsg('Encontré <strong>'+prods.length+' producto'+(prods.length>1?'s':'')</strong> de tus URLs de Amazon con proveedor Alibaba sugerido 🎯<br><small style="color:#94a3b8">Los precios de proveedor son estimados — verifica en el link de Alibaba antes de comprar</small>');
+      await botMsg('Encontré <strong>'+prods.length+' producto'+(prods.length>1?'s':'')+'</strong> de tus URLs de Amazon con proveedor Alibaba sugerido 🎯<br><small style="color:#94a3b8">Los precios de proveedor son estimados — verifica en el link de Alibaba antes de comprar</small>');
     }
     await showProductCards(prods,batchOffset);
   } catch(e){
