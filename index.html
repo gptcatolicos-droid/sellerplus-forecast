@@ -925,7 +925,32 @@ const SIM_STEPS = [
       });
       unlockInput();
     },
-    collect:(v)=>{ const n=parseNum(v.replace(/[$,]/g,'')); if(!n||n<=0) return 'Ingresa un precio válido mayor a 0'; S.data.sellingPrice=n; }
+    collect:(v)=>{
+      const vLow=v.toLowerCase().trim();
+      const wantsSuggestion=['no se','no sé','tu dime','tú dime','dime tu','dímelo','sugiéreme','sugerir','recomienda','no sé cuánto','ns','?','ayuda'].some(function(x){return vLow.includes(x);});
+      if(wantsSuggestion){
+        lockInput();
+        const cost=S.data.supplierCost||5;
+        const suggested=Math.round(cost*4);
+        const min=Math.round(cost*3);
+        const max=Math.round(cost*6);
+        botMsg('Perfecto, te sugiero <strong>$'+suggested+'</strong> — es el punto ideal para tu costo de $'+cost+'. Con ese precio tendrías un margen competitivo.<br><small style="color:#94a3b8">Rango viable: $'+min+' (mínimo) a $'+max+' (premium)</small>').then(function(){
+          showQuickReplies(['$'+min,'$'+suggested,'$'+max,'Otro precio'],function(val){
+            clearQuick();
+            if(val==='Otro precio'){unlockInput();return;}
+            const n=parseNum(val.replace('$',''));
+            S.data.sellingPrice=n;
+            userMsg(val);
+            nextSimStep();
+          });
+          unlockInput();
+        });
+        return '__REDIRECT__';
+      }
+      const n=parseNum(v.replace(/[$,]/g,''));
+      if(!n||n<=0) return 'Ingresa un precio válido, por ejemplo: 25 o 30';
+      S.data.sellingPrice=n;
+    }
   },
   // step 4 - marketplace
   {
@@ -1071,8 +1096,64 @@ Da una recomendación clave de 1 oración.`}]);
     S.aiInsight = insight.trim();
   } catch(e){ S.aiInsight=''; }
 
-  await botMsg(`✅ <strong>¡Plan listo!</strong> Aquí está tu análisis completo 👇`);
+  await botMsg('✅ <strong>¡Plan listo!</strong> Aquí está tu análisis completo 👇');
   setTimeout(()=> showDashboard({ cfg, months, ue, title: d.productName }), 800);
+  // After short delay, ask if they want to add more products
+  setTimeout(function(){
+    var chatBody=document.getElementById('chat-body');
+    if(!chatBody) return;
+    // Only ask if we haven't already shown the dashboard
+    setTimeout(function(){
+      var offerMsg=document.createElement('div');
+      offerMsg.className='msg';
+      offerMsg.innerHTML='<div class="avatar bot">✦</div><div class="bubble bot">¿Quieres añadir <strong>otros productos</strong> al plan y comparar portafolio? 📦<br><small style="color:#94a3b8">Puedes simular con varios productos y ver cuál rinde más</small></div>';
+      chatBody.appendChild(offerMsg);
+      chatBody.scrollTop=chatBody.scrollHeight;
+      // Quick replies
+      var area=document.getElementById('quick-area');
+      if(area){
+        area.innerHTML='';
+        var wrap=document.createElement('div');
+        wrap.className='quick-replies';
+        var opts=[{t:'➕ Agregar otro producto',v:'add'},  {t:'🔍 La IA me sugiere productos',v:'suggest'}, {t:'No, solo este producto',v:'skip'}];
+        opts.forEach(function(opt){
+          var b=document.createElement('button');
+          b.className='qr'; b.textContent=opt.t;
+          b.onclick=function(){
+            area.innerHTML='';
+            userMsg(opt.t);
+            if(opt.v==='add'){
+              // Start a new product flow, keeping current plan
+              S.data={};
+              botMsg('¡Genial! ¿Cuál es el <strong>segundo producto</strong> que quieres agregar al portafolio?').then(function(){
+                // Override SIM_STEPS flow to collect just product + price
+                lockInput();
+                // Redirect to discover for new product
+                S.path='discover'; S.products=[]; S.currentBatchPicks=[];
+                if(!S.confirmedProducts) S.confirmedProducts=[];
+                document.getElementById('topbar-mode').textContent='Buscador IA';
+                showURLBtn(true);
+                showAISearchOptions();
+              });
+            } else if(opt.v==='suggest'){
+              S.path='discover'; S.products=[]; S.currentBatchPicks=[];
+              if(!S.confirmedProducts) S.confirmedProducts=[];
+              document.getElementById('topbar-mode').textContent='Buscador IA';
+              showURLBtn(true);
+              botMsg('¡Vamos! ¿En qué categoría buscamos productos complementarios?').then(function(){
+                showAISearchOptions();
+              });
+            } else {
+              botMsg('Perfecto. Recuerda que puedes usar el <strong>Asesor IA</strong> en el dashboard para ajustar cualquier parámetro 💡');
+            }
+          };
+          wrap.appendChild(b);
+        });
+        area.appendChild(wrap);
+        chatBody.scrollTop=chatBody.scrollHeight;
+      }
+    },1500);
+  },900);
 }
 
 /* ===========================================
@@ -1249,7 +1330,7 @@ async function showProductCards(prods, batchOffset){
 
   var grid = document.createElement('div');
   grid.id = 'prod-grid';
-  grid.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin:6px 0;';
+  grid.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin:6px 0;width:100%;max-width:680px;margin-left:auto;margin-right:auto;';
 
   prods.forEach(function(p, i){
     var globalIdx = batchOffset + i;
