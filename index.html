@@ -1847,9 +1847,17 @@ function showDashboard({cfg,months,ue,title,productPlans}){
   months.forEach(function(m,i){var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';tbl+='<td style="'+st+'">'+C$(m.rev)+'</td>';});
   tbl+='<td class="tc">'+C$(months.reduce(function(s,m){return s+m.rev;},0))+'</td></tr>';
 
-  // ── UNIDADES TOTAL ──
-  tbl+='<tr><td class="lft" style="font-weight:700;background:#fafafa">UNIDADES VENDIDAS (TOTAL)</td>';
-  months.forEach(function(m,i){var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';tbl+='<td style="font-weight:700;background:#fafafa;'+st+'">'+N(m.units)+'</td>';});
+  // ── UNIDADES TOTAL (editable) ──
+  tbl+='<tr><td class="lft" style="font-weight:700;background:#fafafa">UNIDADES VENDIDAS (TOTAL) <span style="font-size:9px;color:#94a3b8;font-weight:400">✏️ click para editar</span></td>';
+  months.forEach(function(m,i){
+    var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';
+    tbl+='<td style="font-weight:700;background:#fafafa;'+st+';cursor:pointer" '
+      +'contenteditable="true" '
+      +'data-month="'+i+'" data-field="units" '
+      +'onblur="cellBlur(this);handleCellEdit(this)" '
+      +'onfocus="cellFocus(this)" '
+      +'title="Clic para editar — presiona Enter para aplicar">'+N(m.units)+'</td>';
+  });
   tbl+='<td class="tc" style="font-weight:700;background:#fafafa">'+N(months.reduce(function(s,m){return s+m.units;},0))+'</td></tr>';
 
   // ── Per-product UNITS rows ──
@@ -1864,9 +1872,15 @@ function showDashboard({cfg,months,ue,title,productPlans}){
           +(pp.ue&&pp.ue.margin<0?'<button onclick="removePortfolioProduct('+idx+')" style="margin-left:6px;background:#fee2e2;border:none;color:#dc2626;cursor:pointer;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;font-family:inherit" title="No rentable — eliminar">✕ quitar</button>':'<button onclick="removePortfolioProduct('+idx+')" style="margin-left:6px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:10px;padding:0;font-family:inherit;opacity:.5" title="Eliminar">✕</button>')
           +'</span>'
         +'</td>';
+      var ppIdx=idx;
       pp.months.forEach(function(m,i){
         var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';
-        tbl+='<td style="font-size:11px;color:#666;'+st+'">'+N(m.units)+'</td>';
+        tbl+='<td style="font-size:11px;color:#555;'+st+';cursor:pointer" '
+          +'contenteditable="true" '
+          +'data-month="'+i+'" data-field="units" data-product="'+ppIdx+'" '
+          +'onblur="cellBlur(this);handleCellEdit(this)" '
+          +'onfocus="cellFocus(this)" '
+          +'>'+N(m.units)+'</td>';
       });
       tbl+='<td class="tc" style="font-size:11px;color:#666">'+N(pp.months.reduce(function(s,m){return s+m.units;},0))+'</td></tr>';
     });
@@ -2286,8 +2300,16 @@ async function runAISim() {
     if(hasPortfolio){
       // Apply globalCfgChanges to ALL products
       var gc = data.globalCfgChanges || {};
+      if(gc.unitsM1 != null){
+        // unitsM1 in AI response = TOTAL units. Distribute proportionally.
+        var totalRequested = parseFloat(gc.unitsM1);
+        var currentTotal = currentProductPlans.reduce(function(s,pp){return s+pp.cfg.unitsM1;},0)||currentProductPlans.length;
+        currentProductPlans.forEach(function(pp){
+          var share = pp.cfg.unitsM1 / currentTotal;
+          pp.cfg.unitsM1 = Math.max(1, Math.round(totalRequested * share));
+        });
+      }
       currentProductPlans.forEach(function(pp){
-        if(gc.unitsM1 != null) pp.cfg.unitsM1 = parseFloat(gc.unitsM1);
         if(gc.growthRate != null) pp.cfg.growthRate = parseFloat(gc.growthRate);
         if(gc.mktgPct != null) pp.cfg.mktgPct = parseFloat(gc.mktgPct);
         if(gc.sellingPrice != null) pp.cfg.sellingPrice = parseFloat(gc.sellingPrice);
@@ -2587,6 +2609,65 @@ function searchReplacement(){
     botMsg('Perfecto! Tienes <strong>'+existingProducts.length+' producto'+(existingProducts.length>1?'s':'')+' ya seleccionados</strong>. Busquemos el o los reemplazos que necesitas 🔍');
     setTimeout(function(){showAISearchOptions();},600);
   },200);
+}
+
+function cellFocus(c){c.style.outline="2px solid #f97316";c.style.background="#fff7ed";c.dataset.original=c.textContent;}
+function cellBlur(c){c.style.outline="";c.style.background="";}
+function handleCellEdit(cell){
+  cell.style.outline='';
+  cell.style.background='';
+  var rawVal = cell.textContent.replace(/[^0-9.]/g,'').trim();
+  var newVal = parseFloat(rawVal);
+  if(isNaN(newVal)||newVal<0){ cell.textContent=cell.dataset.original||cell.textContent; return; }
+
+  var monthIdx = parseInt(cell.dataset.month);
+  var productIdx = cell.dataset.product!=null ? parseInt(cell.dataset.product) : -1;
+  var field = cell.dataset.field; // 'units'
+
+  var plans = window._productPlans;
+
+  if(plans && plans.length > 1 && productIdx >= 0 && productIdx < plans.length){
+    // Edit specific product, specific month
+    if(!plans[productIdx].unitOverrides) plans[productIdx].unitOverrides={};
+    plans[productIdx].unitOverrides[monthIdx] = Math.round(newVal);
+    cell.textContent = Math.round(newVal).toLocaleString();
+    // Show feedback
+    cell.style.background='#f0fdf4';
+    setTimeout(function(){ cell.style.background=''; }, 1200);
+    // Rebuild
+    setTimeout(function(){ rebuildWithOverrides(plans); }, 300);
+
+  } else if(plans && plans.length > 0 && productIdx === -1){
+    // Edit total units row — distribute proportionally across products
+    var currentTotal = plans.reduce(function(s,pp){
+      var mo=pp.unitOverrides&&pp.unitOverrides[monthIdx]!=null?pp.unitOverrides[monthIdx]:pp.months[monthIdx].units;
+      return s+mo;
+    },0)||1;
+    plans.forEach(function(pp){
+      var curr=pp.unitOverrides&&pp.unitOverrides[monthIdx]!=null?pp.unitOverrides[monthIdx]:pp.months[monthIdx].units;
+      if(!pp.unitOverrides) pp.unitOverrides={};
+      pp.unitOverrides[monthIdx]=Math.max(1,Math.round(newVal*(curr/currentTotal)));
+    });
+    cell.textContent = Math.round(newVal).toLocaleString();
+    cell.style.background='#f0fdf4';
+    setTimeout(function(){ cell.style.background=''; }, 1200);
+    setTimeout(function(){ rebuildWithOverrides(plans); }, 300);
+
+  } else if(S.currentPlan && !plans){
+    // Single product: use monthOverrides on the cfg
+    var cfg = _simCfg || S.currentPlan.cfg;
+    if(!window._singleOverrides) window._singleOverrides={};
+    window._singleOverrides[monthIdx]=Math.round(newVal);
+    cell.textContent=Math.round(newVal).toLocaleString();
+    cell.style.background='#f0fdf4';
+    setTimeout(function(){ cell.style.background=''; }, 1200);
+    var newMonths=buildMonthsWithOverrides(cfg,window._singleOverrides);
+    var newUe=calcUnitEconomics(cfg);
+    S.aiInsight='Editado manualmente: mes '+(monthIdx+1)+' → '+Math.round(newVal)+' uds';
+    setTimeout(function(){
+      showDashboard({cfg:cfg,months:newMonths,ue:newUe,title:S.currentPlan.title||cfg.productName});
+    },300);
+  }
 }
 </script>
 <div id="saved-panel" style="position:fixed;right:0;top:0;bottom:0;width:320px;background:#fff;box-shadow:-4px 0 40px rgba(0,0,0,.12);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)">
