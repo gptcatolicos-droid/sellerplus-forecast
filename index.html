@@ -1199,8 +1199,8 @@ function showURLInputBox(){
   lockInput(); clearQuick();
   const box=document.createElement('div');
   box.className='url-box'; box.id='url-input-box';
-  box.style.cssText='margin:6px 42px;animation:fadeUp .3s ease';
-  box.innerHTML='<textarea id="url-textarea" style="width:100%;border:1.5px solid #e0e0e0;border-radius:12px;padding:14px;font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:110px;color:#1a1a1a;line-height:1.6;background:#fff" placeholder="Pega tus URLs (una por linea o separadas por comas):\n\nhttps://www.alibaba.com/product-detail/...\nhttps://www.aliexpress.com/item/..."></textarea>'
+  box.style.cssText='margin:8px auto;animation:fadeUp .3s ease;max-width:680px;width:100%;';
+  box.innerHTML='<textarea id="url-textarea" style="width:100%;border:1.5px solid #e0e0e0;border-radius:12px;padding:14px;font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:110px;color:#1a1a1a;line-height:1.6;background:#fff" placeholder="Pega tus URLs (una por linea):\n\nhttps://www.amazon.com/dp/...\nhttps://www.alibaba.com/product-detail/...\nhttps://www.aliexpress.com/item/..."></textarea>'
     +'<div style="font-size:11px;color:#999;margin-top:6px">Puedes pegar 1 a 10 URLs de Alibaba o AliExpress. La IA extrae el precio y calcula el precio optimo en Amazon.</div>'
     +'<div style="display:flex;gap:8px;margin-top:10px">'
     +'<button onclick="analyzeURLs()" style="flex:1;padding:12px;background:#f97316;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit">Analizar con IA</button>'
@@ -1221,31 +1221,58 @@ function cancelURLInput(){
 
 async function analyzeURLs(){
   const raw=document.getElementById('url-textarea')?document.getElementById('url-textarea').value:'';
-  const urls=[...new Set(raw.split(/[\n\r,; \t]+/).map(u=>u.trim()).filter(u=>u.startsWith('http')&&(u.includes('alibaba')||u.includes('aliexpress'))))].slice(0,5);
-  if(!urls.length){
+  const allUrls=raw.split(/[\n\r,; \t]+/).map(u=>u.trim()).filter(u=>u.startsWith('http'));
+  const supplierUrls=[...new Set(allUrls.filter(u=>u.includes('alibaba')||u.includes('aliexpress')))].slice(0,5);
+  const amazonUrls=[...new Set(allUrls.filter(u=>u.includes('amazon.')))].slice(0,5);
+  const totalUrls=supplierUrls.length+amazonUrls.length;
+  if(!totalUrls){
     const ta=document.getElementById('url-textarea');
-    if(ta){ta.style.borderColor='#f97316';ta.placeholder='Pega al menos una URL de Alibaba o AliExpress...';}
+    if(ta){ta.style.borderColor='#f97316';ta.placeholder='Pega URLs de Alibaba, AliExpress o Amazon...';}
     return;
   }
   document.getElementById('url-input-box')&&document.getElementById('url-input-box').remove();
-  userMsg('Pegué '+urls.length+' URL'+(urls.length>1?'s':'')+' de Alibaba/AliExpress');
+  var urlSummary=[];
+  if(amazonUrls.length) urlSummary.push(amazonUrls.length+' de Amazon');
+  if(supplierUrls.length) urlSummary.push(supplierUrls.length+' de Alibaba/AliExpress');
+  userMsg('Pegué '+urlSummary.join(' y '));
   lockInput();
-  await botMsg('Analizando las URLs... 🔍<br><small style="color:#94a3b8">⚠️ Nota: No puedo acceder directamente a Alibaba. Extraigo el producto del texto de la URL y estimo precios basado en mi conocimiento del mercado. Te recomiendo verificar el precio real en el link.</small>');
-  const sys='Eres experto Amazon FBA. Analiza el texto de estas URLs de Alibaba/AliExpress e infiere el producto. Responde SOLO con JSON válido.';
-  const prompt='URLs de proveedor (analiza el texto para inferir el producto):\n'+urls.map(function(u,i){return (i+1)+'. '+u;}).join('\n')
-    +'\nPara cada URL infiere: tipo de producto, precio estimado, categoría.'
-    +'\nJSON: {"products":[{"name":"nombre producto en español","supplierPrice":8.0,"priceMin":6.0,"priceMax":10.0,"moq":50,"amazonPrice":29.99,"fbaFee":4.59,"amzFeePct":0.15,"margin":0.25,"demand":"Media","competition":"Media","description":"producto inferido de la URL","whyNow":"oportunidad de mercado","imageKeyword":"english product keywords","alibabaTerm":"english search","aliexpressTerm":"english search","tradeAssurance":true}]}';
+
+  var hasAmazon=amazonUrls.length>0;
+  var msg=hasAmazon
+    ? 'Analizando URLs de Amazon 🔍 Para cada producto voy a <strong>buscar el proveedor en Alibaba</strong> y calcular si es rentable como FBA...'
+    : 'Analizando URLs de Alibaba/AliExpress... 🔍<br><small style="color:#94a3b8">Extraigo el producto del texto y estimo precios de mercado.</small>';
+  await botMsg(msg);
+
+  const sys='Eres experto Amazon FBA y sourcing en Alibaba. Responde SOLO con JSON válido, sin markdown.';
+  var urlLines=[];
+  amazonUrls.forEach(function(u,i){urlLines.push('Amazon URL '+(i+1)+': '+u);});
+  supplierUrls.forEach(function(u,i){urlLines.push('Proveedor URL '+(i+1)+': '+u);});
+
+  var amazonInstruction=hasAmazon
+    ? '\nPara URLs de Amazon: identifica el producto, busca en tu conocimiento un proveedor chino equivalente en Alibaba (Gold Supplier), estima precio de proveedor $3-15, calcula si es rentable para FBA.'
+    : '';
+
+  const prompt='Analiza estas URLs para Amazon FBA:\n'+urlLines.join('\n')
+    +amazonInstruction
+    +'\nPara cada URL devuelve UN producto con proveedor Alibaba estimado.'
+    +'\nJSON: {"products":[{"name":"nombre en español","supplierPrice":7.0,"priceMin":5.5,"priceMax":9.0,"moq":100,"amazonPrice":29.99,"fbaFee":4.59,"amzFeePct":0.15,"margin":0.25,"demand":"Alta","competition":"Media","description":"por qué es oportunidad","whyNow":"tendencia actual","alibabaTerm":"english supplier search","aliexpressTerm":"english term","tradeAssurance":true,"sourceType":"amazon|alibaba","originalNote":"nota sobre el producto original"}]}';
+
   try{
     var r=await callAI([{role:'user',content:prompt}],sys);
     var m=r.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
     if(!m) throw new Error('no JSON');
     var parsed=JSON.parse(m[0]);
     var prods=parsed.products||[];
+    if(!prods.length) throw new Error('No se encontraron productos');
     const batchOffset=S.products.length;
-    S.products.push.apply(S.products,prods); S.currentBatchPicks=[];
+    S.products.push.apply(S.products,prods);
+    S.currentBatchPicks=[];
+    if(hasAmazon){
+      await botMsg('Encontré <strong>'+prods.length+' producto'+(prods.length>1?'s':'')</strong> de tus URLs de Amazon con proveedor Alibaba sugerido 🎯<br><small style="color:#94a3b8">Los precios de proveedor son estimados — verifica en el link de Alibaba antes de comprar</small>');
+    }
     await showProductCards(prods,batchOffset);
   } catch(e){
-    await botMsg('No pude analizar las URLs 😅 ' +e.message+'<br>Intenta buscar por categoría o pega URLs más específicas.');
+    await botMsg('No pude analizar las URLs 😅 Intenta con URLs más específicas o busca por categoría.');
     unlockInput();
   }
 }
