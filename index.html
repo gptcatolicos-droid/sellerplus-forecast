@@ -1260,13 +1260,26 @@ function cancelURLInput(){
 
 async function analyzeURLs(){
   const raw=document.getElementById('url-textarea')?document.getElementById('url-textarea').value:'';
-  const allUrls=raw.split(/[\n\r,; \t]+/).map(u=>u.trim()).filter(u=>u.startsWith('http'));
-  const supplierUrls=[...new Set(allUrls.filter(u=>u.includes('alibaba')||u.includes('aliexpress')))].slice(0,5);
+  // Normalize: add https:// if missing, accept amazon/alibaba/aliexpress without protocol
+  const allUrls=raw.split(/[\n\r,; \t]+/).map(function(u){
+    u=u.trim();
+    if(!u) return '';
+    if(!u.startsWith('http')) u='https://'+u;
+    return u;
+  }).filter(function(u){ return u.length>8 && u.includes('.'); });
+  const supplierUrls=[...new Set(allUrls.filter(u=>u.includes('alibaba')||u.includes('aliexpress')||u.includes('dhgate')||u.includes('temu.')||u.includes('faire.')||u.includes('tundra.')))].slice(0,5);
   const amazonUrls=[...new Set(allUrls.filter(u=>u.includes('amazon.')))].slice(0,5);
   const totalUrls=supplierUrls.length+amazonUrls.length;
   if(!totalUrls){
     const ta=document.getElementById('url-textarea');
-    if(ta){ta.style.borderColor='#f97316';ta.placeholder='Pega URLs de Alibaba, AliExpress o Amazon...';}
+    if(ta){
+      ta.style.borderColor='#f97316';
+      ta.style.boxShadow='0 0 0 3px rgba(249,115,22,.15)';
+    }
+    // Show helpful message
+    var hint=document.querySelector('#url-input-box .url-hint');
+    if(!hint){hint=document.createElement('div');hint.className='url-hint';hint.style.cssText='color:#f97316;font-size:12px;font-weight:600;margin-top:6px;';document.getElementById('url-input-box').insertBefore(hint,document.querySelector('#url-input-box div:last-child'));}
+    hint.textContent='⚠️ No encontré URLs válidas. Pega links de Amazon, Alibaba o AliExpress.';
     return;
   }
   document.getElementById('url-input-box')&&document.getElementById('url-input-box').remove();
