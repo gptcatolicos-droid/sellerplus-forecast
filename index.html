@@ -2181,12 +2181,37 @@ function renderAIAdvisor(data, cfg) {
 function applyRec(idx) {
   var rec = window._aiRecs && window._aiRecs[idx];
   if (!rec || !rec.action || !rec.action.field) return;
-  var newCfg = JSON.parse(JSON.stringify(_simCfg));
-  newCfg[rec.action.field] = parseFloat(rec.action.newValue);
-  var newUe = calcUnitEconomics(newCfg);
-  var newMonths = buildMonths(newCfg);
+  var field = rec.action.field;
+  var val = parseFloat(rec.action.newValue);
   S.aiInsight = rec.text || '';
-  showDashboard({cfg:newCfg, months:newMonths, ue:newUe, title: newCfg.productName + ' (ajustado)'});
+
+  // If we have a portfolio, apply to all products and rebuild
+  var plans = window._productPlans;
+  if(plans && plans.length > 0){
+    plans.forEach(function(pp){
+      // Apply the field change to each product
+      if(field === 'sellingPrice') pp.cfg.sellingPrice = val;
+      else if(field === 'supplierCost') pp.cfg.supplierCost = val;
+      else if(field === 'mktgPct') pp.cfg.mktgPct = val;
+      else if(field === 'growthRate') pp.cfg.growthRate = val;
+      else if(field === 'unitsM1'){
+        // Distribute total proportionally
+        var total = plans.reduce(function(s,p){return s+p.cfg.unitsM1;},0)||plans.length;
+        pp.cfg.unitsM1 = Math.max(1, Math.round(val * (pp.cfg.unitsM1/total)));
+      } else {
+        pp.cfg[field] = val;
+      }
+    });
+    rebuildWithOverrides(plans);
+  } else {
+    // Single product
+    var newCfg = JSON.parse(JSON.stringify(_simCfg));
+    newCfg[field] = val;
+    var newUe = calcUnitEconomics(newCfg);
+    var newMonths = buildMonths(newCfg);
+    _simCfg = newCfg;
+    showDashboard({cfg:newCfg, months:newMonths, ue:newUe, title: newCfg.productName + ' (ajustado)'});
+  }
 }
 
 async function runAISim() {
