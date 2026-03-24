@@ -805,7 +805,7 @@ function lockInput(){ S.chatLocked=true; document.getElementById('chat-input').d
 function unlockInput(){ S.chatLocked=false; document.getElementById('chat-input').disabled=false; document.getElementById('btn-send').disabled=false; document.getElementById('chat-input').focus(); }
 
 async function callAI(messages, system){
-  const body = { model:'claude-sonnet-4-20250514', max_tokens:2000, messages };
+  const body = { model:'claude-sonnet-4-20250514', max_tokens:3000, messages };
   if(system) body.system = system;
   const r = await fetch('/api/ai',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
   const d = await r.json();
@@ -1360,9 +1360,8 @@ async function searchWinningProducts(category){
     }
   },800);
 
-  var sys='Eres experto Amazon FBA. Responde SOLO con JSON válido. Sin texto extra ni markdown.';
-  var prompt='5 productos FBA, categoría: "'+category+'". Proveedor: Alibaba o DHgate según el tipo. JSON:'
-    +'{"products":[{"name":"nombre","supplier":"Alibaba","supplierPrice":5.5,"priceMin":4.5,"priceMax":7.0,"moq":100,"amazonPrice":24.99,"fbaFee":4.59,"amzFeePct":0.15,"margin":0.22,"demand":"Alta","competition":"Media","description":"1 frase","whyNow":"tendencia","alibabaTerm":"english term","aliexpressTerm":"english term","tradeAssurance":true}]}';
+  var sys='Responde SOLO con JSON. Sin texto antes ni después.';
+  var prompt='Dame exactamente 5 productos para vender en Amazon FBA en la categoría: '+category+'. Para cada producto incluye: name (español), supplier (Alibaba/DHgate/AliExpress), supplierPrice (número), priceMin, priceMax, moq, amazonPrice, fbaFee (4.59), amzFeePct (0.15), margin (decimal), demand (Alta/Media/Baja), competition (Alta/Media/Baja), description (1 frase en español), whyNow (tendencia en 1 frase), alibabaTerm (en inglés), aliexpressTerm (en inglés), tradeAssurance (true/false). Responde SOLO con el JSON, empezando con { y terminando con }.';
 
   try{
     var raw=await callAI([{role:'user',content:prompt}],sys);
@@ -1382,7 +1381,8 @@ async function searchWinningProducts(category){
   } catch(err){
     clearInterval(progInt);
     document.getElementById('search-progress')&&document.getElementById('search-progress').remove();
-    await botMsg('Ups, tuve un problema buscando en '+category+' 😅 ¿Lo intentamos de nuevo?');
+    console.error('searchWinningProducts error:', err);
+    await botMsg('Error buscando en '+category+': <code style="background:#fee2e2;padding:2px 6px;border-radius:4px;font-size:11px">'+err.message+'</code><br>¿Lo intentamos de nuevo?');
     showQuickReplies(['🔄 Intentar de nuevo','📦 Otra categoría'],function(v){
       userMsg(v); clearQuick();
       if(v.includes('Intentar')) searchWinningProducts(category);
