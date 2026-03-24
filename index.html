@@ -1316,6 +1316,11 @@ async function analyzeURLs(){
     var parsed=JSON.parse(m[0]);
     var prods=parsed.products||[];
     if(!prods.length) throw new Error('No se encontraron productos');
+    // Attach original source URLs to each product
+    prods.forEach(function(p,i){
+      if(amazonUrls[i]) p.sourceUrl = amazonUrls[i];
+      else if(supplierUrls[i]) p.sourceUrl = supplierUrls[i];
+    });
     const batchOffset=S.products.length;
     S.products.push.apply(S.products,prods);
     S.currentBatchPicks=[];
@@ -1597,6 +1602,16 @@ async function buildDiscoverPlan(){
   await botMsg('Construyendo plan con <strong>'+chosen.length+' producto'+(chosen.length>1?'s':'')+'</strong>... 📊');
 
   // Build individual plans per product
+  // Ensure every product has its source URLs built from search terms
+  chosen.forEach(function(p){
+    if(!p.sourceUrl && p.alibabaTerm){
+      p.aliUrl = 'https://www.alibaba.com/trade/search?SearchText='+encodeURIComponent(p.alibabaTerm+' gold supplier')+'&IndexArea=product_en';
+    }
+    if(!p.aexUrl && p.aliexpressTerm){
+      p.aexUrl = 'https://www.aliexpress.com/wholesale?SearchText='+encodeURIComponent(p.aliexpressTerm)+'&SortType=best_match_sort';
+    }
+  });
+
   var productPlans = chosen.map(function(p, idx){
     var cfg = {
       productName: p.name,
@@ -1678,6 +1693,20 @@ function calcUnitEconomics(cfg){
           profit:profit, margin:margin, roi:roi, displayMktgPct:displayMktgPct};
 }
 
+
+function buildProductLinks(p){
+  if(!p) return '';
+  var aliUrl = p.sourceUrl || p.aliUrl || (p.alibabaTerm ? 'https://www.alibaba.com/trade/search?SearchText='+encodeURIComponent(p.alibabaTerm+' gold supplier')+'&IndexArea=product_en' : '');
+  var aexUrl = p.aexUrl || (p.aliexpressTerm ? 'https://www.aliexpress.com/wholesale?SearchText='+encodeURIComponent(p.aliexpressTerm)+'&SortType=best_match_sort' : '');
+  if(!aliUrl && !aexUrl) return '';
+  var html = '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0">';
+  html += '<div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:7px">Ver en proveedor</div>';
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  if(aliUrl) html += '<a href="'+aliUrl+'" target="_blank" rel="noopener" style="flex:1;min-width:120px;padding:8px 12px;background:#fff7ed;border:1.5px solid #ff6a00;border-radius:9px;font-size:12px;font-weight:700;color:#ff6a00;text-decoration:none;text-align:center;display:block">Alibaba ↗</a>';
+  if(aexUrl) html += '<a href="'+aexUrl+'" target="_blank" rel="noopener" style="flex:1;min-width:120px;padding:8px 12px;background:#fff1f0;border:1.5px solid #e62e04;border-radius:9px;font-size:12px;font-weight:700;color:#e62e04;text-decoration:none;text-align:center;display:block">AliExpress ↗</a>';
+  html += '</div></div>';
+  return html;
+}
 function buildMonths(cfg){
   /*
    MODELO FINANCIERO REALISTA AMAZON FBA
@@ -1869,6 +1898,7 @@ function showDashboard({cfg,months,ue,title,productPlans}){
           +'<span style="display:inline-flex;align-items:center;gap:5px">'
           +'<span style="width:14px;height:14px;border-radius:50%;background:'+col+';color:#fff;font-size:8px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</span>'
           +pp.cfg.productName
+          +(function(){var p=pp.product||{};var u=p.sourceUrl||(p.alibabaTerm?'https://www.alibaba.com/trade/search?SearchText='+encodeURIComponent(p.alibabaTerm)+'&IndexArea=product_en':'');return u?'<a href="'+u+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="margin-left:6px;font-size:9px;color:#94a3b8;text-decoration:none" onmouseover="this.style.color=\'#f97316\'" onmouseout="this.style.color=\'#94a3b8\'">🔗</a>':'';}())
           +(pp.ue&&pp.ue.margin<0?'<button onclick="removePortfolioProduct('+idx+')" style="margin-left:6px;background:#fee2e2;border:none;color:#dc2626;cursor:pointer;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;font-family:inherit" title="No rentable — eliminar">✕ quitar</button>':'<button onclick="removePortfolioProduct('+idx+')" style="margin-left:6px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:10px;padding:0;font-family:inherit;opacity:.5" title="Eliminar">✕</button>')
           +'</span>'
         +'</td>';
@@ -2043,6 +2073,7 @@ function showDashboard({cfg,months,ue,title,productPlans}){
           +'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:'+col+';opacity:.4;display:inline-block"></span>Ingresos</span>'
           +'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:'+(isRent?'#10b981':'#ef4444')+';display:inline-block"></span>Ganancia neta</span>'
         +'</div>'
+        +buildProductLinks(pp.product)
         +'</div>';
     });
 
