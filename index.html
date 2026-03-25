@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SellerPlus Forecast</title>
+<style>
+/* ═══════════════════════════════════════
+   V2.0 — SELLERPLUS DESIGN SYSTEM
+   Inspired by Apple Music: clean, airy,
+   confident. Light mode. High contrast.
+═══════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent:    #f97316;
+  --accent2:   #f59e0b;
+  --green:     #22c55e;
+  --red:       #ef4444;
+  --blue:      #3b82f6;
+  --bg:        #f5f5f7;
+  --surface:   #ffffff;
+  --surface2:  #fafafa;
+  --border:    rgba(0,0,0,.08);
+  --text:      #1d1d1f;
+  --text2:     #6e6e73;
+  --text3:     #aeaeb2;
+  --radius:    18px;
+  --radius-sm: 10px;
+  --shadow:    0 2px 16px rgba(0,0,0,.06);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,.12);
+}
+
+body { font-family: -apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+       background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+
+/* ── LAYERS ── */
+.layer { position:fixed; inset:0; display:none; }
+.layer.on { display:flex; }
+
+/* ── WELCOME ── */
+#l-welcome {
+  background: var(--bg);
+  align-items: center; justify-content: center;
+  flex-direction: column; padding: 24px;
+  animation: fadeIn .4s ease;
+}
+.logo-wrap { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:32px; }
+.welcome-box {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 36px 32px;
+  width: 100%; max-width: 420px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+.welcome-box h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.welcome-box p  { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 24px; }
+.field { margin-bottom: 16px; }
+.field label { display:block; font-size: 11px; font-weight: 700; color: var(--text2);
+               text-transform: uppercase; letter-spacing: .06em; margin-bottom: 7px; }
+.field input, .field select {
+  width: 100%; background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 13px 16px;
+  font-size: 15px; color: var(--text);
+  font-family: inherit; outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus, .field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+}
+.field input::placeholder { color: var(--text3); }
+
+/* ── PATH SELECTOR ── */
+#l-path {
+  background: var(--bg);
+  align-items: center; justify-content: center;
+  flex-direction: column; padding: 24px;
+  animation: fadeIn .4s ease;
+}
+.path-top { text-align:center; margin-bottom: 32px; }
+.path-top h2 { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.path-top p  { font-size: 15px; color: var(--text2); }
+.path-hi     { font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+.path-grid   { display:flex; flex-direction:column; gap: 14px; width:100%; max-width: 440px; }
+.path-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 22px 24px;
+  display: flex; align-items: center; gap: 18px;
+  border: 2px solid var(--border);
+  cursor: pointer; transition: all .2s;
+  text-align: left; width: 100%; font-family: inherit;
+  box-shadow: var(--shadow);
+}
+.path-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(249,115,22,.15);
+}
+.path-card-logo { width: 52px; height: 36px; object-fit: contain; flex-shrink: 0; filter: none; }
+.path-card h3   { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.path-card p    { font-size: 12px; color: var(--text2); }
+.path-card-arrow { margin-left:auto; font-size: 20px; color: var(--accent); flex-shrink: 0; }
+
+/* ── TOPBAR ── */
+.topbar {
+  position: fixed; top:0; left:0; right:0; height: 52px; z-index: 100;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 12px;
+}
+.topbar-logo { display:flex; align-items:center; }
+.topbar-mode {
+  font-size: 12px; font-weight: 700; color: var(--text2);
+  background: var(--bg); padding: 4px 12px;
+  border-radius: 99px; border: 1px solid var(--border);
+}
+.topbar-user {
+  font-size: 12px; font-weight: 600; color: var(--text2);
+  margin-left: auto;
+}
+
+/* ── CHAT SCREEN ── */
+#l-chat { flex-direction: column; padding-top: 52px; }
+.chat-body {
+  flex: 1; overflow-y: auto; padding: 20px 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.msg { display: flex; align-items: flex-end; gap: 8px; }
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.avatar.bot { background: linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; }
+.avatar.usr { background: var(--text); color:#fff; font-size:11px; font-weight:700; }
+.bubble {
+  max-width: min(480px, 75%); padding: 11px 16px;
+  border-radius: 18px; font-size: 14px; line-height: 1.55;
+}
+.bubble.bot { background: var(--surface); border: 1px solid var(--border); color: var(--text);
+              border-bottom-left-radius: 4px; box-shadow: var(--shadow); }
+.bubble.usr { background: var(--accent); color:#fff; border-bottom-right-radius: 4px; }
+.msg.user   { flex-direction: row-reverse; }
+
+/* Quick replies */
+#quick-area { padding: 4px 16px 8px; display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+.quick-replies { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; width:100%; }
+.qr {
+  padding: 8px 16px; border-radius: 99px;
+  border: 1.5px solid var(--accent); background: transparent;
+  color: var(--accent); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.qr:hover { background: var(--accent); color:#fff; }
+
+/* Chat input */
+.chat-input-row {
+  display: flex; gap: 10px; padding: 12px 16px;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+}
+#chat-input {
+  flex: 1; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 99px; padding: 11px 18px; font-size: 14px;
+  font-family: inherit; outline: none; color: var(--text);
+  transition: border-color .2s;
+}
+#chat-input:focus { border-color: var(--accent); }
+#chat-input::placeholder { color: var(--text3); }
+#btn-send {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--accent); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s; flex-shrink: 0;
+}
+#btn-send:hover { background: #ea580c; transform: scale(1.05); }
+#btn-send:disabled { opacity: .4; }
+
+/* Progress bar */
+.prog-bar-wrap { margin-top:10px; background: var(--bg); border-radius: 99px; height:5px; overflow:hidden; }
+.prog-bar { height:100%; background: linear-gradient(90deg,var(--accent),var(--accent2));
+            border-radius: 99px; width:0; transition: width .5s ease; }
+
+/* Product cards */
+.prod-cards { display:flex; flex-direction:column; gap: 10px; margin: 6px 0; }
+.prod-pick { background: var(--surface); border-radius:14px; border: 2px solid var(--border);
+             cursor: pointer; transition: all .18s; overflow: hidden;
+             box-shadow: var(--shadow); }
+.prod-pick.sel { border-color: var(--accent); background: #fff7ed; }
+.prod-pick:hover { box-shadow: 0 6px 24px rgba(249,115,22,.15); }
+.btn-confirm-picks {
+  width: 100%; padding: 14px; margin-top: 12px;
+  background: linear-gradient(135deg,var(--accent),var(--accent2));
+  border: none; border-radius: 14px; color: #fff;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: all .2s;
+  box-shadow: 0 4px 16px rgba(249,115,22,.3);
+}
+.btn-confirm-picks:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+.btn-confirm-picks:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(249,115,22,.4); }
+
+/* URL box */
+.url-box { background: var(--surface); border-radius: 14px; padding: 16px;
+           border: 1.5px solid var(--border); box-shadow: var(--shadow); }
+
+/* ── DASHBOARD ── */
+#l-dash { flex-direction: column; padding-top: 52px; }
+.dash-topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 52px;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 16px; gap: 10px; z-index: 100;
+}
+.dash-plan-name { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-body   { flex: 1; overflow-y: auto; }
+.dash-inner  { padding: 20px; display: flex; flex-direction: column; gap: 16px; max-width: 1400px; margin: 0 auto; }
+.dash-footer { background: var(--surface); border-top: 1px solid var(--border);
+               padding: 12px 20px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+
+/* Status pill */
+.status-pill { display:flex; align-items:center; gap:6px; padding: 5px 14px;
+               border-radius: 99px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.pill-ok  { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.pill-bad { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+.dot { width:7px; height:7px; border-radius:50%; }
+.dot-ok  { background: var(--green); }
+.dot-bad { background: var(--red); }
+
+/* Dash buttons */
+.btn-dash {
+  padding: 7px 16px; border: none; border-radius: 99px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: all .15s;
+  background: var(--bg); color: var(--text2);
+  white-space: nowrap;
+}
+.btn-dash:hover { background: var(--border); color: var(--text); }
+.btn-dash.btn-new { background: var(--accent); color: #fff; }
+.btn-dash.btn-new:hover { background: #ea580c; }
+
+/* KPI grid */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 12px; }
+.kpi {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px 18px; border: 1px solid var(--border);
+  box-shadow: var(--shadow); transition: transform .15s;
+}
+.kpi:hover { transform: translateY(-1px); }
+.kpi-icon { font-size: 10px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .08em; margin-bottom: 10px; }
+.ki-b { color: var(--blue); }
+.ki-p { color: #8b5cf6; }
+.ki-g { color: var(--green); }
+.ki-r { color: var(--red); }
+.kpi-val  { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -.5px; line-height: 1; }
+.kpi-val.neg { color: var(--red); }
+.kpi-lbl  { font-size: 11px; color: var(--text2); margin-top: 5px; font-weight: 500; }
+.kpi-hint { font-size: 10.5px; color: var(--text3); margin-top: 2px; }
+
+/* Econ + indicators */
+.econ-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:600px){ .econ-grid { grid-template-columns:1fr; } }
+.econ-card { background: var(--surface); border-radius: var(--radius);
+             padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.econ-title { font-size: 11px; font-weight: 800; color: var(--text2);
+              text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; }
+.econ-row { display:flex; justify-content:space-between; align-items:center;
+            padding: 8px 0; border-bottom: 1px solid var(--bg); font-size: 13px; }
+.econ-row:last-child { border-bottom: none; font-weight: 700; }
+.econ-neg { color: var(--red); font-weight: 600; }
+.econ-pos { color: var(--green); font-weight: 600; }
+
+/* Chart */
+.chart-card { background: var(--surface); border-radius: var(--radius);
+              padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.chart-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+.chart-area  { width: 100%; height: 180px; }
+
+/* Table */
+.table-card { background: var(--surface); border-radius: var(--radius);
+              border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow); }
+.table-head { padding: 16px 20px; font-size: 13px; font-weight: 700;
+              color: var(--text); border-bottom: 1px solid var(--border);
+              display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.table-scroll { overflow-x: auto; }
+.fin-table  { width:100%; border-collapse:collapse; font-size:12px; }
+.fin-table th { padding: 10px 14px; background: var(--bg); font-weight:700;
+                color: var(--text2); font-size: 11px; white-space: nowrap;
+                border-bottom: 1px solid var(--border); text-align:center; }
+.fin-table th.lft { text-align:left; }
+.fin-table td { padding: 9px 14px; border-bottom: 1px solid var(--bg);
+                text-align:center; color: var(--text); white-space:nowrap; }
+.fin-table td.lft { text-align:left; font-weight:500; }
+.fin-table td.tc  { text-align:center; font-weight:700; }
+.fin-table tr:hover td { background: rgba(249,115,22,.03); }
+.tr-rev td  { color: var(--blue); font-weight: 700; }
+.tr-net td  { color: var(--green); font-weight: 700; }
+.tr-fin td  { color: var(--green); font-weight: 800; background: rgba(34,197,94,.04); }
+
+/* ── AI ADVISOR PANEL (V2) ── */
+.ai-panel-v2 {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.ai-panel-header {
+  padding: 16px 20px;
+  background: linear-gradient(135deg,#fff7ed,#fff);
+  border-bottom: 1px solid #fde8cc;
+  display: flex; align-items: center; gap: 12px;
+}
+.ai-panel-icon {
+  width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(135deg,var(--accent),var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; box-shadow: 0 3px 10px rgba(249,115,22,.3);
+}
+.ai-panel-title { font-size: 15px; font-weight: 800; color: var(--text); }
+.ai-panel-sub   { font-size: 11.5px; color: var(--text2); margin-top: 2px; }
+.ai-live-badge  {
+  margin-left: auto; font-size: 9px; font-weight: 800;
+  padding: 4px 10px; border-radius: 99px;
+  background: var(--accent); color: #fff; letter-spacing: .06em;
+}
+/* AI input row */
+.ai-input-row {
+  display: flex; gap: 10px; padding: 14px 20px;
+  background: var(--bg); border-top: 1px solid var(--border);
+  align-items: center;
+}
+.ai-input-field {
+  flex: 1; background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 11px 16px;
+  font-size: 13.5px; font-family: inherit; outline: none; color: var(--text);
+  transition: border-color .2s, box-shadow .2s;
+}
+.ai-input-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+}
+.ai-input-field::placeholder { color: var(--text3); }
+.btn-simulate-ia {
+  padding: 11px 22px;
+  background: linear-gradient(135deg,var(--accent),var(--accent2));
+  border: none; border-radius: 12px; color: #fff;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  font-family: inherit; white-space: nowrap;
+  box-shadow: 0 3px 12px rgba(249,115,22,.3);
+  transition: all .2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-simulate-ia:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(249,115,22,.4); }
+.btn-simulate-ia:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* AI recs */
+.ai-rec {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 12px; border-radius:10px;
+  border:1px solid var(--border); background:var(--surface2);
+  font-size: 12.5px; color: var(--text); line-height: 1.5;
+}
+.ai-rec-icon { flex-shrink:0; width:28px; height:28px; border-radius:8px;
+               display:flex; align-items:center; justify-content:center; font-size:14px; }
+.ai-rec-apply {
+  margin-left:auto; flex-shrink:0; padding:4px 12px;
+  border:none; border-radius:7px; font-size:11px; font-weight:700;
+  cursor:pointer; background:var(--accent); color:#fff; font-family:inherit;
+  white-space:nowrap; transition: all .15s;
+}
+.ai-rec-apply:hover { background: #ea580c; }
+.ai-scenario-btn {
+  padding:5px 13px; border:1.5px solid var(--border);
+  border-radius:99px; font-size:12px; font-weight:600;
+  color:var(--text2); cursor:pointer; background:var(--surface);
+  font-family:inherit; transition:all .15s;
+}
+.ai-scenario-btn:hover { border-color:var(--accent); color:var(--accent); background:#fff7ed; }
+
+/* Per-product section */
+.prod-detail-card {
+  background: var(--surface); border-radius: 14px;
+  padding: 16px; border: 1.5px solid var(--border);
+  box-shadow: var(--shadow); transition: box-shadow .2s;
+}
+.prod-detail-card:hover { box-shadow: var(--shadow-lg); }
+
+/* Insight banner */
+.insight { padding: 14px 18px; border-radius: 14px; font-size: 13px; line-height: 1.6; }
+.ins-ok   { background:#f0fdf4; border:1px solid #bbf7d0; color:#15803d; }
+.ins-warn { background:#fefce8; border:1px solid #fde68a; color:#92400e; }
+.ins-bad  { background:#fef2f2; border:1px solid #fecaca; color:#dc2626; }
+
+/* Saved plans panel */
+#saved-panel {
+  position:fixed; right:0; top:0; bottom:0; width:320px;
+  background: var(--surface); box-shadow: -4px 0 40px rgba(0,0,0,.12);
+  z-index:200; display:flex; flex-direction:column;
+  transform:translateX(100%); transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+#saved-panel.open { transform:translateX(0); }
+.saved-item {
+  background: var(--bg); border-radius:12px; padding:13px 15px;
+  margin-bottom:8px; cursor:pointer; border:2px solid transparent; transition:all .15s;
+}
+.saved-item:hover { border-color:var(--accent); background:#fff7ed; }
+
+/* Floating URL button */
+#btn-url-float {
+  position:fixed; bottom:20px; right:20px;
+  background:var(--accent); border:none; border-radius:50%;
+  width:48px; height:48px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 4px 20px rgba(249,115,22,.4); z-index:50; transition:all .2s;
+}
+#btn-url-float:hover { transform:scale(1.1); box-shadow:0 8px 28px rgba(249,115,22,.5); }
+
+/* Highlight */
+.highlight { color:var(--accent); font-weight:700; }
+
+/* Animations */
+@keyframes fadeIn  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+@keyframes bounce  { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+@keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius:99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.25); }
+
+/* ── CHAT TOPBAR ── */
+.chat-topbar {
+  position: fixed; top:0; left:0; right:0; height: 60px;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 12px; z-index: 100;
+}
+.chat-topbar-left { display:flex; align-items:center; gap:10px; }
+.btn-restart {
+  padding: 6px 14px; border: 1.5px solid var(--border);
+  border-radius: 99px; background: transparent;
+  font-size: 12px; font-weight: 600; color: var(--text2);
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.btn-restart:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── CHAT BODY — centered like ChatGPT ── */
+.chat-body {
+  flex: 1; overflow-y: auto;
+  padding: 20px 16px 8px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.chat-body > * { max-width: 680px; width: 100%; margin-left: auto; margin-right: auto; }
+.chat-body .msg { max-width: 680px; }
+#prod-grid { max-width: 680px; margin-left: auto; margin-right: auto; }
+.btn-confirm-picks { max-width: 680px; margin-left: auto; margin-right: auto; display: block; }
+.url-box { max-width: 680px; margin-left: auto; margin-right: auto; }
+
+/* ── CHAT FOOTER ── */
+.chat-footer {
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+}
+.chat-input-row {
+  display: flex; gap: 10px; align-items: center;
+  max-width: 680px; margin: 0 auto;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 99px; padding: 6px 8px 6px 18px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.chat-input-row:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(249,115,22,.1);
+}
+#chat-input {
+  flex: 1; background: transparent; border: none;
+  font-size: 14px; font-family: inherit; outline: none;
+  color: var(--text); padding: 6px 0;
+}
+#chat-input::placeholder { color: var(--text3); }
+#quick-area { padding: 4px 16px 6px; max-width: 712px; margin: 0 auto; }
+.quick-replies { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+.qr {
+  padding: 8px 16px; border-radius: 99px;
+  border: 1.5px solid var(--accent); background: transparent;
+  color: var(--accent); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.qr:hover { background: var(--accent); color:#fff; }
+
+/* ── SEND BUTTON ── */
+.btn-send, #btn-send {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s; flex-shrink: 0;
+}
+.btn-send:hover, #btn-send:hover { background: #ea580c; transform: scale(1.05); }
+.btn-send:disabled, #btn-send:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* ── TYPING BUBBLE ── */
+.typing-bubble {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 12px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 18px;
+  border-bottom-left-radius: 4px;
+}
+.typing-bubble span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text3); animation: bounce 1.2s infinite;
+}
+.typing-bubble span:nth-child(2) { animation-delay: .15s; }
+.typing-bubble span:nth-child(3) { animation-delay: .3s; }
+
+/* ── DASH TOPBAR ── */
+.dash-topbar {
+  position: fixed; top:0; left:0; right:0; height: 60px;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 10px; z-index: 100;
+}
+.dash-topbar-left { display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
+.dash-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+/* ── PATH CARDS — fix layout ── */
+.path-grid { display:flex; flex-direction:column; gap:14px; width:100%; max-width:480px; }
+.path-card {
+  background: var(--surface);
+  border-radius: 20px; padding: 20px 22px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  border: 2px solid var(--border); cursor: pointer;
+  transition: all .2s; text-align: left; width: 100%;
+  font-family: inherit; box-shadow: var(--shadow);
+}
+.path-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(249,115,22,.15);
+}
+.path-card h3 { font-size: 17px; font-weight: 800; color: var(--text); margin:0; }
+.path-card p  { font-size: 13px; color: var(--text2); line-height: 1.5; margin:0; }
+.path-tag {
+  font-size: 11px; font-weight: 700; padding: 3px 10px;
+  border-radius: 99px; background: #fff7ed; color: var(--accent);
+  border: 1px solid #fed7aa;
+}
+
+/* ── SAVED PANEL ── */
+#saved-panel.open { transform: translateX(0) !important; }
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     LAYER 1: WELCOME
+══════════════════════════════ -->
+<div class="layer on" id="l-welcome">
+  <div class="logo-wrap"><img src="/logo.png" alt="SellerPlus" style="height:110px;width:auto;object-fit:contain"/>
+    <div style="font-size:13px;color:#888;margin-top:8px;text-align:center">Tu éxito es nuestra meta</div>
+  </div>
+  <div class="welcome-box">
+    <h2>¡Bienvenido! 👋</h2>
+    <p>Tu planificador de negocios Amazon. <strong style="color:#f97316">Gratis. Sin complicaciones.</strong></p>
+    <div class="field">
+      <label>¿Cómo te llamamos?</label>
+      <input type="text" id="inp-name" placeholder="Ej: Carlos, Mariana..." maxlength="30" autocomplete="off"
+        onkeydown="if(event.key==='Enter') document.getElementById('btn-simulate').focus()"/>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px">
+      <button type="button" id="btn-simulate" class="path-card" onclick="quickStart('simulate')">
+        <img src="/amazon-logo.png" alt="Amazon" style="height:28px;width:auto;object-fit:contain"/>
+        <h3>Simular mi inversión</h3>
+        <p>Ya tengo un producto en mente. Calcula rentabilidad.</p>
+        <span class="path-tag">Calculadora paso a paso →</span>
+      </button>
+      <button type="button" class="path-card" onclick="quickStart('discover')">
+        <img src="/alibaba-logo.png" alt="Alibaba" style="height:26px;width:auto;object-fit:contain"/>
+        <h3>Buscar productos ganadores</h3>
+        <p>La IA busca por mí en Alibaba: bajo costo, alto margen.</p>
+        <span class="path-tag">IA busca por ti →</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LAYER 2: PATH SELECTOR
+══════════════════════════════ -->
+<div class="layer" id="l-path">
+  <div class="path-top">
+    <div class="path-hi" id="path-hi">¡Hola!</div>
+    <h2>Mi Plan de Negocio en Amazon</h2>
+    <p>Elige tu punto de partida. Te guiaremos paso a paso.</p>
+  </div>
+  <div class="path-grid">
+    <div class="path-card" tabindex="0" onclick="startPath('simulate')" onkeydown="if(event.key==='Enter')startPath('simulate')">
+      <img src="/amazon-logo.png" alt="Amazon" style="height:32px;width:auto;object-fit:contain"/>
+      <h3>Simular mi inversión</h3>
+      <p>Ya tengo un producto en mente. Calcula si es rentable y cuánto puedo ganar.</p>
+      <span class="path-tag">Calculadora paso a paso →</span>
+    </div>
+    <div class="path-card" tabindex="0" onclick="startPath('discover')" onkeydown="if(event.key==='Enter')startPath('discover')">
+      <img src="/alibaba-logo.png" alt="Alibaba" style="height:28px;width:auto;object-fit:contain"/>
+      <h3>Buscar productos ganadores</h3>
+      <p>No sé qué vender. La IA busca productos con bajo costo, alta demanda y buen margen.</p>
+      <span class="path-tag">IA busca por ti →</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LAYER 3: CHAT / WIZARD
+══════════════════════════════ -->
+<div class="layer" id="l-chat" style="flex-direction:column;padding-top:60px">
+  <div class="chat-topbar">
+    <div class="chat-topbar-left">
+      <img src="/logo.png" alt="SellerPlus" style="height:38px;width:auto"/>
+      <span class="topbar-mode" id="topbar-mode">Simulador</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button class="btn-restart" onclick="goHome()">← Inicio</button>
+    </div>
+  </div>
+  <div class="chat-body" id="chat-body"></div>
+  <div id="quick-area"></div>
+  <div class="chat-footer">
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="Escribe tu respuesta aquí..." autocomplete="off"/>
+      <button class="btn-send" id="btn-send" onclick="sendUserMsg()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LAYER 4: DASHBOARD
+══════════════════════════════ -->
+<div class="layer" id="l-dash" style="flex-direction:column;padding-top:60px">
+  <div class="dash-topbar">
+    <div class="dash-topbar-left">
+      <img src="/logo.png" alt="SellerPlus" style="height:38px;width:auto"/>
+      <span class="dash-plan-name" id="dash-plan-name"></span>
+    </div>
+    <div class="dash-actions">
+      <div class="status-pill" id="dash-status"></div>
+      <button class="btn-dash" id="btn-save-plan" onclick="savePlanToStorage()" style="background:rgba(99,102,241,.15);color:#818cf8">Guardar</button>
+      <button class="btn-dash" onclick="downloadExcel()" style="background:rgba(16,185,129,.15);color:#10b981">Descargar Excel</button>
+      <button class="btn-dash" onclick="openSavedPanel()" style="background:rgba(255,255,255,.08);color:#aaa">Mis Planes</button>
+      <button class="btn-dash btn-new" onclick="goHome()">+ Nuevo</button>
+    </div>
+  </div>
+  <div class="dash-body">
+    <div class="dash-inner" id="dash-inner"></div>
+  </div>
+</div>
+
+<script>
+/* ===========================================
+   STATE
+=========================================== */
+const S = {
+  user: { name:'', profile:'' },
+  currentPlan: null,
+  path: '',
+  step: 0,
+  data: {},
+  products: [],
+  selectedProducts: [],
+  confirmedProducts: [],
+  currentBatchPicks: [],
+  chatLocked: false,
+};
+
+/* ===========================================
+   LAYER SWITCHER
+=========================================== */
+function show(id){ document.querySelectorAll('.layer').forEach(l=>l.classList.remove('on')); document.getElementById(id).classList.add('on'); }
+
+/* ===========================================
+   WELCOME
+=========================================== */
+function quickStart(path){
+  var name=document.getElementById('inp-name').value.trim();
+  if(!name){ document.getElementById('inp-name').focus(); document.getElementById('inp-name').style.borderColor='#f97316'; return; }
+  S.user={name:name,profile:'emprendedor'};
+  document.getElementById('path-hi') && (document.getElementById('path-hi').textContent='Hola '+name+'!');
+  document.getElementById('topbar-user') && (document.getElementById('topbar-user').textContent=name);
+  S.path=path; S.step=0; S.data={}; S.products=[]; S.confirmedProducts=[]; S.currentBatchPicks=[]; S.chatLocked=false;
+  document.getElementById('chat-body').innerHTML='';
+  document.getElementById('quick-area').innerHTML='';
+  document.getElementById('topbar-mode').textContent=path==='simulate'?'Simulador':'Buscador IA';
+  showURLBtn(path==='discover');
+  show('l-chat');
+  setTimeout(function(){path==='simulate'?runSimulateStep(0):runDiscoverStep(0);},300);
+}
+
+function startApp(){
+  // legacy - now using quickStart
+  var name=document.getElementById('inp-name').value.trim();
+  if(!name){ document.getElementById('inp-name').focus(); return; }
+  S.user={name:name,profile:'emprendedor'};
+  document.getElementById('path-hi') && (document.getElementById('path-hi').textContent='Hola '+name+'!');
+  document.getElementById('topbar-user') && (document.getElementById('topbar-user').textContent=name);
+  show('l-path');
+}
+
+// keydown handled inline
+
+/* ===========================================
+   PATH SELECT
+=========================================== */
+function startPath(path){
+  S.path = path;
+  S.step = 0;
+  S.data = {};
+  S.products = [];
+  S.confirmedProducts = [];
+  S.currentBatchPicks = [];
+  S.products = [];
+  S.confirmedProducts = [];
+  S.currentBatchPicks = [];
+  S.chatLocked = false;
+  document.getElementById('chat-body').innerHTML = '';
+  document.getElementById('quick-area').innerHTML = '';
+  document.getElementById('topbar-mode').textContent = path==='simulate' ? '📊 Simulador' : '🔍 Buscador IA';
+  showURLBtn(path==='discover');
+  show('l-chat');
+  setTimeout(()=>{ path==='simulate' ? runSimulateStep(0) : runDiscoverStep(0); }, 300);
+}
+
+function goHome(){ show('l-path'); }
+
+/* ===========================================
+   CHAT HELPERS
+=========================================== */
+function botMsg(html, delay=0){
+  return new Promise(res=>{
+    const body = document.getElementById('chat-body');
+    // typing indicator
+    const t = document.createElement('div');
+    t.className='msg'; t.id='typing-row';
+    t.innerHTML=`<div class="avatar bot">✦</div><div class="typing-bubble"><span></span><span></span><span></span></div>`;
+    body.appendChild(t); scrollBot();
+    setTimeout(()=>{
+      t.remove();
+      const d=document.createElement('div'); d.className='msg';
+      d.innerHTML=`<div class="avatar bot">✦</div><div class="bubble bot">${html}</div>`;
+      body.appendChild(d); scrollBot(); res();
+    }, delay||650 + html.length*1.2);
+  });
+}
+
+function userMsg(text){
+  const body=document.getElementById('chat-body');
+  const initials=(S.user.name||'?').slice(0,2).toUpperCase();
+  const d=document.createElement('div'); d.className='msg user';
+  d.innerHTML=`<div class="bubble usr">${esc(text)}</div><div class="avatar usr">${initials}</div>`;
+  body.appendChild(d); scrollBot();
+}
+
+function scrollBot(){ const b=document.getElementById('chat-body'); b.scrollTop=b.scrollHeight; }
+function esc(t){ var d=document.createElement('div');d.appendChild(document.createTextNode(t));return d.innerHTML; }
+
+function showQuickReplies(options, onPick){
+  clearQuick();
+  const area=document.getElementById('quick-area');
+  const wrap=document.createElement('div'); wrap.className='quick-replies'; wrap.id='qr-wrap';
+  options.forEach(opt=>{
+    const b=document.createElement('button'); b.className='qr'; b.textContent=opt;
+    b.onclick=()=>{ clearQuick(); onPick(opt); };
+    wrap.appendChild(b);
+  });
+  area.appendChild(wrap); scrollBot();
+}
+
+function clearQuick(){ document.getElementById('quick-area').innerHTML=''; }
+
+function lockInput(){ S.chatLocked=true; document.getElementById('chat-input').disabled=true; document.getElementById('btn-send').disabled=true; }
+function unlockInput(){ S.chatLocked=false; document.getElementById('chat-input').disabled=false; document.getElementById('btn-send').disabled=false; document.getElementById('chat-input').focus(); }
+
+async function callAI(messages, system){
+  const body = { model:'claude-sonnet-4-20250514', max_tokens:3000, messages };
+  if(system) body.system = system;
+  const r = await fetch('/api/ai',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  const d = await r.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.content.map(c=>c.text||'').join('');
+}
+
+/* ===========================================
+   SIMULATE PATH - step-by-step wizard
+=========================================== */
+const SIM_STEPS = [
+  // step 0 - product name
+  {
+    ask: async ()=> {
+      const greetings = [
+        `Hola ${S.user.name}! 😊 Vamos a construir tu plan de negocio en Amazon juntos.<br><br><strong>¿Qué producto tienes en mente para vender?</strong><br><small style="color:#94a3b8">Ej: "audífonos bluetooth", "café molido 250g", "correa para perros". O si no tienes idea, dímelo y te sugiero opciones.</small>`,
+        `${S.user.name}, qué bueno que llegaste! 🚀 ¿Ya tienes un producto en mente o quieres que te sugiera ideas con buen potencial en Amazon?`,
+        `Hola ${S.user.name}! Cuéntame: <strong>¿qué producto quieres vender en Amazon?</strong><br><small style="color:#94a3b8">Si no tienes ninguno todavía, escribe "no sé" y te doy ideas rentables.</small>`,
+      ];
+      await botMsg(greetings[Math.floor(Math.random()*greetings.length)]);
+      unlockInput();
+    },
+    collect: (v)=>{
+      const vLow = v.toLowerCase().trim();
+      const noIdea = vLow.length<3 || ['no','no sé','no se','sin idea','ninguno','nada','no tengo','no sé qué','ns','?','0','ideas','ayuda','sugerir','sugerencias'].some(function(x){ return vLow.includes(x); });
+      if(noIdea){
+        lockInput();
+        botMsg('¡Sin problema '+S.user.name+'! Déjame buscar ideas con alto potencial ahora mismo 🔥').then(async function(){
+          try{
+            var sys='Eres experto Amazon FBA. Responde SOLO con JSON válido, sin markdown.';
+            var prompt='Da 5 productos Amazon FBA con alto margen ahora. JSON compacto:'
+              +' {"products":[{"name":"nombre","supplierPrice":8.0,"priceMin":6.0,"priceMax":10.0,"moq":100,"amazonPrice":29.99,"fbaFee":4.59,"amzFeePct":0.15,"margin":0.28,"demand":"Alta","competition":"Baja","description":"1 frase","whyNow":"tendencia","alibabaTerm":"term","aliexpressTerm":"term","tradeAssurance":true}]}';
+            var raw = await callAI([{role:'user',content:prompt}], sys);
+            var m = raw.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
+            if(!m) throw new Error('no json');
+            var data = JSON.parse(m[0]);
+            var prods = data.products||[];
+            if(!prods.length) throw new Error('vacío');
+            S.products = prods;
+            S.currentBatchPicks = [];
+            S.confirmedProducts = [];
+            await botMsg('Encontré <strong>'+prods.length+' productos con buen potencial</strong> 🎯 Selecciona los que te interesen o haz clic en "Ver en Alibaba" para revisar el precio real:');
+            await showProductCards(prods, 0);
+            // Button: create plan with ALL selected products, each with its own price
+            var btn=document.getElementById('btn-confirm-picks');
+            if(btn){
+              btn.textContent='Crear plan con productos seleccionados →';
+              btn.onclick=function(){
+                var picked=S.currentBatchPicks;
+                if(!picked.length) return;
+                // Move all picked to confirmedProducts
+                S.confirmedProducts=picked.map(function(i){return S.products[i];});
+                S.currentBatchPicks=[];
+                document.getElementById('prod-grid')&&document.getElementById('prod-grid').remove();
+                document.getElementById('btn-confirm-picks')&&document.getElementById('btn-confirm-picks').remove();
+                var names=S.confirmedProducts.map(function(p){return p.name;}).join(', ');
+                userMsg('Crear plan con: '+names);
+                lockInput();
+                buildDiscoverPlan();
+              };
+            }
+            // Also add "quiero otras opciones" button
+            await botMsg('¿Ninguna te convence? <button onclick="suggestMoreProducts()" style="background:#f97316;color:#fff;border:none;padding:4px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Ver más opciones →</button>');
+          } catch(err){
+            await botMsg('¿En qué área te gustaría vender? Te busco ideas específicas.');
+            showQuickReplies(['🏠 Hogar','💪 Fitness','🐾 Mascotas','💄 Belleza','📱 Gadgets','☕ Cocina'],function(v){
+              userMsg(v); clearQuick();
+              S.path='discover'; S.products=[]; S.confirmedProducts=[]; S.currentBatchPicks=[];
+              document.getElementById('topbar-mode').textContent='Buscador IA';
+              showURLBtn(true);
+              discoverCategory=v;
+              searchWinningProducts(v);
+            });
+            lockInput();
+          }
+        });
+        return '__REDIRECT__';
+      }
+      S.data.productName = v;
+    }
+  },
+  // step 1 - supplier cost
+  {
+    ask: async ()=>{
+      await botMsg(`<strong>${S.data.productName}</strong> — buena elección! 👍<br><br>Ahora lo clave: <strong>¿cuánto te cuesta comprarlo al proveedor?</strong> (precio por unidad en USD)<br><small style="color:#94a3b8">Si aún no tienes proveedor, pon un estimado. Después lo ajustamos. Ej: $5, $12, $3.50</small>`);
+      unlockInput();
+    },
+    collect:(v)=>{ const n=parseNum(v); if(!n||n<=0) return 'Escribe un número mayor a 0, por ejemplo: 5 o 12.50'; S.data.supplierCost=n; }
+  },
+  // step 2 - initial units
+  {
+    ask: async ()=>{
+      const cost = S.data.supplierCost;
+      await botMsg(`Perfecto. ¿Y cuántas unidades piensas pedir en tu <strong>primer pedido</strong>?<br><small style="color:#94a3b8">Con $${cost}/ud, pedido de 100 uds = inversión de $${(cost*100).toFixed(0)} · 200 uds = $${(cost*200).toFixed(0)} · 500 uds = $${(cost*500).toFixed(0)}</small>`);
+      showQuickReplies(['100 unidades','200 unidades','300 unidades','500 unidades'], (v)=>{
+        userMsg(v); clearQuick();
+        S.data.initialUnits = parseNum(v);
+        nextSimStep();
+      });
+      unlockInput();
+    },
+    collect:(v)=>{ const n=parseNum(v); if(!n||n<1) return 'Ingresa un número mayor a 0'; S.data.initialUnits=Math.round(n); }
+  },
+  // step 3 - selling price
+  {
+    ask: async ()=>{
+      const cost = S.data.supplierCost;
+      const s3x = Math.round(cost*3);
+      const s4x = Math.round(cost*4.5);
+      const s6x = Math.round(cost*6);
+      await botMsg(`Ahora la pregunta del millón 💰 <strong>¿A qué precio lo venderías en Amazon?</strong><br><br>Basado en tu costo de $${cost}, aquí van tres opciones:<br><small style="color:#94a3b8">• $${s3x} = margen ajustado pero competitivo<br>• $${s4x} = balance ideal precio/margen ⭐<br>• $${s6x} = margen alto, necesita diferenciarse</small>`);
+      showQuickReplies(['$'+s3x, '$'+s4x, '$'+s6x, 'Otro precio'], (v)=>{
+        if(v === 'Otro precio'){ unlockInput(); return; }
+        userMsg(v); clearQuick();
+        S.data.sellingPrice = parseNum(v.replace('$',''));
+        nextSimStep();
+      });
+      unlockInput();
+    },
+    collect:(v)=>{
+      const vLow=v.toLowerCase().trim();
+      const wantsSuggestion=['no se','no sé','tu dime','tú dime','dime tu','dímelo','sugiéreme','sugerir','recomienda','no sé cuánto','ns','?','ayuda'].some(function(x){return vLow.includes(x);});
+      if(wantsSuggestion){
+        lockInput();
+        const cost=S.data.supplierCost||5;
+        const suggested=Math.round(cost*4);
+        const min=Math.round(cost*3);
+        const max=Math.round(cost*6);
+        botMsg('Perfecto, te sugiero <strong>$'+suggested+'</strong> — es el punto ideal para tu costo de $'+cost+'. Con ese precio tendrías un margen competitivo.<br><small style="color:#94a3b8">Rango viable: $'+min+' (mínimo) a $'+max+' (premium)</small>').then(function(){
+          showQuickReplies(['$'+min,'$'+suggested,'$'+max,'Otro precio'],function(val){
+            clearQuick();
+            if(val==='Otro precio'){unlockInput();return;}
+            const n=parseNum(val.replace('$',''));
+            S.data.sellingPrice=n;
+            userMsg(val);
+            nextSimStep();
+          });
+          unlockInput();
+        });
+        return '__REDIRECT__';
+      }
+      const n=parseNum(v.replace(/[$,]/g,''));
+      if(!n||n<=0) return 'Ingresa un precio válido, por ejemplo: 25 o 30';
+      S.data.sellingPrice=n;
+    }
+  },
+  // step 4 - marketplace
+  {
+    ask: async ()=>{
+      await botMsg(`¿En qué marketplace de Amazon vas a vender? Cada uno tiene su propio mercado y nivel de competencia.`);
+      showQuickReplies(['🇺🇸 Amazon USA','🇲🇽 Amazon México','🇪🇸 Amazon España','🇨🇦 Amazon Canadá'], (v)=>{
+        userMsg(v); clearQuick(); S.data.marketplace=v; nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 5 - category
+  {
+    ask: async ()=>{
+      await botMsg(`¿En qué categoría entraría tu producto? Esto afecta la <strong>comisión de Amazon</strong> (entre 8% y 17% según categoría).`);
+      showQuickReplies(['Electrónica (8%)','Salud / Belleza (15%)','Hogar y Cocina (15%)','Ropa / Moda (17%)','Alimentos (8%)','Juguetes (15%)','Deportes (15%)','Otra (15%)'], (v)=>{
+        userMsg(v); clearQuick(); S.data.category=v;
+        const fees={'Electrónica (8%)':0.08,'Ropa / Moda (17%)':0.17,'Alimentos (8%)':0.08};
+        S.data.amzFeePct = fees[v] || 0.15;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 6 - weight
+  {
+    ask: async ()=>{
+      await botMsg(`¿Cuánto pesa cada unidad con su empaque? Esto determina el <strong>costo de logística FBA</strong>.`);
+      showQuickReplies(['Menos de 250g (~$3.22)','250g - 500g (~$4.59)','500g - 1kg (~$5.58)','1kg - 2kg (~$6.80)','Más de 2kg (~$8.25)'], (v)=>{
+        userMsg(v); clearQuick(); S.data.weight=v;
+        const fbaFees={'Menos de 250g (~$3.22)':3.22,'250g - 500g (~$4.59)':4.59,'500g - 1kg (~$5.58)':5.58,'1kg - 2kg (~$6.80)':6.80,'Más de 2kg (~$8.25)':8.25};
+        S.data.fbaFee = fbaFees[v] || 5.58;
+        nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 7 - units month 1
+  {
+    ask: async ()=>{
+      await botMsg(`¡Casi terminamos! ¿Cuántas unidades esperas vender en tu <strong>primer mes</strong>?<br><small style="color:#94a3b8">Sé conservador — mejor llevarte una sorpresa positiva que negativa 😄</small>`);
+      showQuickReplies(['10-20 unidades','20-50 unidades','50-100 unidades','100+ unidades'], (v)=>{
+        userMsg(v); clearQuick();
+        const map={'10-20 unidades':15,'20-50 unidades':35,'50-100 unidades':75,'100+ unidades':120};
+        S.data.unitsM1=map[v]||20; nextSimStep();
+      });
+      lockInput();
+    },
+    collect:()=>{}
+  },
+  // step 8 - GENERATE
+  {
+    ask: async ()=>{
+      lockInput();
+      await botMsg(`Listo ${S.user.name}! 🎯 Tengo todo lo que necesito. Dame un momento para calcular tu plan completo a 12 meses con proyecciones reales...`);
+      await generateSimPlan();
+    },
+    collect:()=>{}
+  }
+];
+
+let simStepIdx = 0;
+
+async function runSimulateStep(idx){
+  simStepIdx = idx;
+  const step = SIM_STEPS[idx];
+  if(!step) return;
+  lockInput();
+  await step.ask();
+}
+
+function nextSimStep(){ runSimulateStep(simStepIdx+1); }
+
+document.getElementById('chat-input').addEventListener('keydown', e=>{ if(e.key==='Enter') sendUserMsg(); });
+
+function sendUserMsg(){
+  if(S.chatLocked) return;
+  const inp=document.getElementById('chat-input');
+  const val=inp.value.trim(); if(!val) return;
+  inp.value='';
+  userMsg(val);
+  lockInput(); clearQuick();
+
+  if(S.path==='simulate'){
+    const step=SIM_STEPS[simStepIdx];
+    if(!step){return;}
+    const err=step.collect(val);
+    if(err==='__REDIRECT__') return;
+    if(err){ botMsg('⚠️ '+err).then(function(){unlockInput();}); return; }
+    nextSimStep();
+  } else {
+    // discover path free text handling
+    handleDiscoverInput(val);
+  }
+}
+
+function parseNum(v){ return parseFloat(String(v).replace(/[^0-9.]/g,'')); }
+function fmt$(n){ return '$'+Number(n).toFixed(2); }
+
+/* ===========================================
+   SIMULATE - GENERATE PLAN
+=========================================== */
+async function generateSimPlan(){
+  const d=S.data;
+  // build financial model
+  const cfg={
+    productName: d.productName,
+    supplierCost: d.supplierCost,
+    sellingPrice: d.sellingPrice,
+    fbaFee: d.fbaFee||5.58,
+    amzFeePct: d.amzFeePct||0.15,
+    mktgPct: 0.25, // base rate (curve applies 45%->25% in buildMonths)
+    agencyFee: 0,
+    membership: 39.99, // full monthly membership
+    taxRate: 0.08,
+    growthRate: 0.10, // blends with realistic growth curve
+    unitsM1: d.unitsM1||20,
+  };
+
+  // unit economics
+  const ue = calcUnitEconomics(cfg);
+
+  if(ue.margin < 0){
+    await botMsg(`⚠️ <strong>Atención:</strong> Con los datos que me diste, este producto <strong>no sería rentable</strong> con el precio actual.<br><br>Tu costo total por unidad es ${fmt$(ue.totalCostPerUnit)} y estás vendiendo a ${fmt$(d.sellingPrice)}. <strong>Estás perdiendo ${fmt$(Math.abs(ue.profit))} por unidad.</strong><br><br>Opciones: 1) Subir el precio de venta, 2) Conseguir proveedor más barato, 3) Reducir peso del paquete para bajar FBA.`);
+  }
+
+  const months = buildMonths(cfg);
+
+  // AI insight
+  try{
+    const insight = await callAI([{role:'user',content:`Analiza este negocio Amazon en español (2-3 oraciones máximo, directo, útil):
+Producto: ${d.productName}
+Precio venta: $${d.sellingPrice}
+Costo proveedor: $${d.supplierCost}
+Margen neto por unidad: ${(ue.margin*100).toFixed(1)}%
+ROI: ${(ue.roi*100).toFixed(0)}%
+Ganancia total 12 meses: $${months.reduce((s,m)=>s+m.netTax,0).toFixed(0)}
+Categoría: ${d.category||'General'}
+Da una recomendación clave de 1 oración.`}]);
+    S.aiInsight = insight.trim();
+  } catch(e){ S.aiInsight=''; }
+
+  await botMsg('✅ <strong>¡Plan listo!</strong> Aquí está tu análisis completo 👇');
+  setTimeout(()=> showDashboard({ cfg, months, ue, title: d.productName }), 800);
+  // After short delay, ask if they want to add more products
+  setTimeout(function(){
+    var chatBody=document.getElementById('chat-body');
+    if(!chatBody) return;
+    // Only ask if we haven't already shown the dashboard
+    setTimeout(function(){
+      var offerMsg=document.createElement('div');
+      offerMsg.className='msg';
+      offerMsg.innerHTML='<div class="avatar bot">✦</div><div class="bubble bot">¿Quieres añadir <strong>otros productos</strong> al plan y comparar portafolio? 📦<br><small style="color:#94a3b8">Puedes simular con varios productos y ver cuál rinde más</small></div>';
+      chatBody.appendChild(offerMsg);
+      chatBody.scrollTop=chatBody.scrollHeight;
+      // Quick replies
+      var area=document.getElementById('quick-area');
+      if(area){
+        area.innerHTML='';
+        var wrap=document.createElement('div');
+        wrap.className='quick-replies';
+        var opts=[{t:'➕ Agregar otro producto',v:'add'},  {t:'🔍 La IA me sugiere productos',v:'suggest'}, {t:'No, solo este producto',v:'skip'}];
+        opts.forEach(function(opt){
+          var b=document.createElement('button');
+          b.className='qr'; b.textContent=opt.t;
+          b.onclick=function(){
+            area.innerHTML='';
+            userMsg(opt.t);
+            if(opt.v==='add'){
+              // Start a new product flow, keeping current plan
+              S.data={};
+              botMsg('¡Genial! ¿Cuál es el <strong>segundo producto</strong> que quieres agregar al portafolio?').then(function(){
+                // Override SIM_STEPS flow to collect just product + price
+                lockInput();
+                // Redirect to discover for new product
+                S.path='discover'; S.products=[]; S.currentBatchPicks=[];
+                if(!S.confirmedProducts) S.confirmedProducts=[];
+                document.getElementById('topbar-mode').textContent='Buscador IA';
+                showURLBtn(true);
+                showAISearchOptions();
+              });
+            } else if(opt.v==='suggest'){
+              S.path='discover'; S.products=[]; S.currentBatchPicks=[];
+              if(!S.confirmedProducts) S.confirmedProducts=[];
+              document.getElementById('topbar-mode').textContent='Buscador IA';
+              showURLBtn(true);
+              botMsg('¡Vamos! ¿En qué categoría buscamos productos complementarios?').then(function(){
+                showAISearchOptions();
+              });
+            } else {
+              botMsg('Perfecto. Recuerda que puedes usar el <strong>Asesor IA</strong> en el dashboard para ajustar cualquier parámetro 💡');
+            }
+          };
+          wrap.appendChild(b);
+        });
+        area.appendChild(wrap);
+        chatBody.scrollTop=chatBody.scrollHeight;
+      }
+    },1500);
+  },900);
+}
+
+/* ===========================================
+   DISCOVER PATH
+=========================================== */
+let discoverStep=0;
+let discoverCategory='';
+
+let discoverMode='ai';
+
+async function runDiscoverStep(step){
+  discoverStep=step;
+  if(step===0){
+    await botMsg('Hola '+S.user.name+'! 🔍 ¿Cómo quieres buscar productos?');
+    lockInput();
+    // Show 2 big option cards inline in chat
+    var body=document.getElementById('chat-body');
+    var optDiv=document.createElement('div');
+    optDiv.id='discover-options';
+    optDiv.style.cssText='display:flex;flex-direction:column;gap:10px;margin:4px 0;max-width:680px;margin-left:auto;margin-right:auto;width:100%';
+    optDiv.innerHTML=
+      '<button onclick="pickDiscoverMode(\'ai\')" style="display:flex;align-items:center;gap:16px;padding:18px 20px;background:#fff;border:2px solid #e8e8e8;border-radius:16px;cursor:pointer;text-align:left;font-family:inherit;transition:all .2s;width:100%" onmouseover="this.style.borderColor=\'#f97316\';this.style.background=\'#fff7ed\'" onmouseout="this.style.borderColor=\'#e8e8e8\';this.style.background=\'#fff\'">'
+        +'<div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#f97316,#f59e0b);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px">🤖</div>'
+        +'<div style="flex:1"><div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:3px">Buscar productos con IA</div>'
+        +'<div style="font-size:12px;color:#94a3b8">La IA analiza Alibaba, DHgate, Faire y más — elige categoría y te sugiero los mejores</div></div>'
+        +'<span style="font-size:18px;color:#f97316">→</span>'
+      +'</button>'
+      +'<button onclick="pickDiscoverMode(\'url\')" style="display:flex;align-items:center;gap:16px;padding:18px 20px;background:#fff;border:2px solid #e8e8e8;border-radius:16px;cursor:pointer;text-align:left;font-family:inherit;transition:all .2s;width:100%" onmouseover="this.style.borderColor=\'#f97316\';this.style.background=\'#fff7ed\'" onmouseout="this.style.borderColor=\'#e8e8e8\';this.style.background=\'#fff\'">'
+        +'<div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px">🔗</div>'
+        +'<div style="flex:1"><div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:3px">Pegar URLs de productos</div>'
+        +'<div style="font-size:12px;color:#94a3b8">Amazon, Alibaba, AliExpress, Temu, DHgate — pega los links y busco el proveedor ideal</div></div>'
+        +'<span style="font-size:18px;color:#6366f1">→</span>'
+      +'</button>';
+    body.appendChild(optDiv);
+    body.scrollTop=body.scrollHeight;
+  }
+}
+
+function pickDiscoverMode(mode){
+  var optDiv=document.getElementById('discover-options');
+  if(optDiv) optDiv.remove();
+  clearQuick();
+  if(mode==='ai'){
+    discoverMode='ai';
+    userMsg('Buscar productos con IA');
+    showAISearchOptions();
+  } else {
+    discoverMode='urls';
+    userMsg('Pegar URLs de productos');
+    showURLInputBox();
+  }
+}
+
+function handleDiscoverInput(val){
+  // Detect URL paste in chat input
+  var hasUrl = val.includes('http') && (val.includes('amazon.')||val.includes('alibaba')||val.includes('aliexpress')||val.includes('dhgate')||val.includes('temu.')||val.includes('faire.')||val.includes('tundra.')||val.includes('handshake.')||val.includes('wholesalecentral'));
+  if(hasUrl){
+    // Pre-fill the URL textarea and analyze
+    lockInput(); clearQuick();
+    var tempArea = document.createElement('textarea');
+    tempArea.id='url-textarea'; tempArea.style.display='none';
+    tempArea.value=val;
+    document.body.appendChild(tempArea);
+    discoverMode='urls';
+    analyzeURLs().then(function(){ tempArea.remove(); }).catch(function(){ tempArea.remove(); });
+    return;
+  }
+  if(discoverStep===1){ clearQuick(); discoverCategory=val; searchWinningProducts(val); }
+}
+
+async function showAISearchOptions(){
+  const cats = ['🏠 Hogar y Cocina','💄 Belleza y Cuidado Personal','💪 Fitness y Deporte','📱 Electrónica / Gadgets','🐾 Mascotas','👶 Bebés y Niños','🌿 Salud y Bienestar','☕ Cocina Gourmet'];
+  await botMsg(`En Alibaba hay categorías que tienen una demanda brutal en Amazon 📈 ¿En qué categoría te quieres enfocar ${S.user.name}? O escríbela tú:`);
+  showQuickReplies(cats, (v)=>{ userMsg(v); clearQuick(); discoverCategory=v; searchWinningProducts(v); });
+  discoverStep=1;
+  unlockInput();
+}
+
+function showURLInputBox(){
+  document.getElementById('url-input-box') && document.getElementById('url-input-box').remove();
+  const body=document.getElementById('chat-body');
+  lockInput(); clearQuick();
+  const box=document.createElement('div');
+  box.className='url-box'; box.id='url-input-box';
+  box.style.cssText='margin:8px auto;animation:fadeUp .3s ease;max-width:680px;width:100%;';
+  box.innerHTML='<textarea id="url-textarea" style="width:100%;border:1.5px solid #e0e0e0;border-radius:12px;padding:14px;font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:110px;color:#1a1a1a;line-height:1.6;background:#fff" placeholder="Pega tus URLs (una por linea):\n\nhttps://www.amazon.com/dp/...\nhttps://www.alibaba.com/product-detail/...\nhttps://www.aliexpress.com/item/..."></textarea>'
+    +'<div style="font-size:11px;color:#999;margin-top:6px">Puedes pegar 1 a 10 URLs de Alibaba o AliExpress. La IA extrae el precio y calcula el precio optimo en Amazon.</div>'
+    +'<div style="display:flex;gap:8px;margin-top:10px">'
+    +'<button onclick="analyzeURLs()" style="flex:1;padding:12px;background:#f97316;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit">Analizar con IA</button>'
+    +'<button onclick="cancelURLInput()" style="padding:12px 18px;background:#f1f5f9;border:none;border-radius:10px;color:#666;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Cancelar</button>'
+    +'</div>';
+  body.appendChild(box); scrollBot();
+}
+
+function cancelURLInput(){
+  document.getElementById('url-input-box') && document.getElementById('url-input-box').remove();
+  unlockInput();
+  botMsg('Que quieres hacer?').then(()=>{
+    showQuickReplies(['La IA me busca productos','Tengo URLs de Alibaba/AliExpress'],
+      (v)=>{ userMsg(v); clearQuick(); if(v.includes('IA')){discoverMode='ai';showAISearchOptions();}else{discoverMode='urls';showURLInputBox();} });
+    lockInput();
+  });
+}
+
+async function analyzeURLs(){
+  const raw=document.getElementById('url-textarea')?document.getElementById('url-textarea').value:'';
+  // Normalize: add https:// if missing, accept amazon/alibaba/aliexpress without protocol
+  const allUrls=raw.split(/[\n\r,; \t]+/).map(function(u){
+    u=u.trim();
+    if(!u) return '';
+    if(!u.startsWith('http')) u='https://'+u;
+    return u;
+  }).filter(function(u){ return u.length>8 && u.includes('.'); });
+  const supplierUrls=[...new Set(allUrls.filter(u=>u.includes('alibaba')||u.includes('aliexpress')||u.includes('dhgate')||u.includes('temu.')||u.includes('faire.')||u.includes('tundra.')))].slice(0,5);
+  const amazonUrls=[...new Set(allUrls.filter(u=>u.includes('amazon.')))].slice(0,5);
+  const totalUrls=supplierUrls.length+amazonUrls.length;
+  if(!totalUrls){
+    const ta=document.getElementById('url-textarea');
+    if(ta){
+      ta.style.borderColor='#f97316';
+      ta.style.boxShadow='0 0 0 3px rgba(249,115,22,.15)';
+    }
+    // Show helpful message
+    var hint=document.querySelector('#url-input-box .url-hint');
+    if(!hint){hint=document.createElement('div');hint.className='url-hint';hint.style.cssText='color:#f97316;font-size:12px;font-weight:600;margin-top:6px;';document.getElementById('url-input-box').insertBefore(hint,document.querySelector('#url-input-box div:last-child'));}
+    hint.textContent='⚠️ No encontré URLs válidas. Pega links de Amazon, Alibaba o AliExpress.';
+    return;
+  }
+  document.getElementById('url-input-box')&&document.getElementById('url-input-box').remove();
+  var urlSummary=[];
+  if(amazonUrls.length) urlSummary.push(amazonUrls.length+' de Amazon');
+  if(supplierUrls.length) urlSummary.push(supplierUrls.length+' de Alibaba/AliExpress');
+  userMsg('Pegué '+urlSummary.join(' y '));
+  lockInput();
+
+  var hasAmazon=amazonUrls.length>0;
+  var msg=hasAmazon
+    ? 'Analizando URLs de Amazon 🔍 Para cada producto voy a <strong>buscar el proveedor en Alibaba</strong> y calcular si es rentable como FBA...'
+    : 'Analizando URLs de Alibaba/AliExpress... 🔍<br><small style="color:#94a3b8">Extraigo el producto del texto y estimo precios de mercado.</small>';
+  await botMsg(msg);
+
+  const sys='Eres experto Amazon FBA y sourcing en Alibaba. Responde SOLO con JSON válido, sin markdown.';
+  var urlLines=[];
+  amazonUrls.forEach(function(u,i){urlLines.push('Amazon URL '+(i+1)+': '+u);});
+  supplierUrls.forEach(function(u,i){urlLines.push('Proveedor URL '+(i+1)+': '+u);});
+
+  var amazonInstruction=hasAmazon
+    ? '\nPara URLs de Amazon: identifica el producto, busca en tu conocimiento un proveedor chino equivalente en Alibaba (Gold Supplier), estima precio de proveedor $3-15, calcula si es rentable para FBA.'
+    : '';
+
+  const prompt='Analiza estas URLs para Amazon FBA:\n'+urlLines.join('\n')
+    +amazonInstruction
+    +'\nPara cada URL devuelve UN producto con proveedor Alibaba estimado.'
+    +'\nJSON: {"products":[{"name":"nombre en español","supplierPrice":7.0,"priceMin":5.5,"priceMax":9.0,"moq":100,"amazonPrice":29.99,"fbaFee":4.59,"amzFeePct":0.15,"margin":0.25,"demand":"Alta","competition":"Media","description":"por qué es oportunidad","whyNow":"tendencia actual","alibabaTerm":"english supplier search","aliexpressTerm":"english term","tradeAssurance":true,"sourceType":"amazon|alibaba","originalNote":"nota sobre el producto original"}]}';
+
+  try{
+    var r=await callAI([{role:'user',content:prompt}],sys);
+    var m=r.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('no JSON');
+    var parsed=JSON.parse(m[0]);
+    var prods=parsed.products||[];
+    if(!prods.length) throw new Error('No se encontraron productos');
+    // Attach original source URLs to each product
+    prods.forEach(function(p,i){
+      if(amazonUrls[i]) p.sourceUrl = amazonUrls[i];
+      else if(supplierUrls[i]) p.sourceUrl = supplierUrls[i];
+    });
+    const batchOffset=S.products.length;
+    S.products.push.apply(S.products,prods);
+    S.currentBatchPicks=[];
+    if(hasAmazon){
+      await botMsg('Encontré <strong>'+prods.length+' producto'+(prods.length>1?'s':'')+'</strong> de tus URLs de Amazon con proveedor Alibaba sugerido 🎯<br><small style="color:#94a3b8">Los precios de proveedor son estimados — verifica en el link de Alibaba antes de comprar</small>');
+    }
+    await showProductCards(prods,batchOffset);
+  } catch(e){
+    await botMsg('No pude analizar las URLs 😅 Intenta con URLs más específicas o busca por categoría.');
+    unlockInput();
+  }
+}
+
+function triggerURLInput(){
+  document.getElementById('url-input-box') && document.getElementById('url-input-box').remove();
+  showURLInputBox();
+}
+
+async function searchWinningProducts(category){
+  lockInput(); clearQuick();
+  var body=document.getElementById('chat-body');
+  var prog=document.createElement('div'); prog.className='msg'; prog.id='search-progress';
+  prog.innerHTML='<div class="avatar bot">&#10022;</div>'
+    +'<div class="bubble bot">'
+    +'<div>Buscando en <strong>'+category+'</strong>... ya casi 🔍</div>'
+    +'<div style="margin-top:8px;background:#f1f5f9;border-radius:99px;height:5px;overflow:hidden">'
+    +'<div id="prog-bar" style="height:100%;background:linear-gradient(90deg,#f97316,#f59e0b);border-radius:99px;width:0%;transition:width .5s ease"></div></div>'
+    +'<div id="prog-step" style="font-size:11px;color:#94a3b8;margin-top:5px">Analizando mercado...</div>'
+    +'</div>';
+  body.appendChild(prog);
+  var steps=[[20,'Revisando proveedores en Alibaba...'],[45,'Calculando márgenes reales en Amazon...'],[70,'Evaluando competencia...'],[90,'Casi listo...']];
+  var si=0;
+  var progInt=setInterval(function(){
+    if(si<steps.length){
+      var b=document.getElementById('prog-bar'),st=document.getElementById('prog-step');
+      if(b)b.style.width=steps[si][0]+'%'; if(st)st.textContent=steps[si][1]; si++;
+    }
+  },800);
+
+  var sys='Responde SOLO con JSON. Sin texto antes ni después.';
+  var prompt='Dame exactamente 5 productos para vender en Amazon FBA en la categoría: '+category+'. Para cada producto incluye: name (español), supplier (Alibaba/DHgate/AliExpress), supplierPrice (número), priceMin, priceMax, moq, amazonPrice, fbaFee (4.59), amzFeePct (0.15), margin (decimal), demand (Alta/Media/Baja), competition (Alta/Media/Baja), description (1 frase en español), whyNow (tendencia en 1 frase), alibabaTerm (en inglés), aliexpressTerm (en inglés), tradeAssurance (true/false). Responde SOLO con el JSON, empezando con { y terminando con }.';
+
+  try{
+    var raw=await callAI([{role:'user',content:prompt}],sys);
+    clearInterval(progInt);
+    document.getElementById('search-progress')&&document.getElementById('search-progress').remove();
+    var m=raw.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('Respuesta inválida de la IA');
+    var parsed=JSON.parse(m[0]);
+    var prods=parsed.products||[];
+    if(!prods.length) throw new Error('No se encontraron productos');
+    var batchOffset=S.products.length;
+    S.products.push.apply(S.products,prods);
+    S.currentBatchPicks=[];
+    var names=prods.slice(0,3).map(function(p){return p.name;}).join(', ');
+    await botMsg('Encontré <strong>'+prods.length+' productos increíbles</strong> en '+category+' 🎯 como '+names+'...<br><small style="color:#94a3b8">Haz clic en cada card para seleccionar los que te interesan</small>');
+    await showProductCards(prods,batchOffset);
+  } catch(err){
+    clearInterval(progInt);
+    document.getElementById('search-progress')&&document.getElementById('search-progress').remove();
+    console.error('searchWinningProducts error:', err);
+    await botMsg('Error buscando en '+category+': <code style="background:#fee2e2;padding:2px 6px;border-radius:4px;font-size:11px">'+err.message+'</code><br>¿Lo intentamos de nuevo?');
+    showQuickReplies(['🔄 Intentar de nuevo','📦 Otra categoría'],function(v){
+      userMsg(v); clearQuick();
+      if(v.includes('Intentar')) searchWinningProducts(category);
+      else showAISearchOptions();
+    });
+    lockInput();
+  }
+}
+
+async function showProductCards(prods, batchOffset){
+  batchOffset = batchOffset || 0;
+  var body = document.getElementById('chat-body');
+  document.getElementById('prod-grid') && document.getElementById('prod-grid').remove();
+  document.getElementById('btn-confirm-picks') && document.getElementById('btn-confirm-picks').remove();
+
+  // AI picks top recommendation: highest margin + high demand + low competition
+  var scored = prods.map(function(p, i){
+    var score = (p.margin||0)*100;
+    if(p.demand==='Alta') score += 20;
+    if(p.competition==='Baja') score += 15;
+    if(p.tradeAssurance!==false) score += 10;
+    return {i:i, score:score};
+  }).sort(function(a,b){return b.score-a.score;});
+  var topIdx = scored[0] ? scored[0].i : 0;
+
+  var grid = document.createElement('div');
+  grid.id = 'prod-grid';
+  grid.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin:6px 0;width:100%;max-width:680px;margin-left:auto;margin-right:auto;';
+
+  prods.forEach(function(p, i){
+    var globalIdx = batchOffset + i;
+    var isTop = (i === topIdx);
+    var card = document.createElement('div');
+    card.id = 'pc-' + globalIdx;
+
+    var baseBorder = isTop ? '#f97316' : '#e8e8e8';
+    var baseBg = isTop ? '#fffbf7' : '#fff';
+    card.style.cssText = 'background:'+baseBg+';border-radius:14px;border:2px solid '+baseBorder+';'
+      +'padding:0;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;';
+
+    var aliUrl = 'https://www.alibaba.com/trade/search?SearchText='
+      + encodeURIComponent((p.alibabaTerm||p.name)+' gold supplier')+'&IndexArea=product_en';
+    var aexUrl = 'https://www.aliexpress.com/wholesale?SearchText='
+      + encodeURIComponent(p.aliexpressTerm||p.name)+'&SortType=best_match_sort';
+
+    var priceRange = (p.priceMin && p.priceMax)
+      ? '$'+Number(p.priceMin).toFixed(2)+'–$'+Number(p.priceMax).toFixed(2)
+      : '~$'+Number(p.supplierPrice).toFixed(2);
+    var moq = p.moq ? p.moq+' uds mín.' : '';
+    var margin = Math.round((p.margin||0)*100);
+    var marginColor = margin>=30?'#15803d':margin>=20?'#0369a1':'#d97706';
+    var marginBg   = margin>=30?'#dcfce7':margin>=20?'#dbeafe':'#fef3c7';
+    var ta = p.tradeAssurance !== false;
+
+    // Rank badge color
+    var rankColors = ['#f97316','#6366f1','#06b6d4','#10b981','#8b5cf6','#ec4899','#f59e0b','#14b8a6','#84cc16','#ef4444'];
+    var rankColor = rankColors[i % rankColors.length];
+
+    // Supplier badge
+    var sup=(p.supplier||'Alibaba').toLowerCase();
+    var supBadge='';
+    if(sup.includes('alibaba')){
+      supBadge='<span style="font-size:9px;font-weight:800;color:#ff6a00;background:#fff3e0;padding:2px 7px;border-radius:99px;border:1px solid #ffd18033">Alibaba</span>';
+    } else if(sup.includes('aliexpress')){
+      supBadge='<span style="font-size:9px;font-weight:800;color:#e62e04;background:#fff1f0;padding:2px 7px;border-radius:99px;border:1px solid #fecaca">AliExpress</span>';
+    } else if(sup.includes('dhgate')){
+      supBadge='<span style="font-size:9px;font-weight:800;color:#e63946;background:#fff0f0;padding:2px 7px;border-radius:99px;border:1px solid #fecaca">DHgate</span>';
+    } else if(sup.includes('temu')){
+      supBadge='<span style="font-size:9px;font-weight:800;color:#ff6900;background:#fff4ee;padding:2px 7px;border-radius:99px;border:1px solid #ffcba4">Temu</span>';
+    } else if(sup.includes('faire')){
+      supBadge='<span style="font-size:9px;font-weight:800;color:#1a1a2e;background:#f0f0ff;padding:2px 7px;border-radius:99px;border:1px solid #c5c6ff">Faire</span>';
+    } else if(sup.includes('tundra')){
+      supBadge='<span style="font-size:9px;font-weight:800;color:#2d6a4f;background:#f0fdf4;padding:2px 7px;border-radius:99px;border:1px solid #bbf7d0">Tundra</span>';
+    } else if(sup.includes('handshake')){
+      supBadge='<span style="font-size:9px;font-weight:800;color:#5e60ce;background:#f5f3ff;padding:2px 7px;border-radius:99px;border:1px solid #ddd6fe">Handshake</span>';
+    } else if(sup.includes('wholesale')){
+      supBadge='<span style="font-size:9px;font-weight:800;color:#2196f3;background:#eff6ff;padding:2px 7px;border-radius:99px;border:1px solid #bfdbfe">Wholesale</span>';
+    } else {
+      supBadge='<span style="font-size:9px;font-weight:800;color:#666;background:#f5f5f5;padding:2px 7px;border-radius:99px">'+( p.supplier||'Alibaba')+'</span>';
+    }
+
+    card.innerHTML =
+      // Top bar: rank + name + supplier badge + check
+      '<div style="display:flex;align-items:center;gap:8px;padding:12px 14px 10px;border-bottom:1px solid '+(isTop?'#fed7aa':'#f5f5f5')+'">'
+        +'<div style="width:24px;height:24px;border-radius:50%;background:'+rankColor+';color:#fff;'
+          +'font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div>'
+        +'<div style="flex:1;font-size:13.5px;font-weight:800;color:#1a1a1a;line-height:1.3">'+p.name+'</div>'
+        +supBadge
+        +(isTop?'<div style="font-size:9px;font-weight:800;background:#f97316;color:#fff;padding:2px 8px;border-radius:99px;flex-shrink:0;letter-spacing:.04em">★ IA</div>':'')
+        +'<div id="chk-'+globalIdx+'" style="display:none;width:22px;height:22px;background:#f97316;border-radius:50%;'
+          +'align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900;flex-shrink:0">✓</div>'
+      +'</div>'
+
+      // Price + margin row
+      +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 14px;background:'+(isTop?'#fff7ed':'#fafafa')+';">'
+        +'<span style="font-size:14px;font-weight:800;color:#1a1a1a">'+priceRange+'/ud</span>'
+        +(moq?'<span style="font-size:10.5px;color:#94a3b8;font-weight:600">'+moq+'</span>':'')
+        +'<span style="margin-left:auto;font-size:11px;font-weight:800;background:'+marginBg+';color:'+marginColor+';padding:3px 9px;border-radius:99px;">'+margin+'% margen</span>'
+        +'<span style="font-size:11px;font-weight:700;color:#2563eb;background:#eff6ff;padding:3px 9px;border-radius:99px;">Amazon $'+Number(p.amazonPrice).toFixed(2)+'</span>'
+      +'</div>'
+
+      // Description + whyNow
+      +'<div style="padding:8px 14px 6px;">'
+        +'<div style="font-size:12px;color:#444;line-height:1.55;margin-bottom:5px">'+p.description+'</div>'
+        +(p.whyNow?'<div style="font-size:11px;color:#f97316;font-weight:600;display:flex;align-items:flex-start;gap:4px">'
+          +'<span style="flex-shrink:0">↑</span><span>'+p.whyNow+'</span></div>':'')
+      +'</div>'
+
+      // Tags row
+      +'<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:0 14px 10px;">'
+        +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;'
+          +(p.demand==='Alta'?'background:#dcfce7;color:#15803d':'background:#fef9c3;color:#92400e')+'">'+p.demand+' demanda</span>'
+        +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;'
+          +(p.competition==='Baja'?'background:#dcfce7;color:#15803d':p.competition==='Media'?'background:#dbeafe;color:#1d4ed8':'background:#fee2e2;color:#dc2626')+'">Comp. '+p.competition+'</span>'
+        +(ta?'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:#ede9fe;color:#6d28d9">✔ Trade Assurance</span>':'')
+        +'<div style="margin-left:auto;display:flex;gap:6px;">'
+          +'<a href="'+aliUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" '
+            +'style="font-size:10.5px;font-weight:700;color:#ff6a00;text-decoration:none;padding:4px 10px;'
+            +'border:1.5px solid #ff6a00;border-radius:7px;white-space:nowrap" '
+            +'onmouseover="this.style.background=\'#fff7ed\'" onmouseout="this.style.background=\'\'">Alibaba ↗</a>'
+          +'<a href="'+aexUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" '
+            +'style="font-size:10.5px;font-weight:700;color:#e62e04;text-decoration:none;padding:4px 10px;'
+            +'border:1.5px solid #e62e04;border-radius:7px;white-space:nowrap" '
+            +'onmouseover="this.style.background=\'#fff1f0\'" onmouseout="this.style.background=\'\'">AliExpress ↗</a>'
+        +'</div>'
+      +'</div>';
+
+    card.onmouseenter = function(){
+      if(!this.classList.contains('sel')) this.style.boxShadow='0 4px 16px rgba(249,115,22,.15)';
+    };
+    card.onmouseleave = function(){
+      if(!this.classList.contains('sel')) this.style.boxShadow='none';
+    };
+    card.onclick = function(){ toggleProductPick(globalIdx); };
+    grid.appendChild(card);
+  });
+
+  body.appendChild(grid);
+  var btn = document.createElement('button');
+  btn.id='btn-confirm-picks'; btn.className='btn-confirm-picks';
+  btn.textContent='Selecciona productos para continuar';
+  btn.disabled = true;
+  btn.onclick = function(){ afterPickDecision(); };
+  body.appendChild(btn);
+  scrollBot();
+}
+
+function toggleProductPick(globalIdx){
+  var already=S.currentBatchPicks.indexOf(globalIdx);
+  var totalSel=S.confirmedProducts.length+S.currentBatchPicks.length;
+  var card=document.getElementById('pc-'+globalIdx);
+  var chk=document.getElementById('chk-'+globalIdx);
+  if(already>=0){
+    S.currentBatchPicks.splice(already,1);
+    if(card){card.style.borderColor='#e8e8e8';card.style.background='#fff';}
+    if(chk)chk.style.display='none';
+  } else if(totalSel<10){
+    S.currentBatchPicks.push(globalIdx);
+    if(card){card.style.borderColor='#f97316';card.style.background='#fff7ed';}
+    if(chk)chk.style.display='flex';
+  }
+  var btn=document.getElementById('btn-confirm-picks');
+  var n=S.currentBatchPicks.length;
+  var total=S.confirmedProducts.length+n;
+  if(btn){
+    btn.disabled=n===0;
+    if(n===0){
+      btn.textContent='Selecciona productos para continuar';
+    } else {
+      var names=S.currentBatchPicks.slice(0,2).map(function(i){
+        var p=S.products[i]; return p?p.name.split(' ').slice(0,2).join(' '):'';
+      }).filter(Boolean).join(' + ');
+      btn.textContent=(n===1?'Crear plan con ':'Crear plan con '+n+' productos: ')+names+(n>2?' + '+(n-2)+' más':'');
+    }
+  }
+}
+
+async function afterPickDecision(){
+  var newlyPicked=S.currentBatchPicks.map(function(i){return S.products[i];});
+  // If we already have confirmed products (replacement mode), preserve them
+  if(!S.confirmedProducts) S.confirmedProducts=[];
+  S.confirmedProducts.push.apply(S.confirmedProducts,newlyPicked);
+  S.currentBatchPicks=[];
+  document.getElementById('prod-grid')&&document.getElementById('prod-grid').remove();
+  document.getElementById('btn-confirm-picks')&&document.getElementById('btn-confirm-picks').remove();
+  var total=S.confirmedProducts.length;
+  userMsg('Seleccioné '+newlyPicked.length+' producto'+(newlyPicked.length>1?'s':'')+'.');
+  if(total>=10){lockInput();await botMsg('Perfecto! Con '+total+' productos ya tenemos suficiente para un plan completo 💪 Construyendo tu plan...');await buildDiscoverPlan();return;}
+  lockInput();
+  var names=newlyPicked.map(function(p){return '<strong>'+p.name+'</strong>';}).join(', ');
+  var priceList = newlyPicked.map(function(p){
+    return p.name+' <span style="color:#f97316">$'+Number(p.supplierPrice).toFixed(2)+' → $'+Number(p.amazonPrice).toFixed(2)+'</span>';
+  }).join('<br>');
+  await botMsg('Agregaste:<br>'+priceList+'<br><br>Total: <strong>'+total+'/10</strong> productos. ¿Qué hacemos?');
+  showQuickReplies(
+    ['🚀 Crear mi plan ya','🔍 Buscar más productos','📦 Misma categoría'],
+    async function(v){
+      userMsg(v); clearQuick();
+      if(v.includes('Crear')){lockInput();await botMsg('Construyendo tu plan de negocio... 📊');await buildDiscoverPlan();}
+      else if(v.includes('más')){await showAISearchOptions();}
+      else{searchWinningProducts(discoverCategory);}
+    }
+  );
+  unlockInput();
+}
+
+async function buildDiscoverPlan(){
+  var chosen = S.confirmedProducts;
+  if(!chosen.length) return;
+  lockInput(); clearQuick();
+
+  await botMsg('Construyendo plan con <strong>'+chosen.length+' producto'+(chosen.length>1?'s':'')+'</strong>... 📊');
+
+  // Build individual plans per product
+  // Ensure every product has its source URLs built from search terms
+  chosen.forEach(function(p){
+    if(!p.sourceUrl && p.alibabaTerm){
+      p.aliUrl = 'https://www.alibaba.com/trade/search?SearchText='+encodeURIComponent(p.alibabaTerm+' gold supplier')+'&IndexArea=product_en';
+    }
+    if(!p.aexUrl && p.aliexpressTerm){
+      p.aexUrl = 'https://www.aliexpress.com/wholesale?SearchText='+encodeURIComponent(p.aliexpressTerm)+'&SortType=best_match_sort';
+    }
+  });
+
+  var productPlans = chosen.map(function(p, idx){
+    var cfg = {
+      productName: p.name,
+      supplierCost: p.supplierPrice || 5,
+      sellingPrice: p.amazonPrice || 20,
+      fbaFee: p.fbaFee || (p.amazonPrice > 15 ? 5.58 : 4.59),
+      amzFeePct: p.amzFeePct || 0.15,
+      mktgPct: 0.25,
+      agencyFee: 0,
+      membership: 39.99 / chosen.length, // split membership across products
+      taxRate: 0.08,
+      growthRate: 0.10,
+      unitsM1: Math.max(15, Math.round(40 / chosen.length) * (idx===0?2:1)),
+      baseRoas: p.margin >= 0.3 ? 5 : 4
+    };
+    var ue = calcUnitEconomics(cfg);
+    var months = buildMonths(cfg);
+    return { cfg: cfg, ue: ue, months: months, product: p };
+  });
+
+  // Consolidated monthly totals
+  var consolidated = Array.from({length:12}, function(_,i){
+    return productPlans.reduce(function(acc, pp){
+      var m = pp.months[i];
+      return {
+        m: i+1, label: 'Mes '+(i+1),
+        rev: acc.rev + m.rev,
+        units: acc.units + m.units,
+        mktg: acc.mktg + m.mktg,
+        amzFee: acc.amzFee + m.amzFee,
+        fba: acc.fba + m.fba,
+        cogs: acc.cogs + m.cogs,
+        costs: acc.costs + m.costs,
+        net: acc.net + m.net,
+        tax: acc.tax + m.tax,
+        netTax: acc.netTax + m.netTax,
+        roas: 0 // calculated below
+      };
+    }, {m:i+1,label:'Mes '+(i+1),rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0,roas:0});
+  });
+  // Fix ROAS on consolidated
+  consolidated.forEach(function(m){ m.roas = m.mktg>0 ? m.rev/m.mktg : 0; });
+
+  // Weighted average cfg for display
+  var totalUnits = chosen.reduce(function(s,p){return s+(p.supplierPrice||5);},0);
+  var consolidatedCfg = {
+    productName: chosen.length===1 ? chosen[0].name : 'Portafolio '+chosen.length+' Productos',
+    supplierCost: chosen.reduce(function(s,p){return s+(p.supplierPrice||5);},0)/chosen.length,
+    sellingPrice: chosen.reduce(function(s,p){return s+(p.amazonPrice||20);},0)/chosen.length,
+    fbaFee: chosen.reduce(function(s,p){return s+(p.fbaFee||5.58);},0)/chosen.length,
+    amzFeePct: 0.15, mktgPct: 0.25, taxRate: 0.08, growthRate: 0.10,
+    unitsM1: productPlans.reduce(function(s,pp){return s+pp.cfg.unitsM1;},0)
+  };
+  var consolidatedUe = calcUnitEconomics(consolidatedCfg);
+
+  S.aiInsight = '';
+  setTimeout(function(){
+    showDashboard({
+      cfg: consolidatedCfg,
+      months: consolidated,
+      ue: consolidatedUe,
+      title: consolidatedCfg.productName,
+      productPlans: productPlans  // pass individual plans
+    });
+  }, 600);
+}
+
+function calcUnitEconomics(cfg){
+  // Use month-1 marketing rate (45%) for honest unit economics display
+  var displayMktgPct = cfg.mktgPct === 0.25 ? 0.45 : cfg.mktgPct;
+  var netPrice = cfg.sellingPrice * 0.95; // after 5% returns
+  var amzFee = netPrice * (cfg.amzFeePct || 0.15);
+  var mktg = netPrice * displayMktgPct;
+  var totalCost = cfg.supplierCost + cfg.fbaFee + amzFee + mktg;
+  var profit = netPrice - totalCost;
+  var margin = netPrice > 0 ? profit / netPrice : 0;
+  var roi = cfg.supplierCost > 0 ? profit / cfg.supplierCost : 0;
+  return {amzFee:amzFee, mktg:mktg, totalCostPerUnit:totalCost,
+          profit:profit, margin:margin, roi:roi, displayMktgPct:displayMktgPct};
+}
+
+
+function buildProductLinks(p){
+  if(!p) return '';
+  var aliUrl = p.sourceUrl || p.aliUrl || (p.alibabaTerm ? 'https://www.alibaba.com/trade/search?SearchText='+encodeURIComponent(p.alibabaTerm+' gold supplier')+'&IndexArea=product_en' : '');
+  var aexUrl = p.aexUrl || (p.aliexpressTerm ? 'https://www.aliexpress.com/wholesale?SearchText='+encodeURIComponent(p.aliexpressTerm)+'&SortType=best_match_sort' : '');
+  if(!aliUrl && !aexUrl) return '';
+  var html = '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0">';
+  html += '<div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:7px">Ver en proveedor</div>';
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  if(aliUrl) html += '<a href="'+aliUrl+'" target="_blank" rel="noopener" style="flex:1;min-width:120px;padding:8px 12px;background:#fff7ed;border:1.5px solid #ff6a00;border-radius:9px;font-size:12px;font-weight:700;color:#ff6a00;text-decoration:none;text-align:center;display:block">Alibaba ↗</a>';
+  if(aexUrl) html += '<a href="'+aexUrl+'" target="_blank" rel="noopener" style="flex:1;min-width:120px;padding:8px 12px;background:#fff1f0;border:1.5px solid #e62e04;border-radius:9px;font-size:12px;font-weight:700;color:#e62e04;text-decoration:none;text-align:center;display:block">AliExpress ↗</a>';
+  html += '</div></div>';
+  return html;
+}
+function buildMonths(cfg){
+  /*
+   MODELO FINANCIERO REALISTA AMAZON FBA
+   ======================================
+   Basado en métricas reales de vendedores nuevos en Amazon:
+
+   MARKETING (PPC):
+   - Meses 1-2: 45% del revenue (ROAS ~2.2x) — sin reseñas, CPC alto (~$0.50), baja conversión
+   - Mes 3: 40% (ROAS 2.5x) — primeras reseñas orgánicas
+   - Mes 4-5: 35-38% — mejorando ranking
+   - Mes 6+: 30-33% bajando gradualmente (orgánico crece)
+   - Mes 9+: 25-28% — equilibrio paid/organic
+   - ROAS máximo alcanzable para nuevos: ~2.5x (no 4x que es para marcas establecidas)
+
+   CRECIMIENTO DE UNIDADES:
+   - Meses 1-2: muy lento (sin reviews, sin ranking) +3-4%/mes
+   - Mes 3-5: acelerando (+6-8%) con reviews
+   - Mes 6+: crecimiento sostenido (+8-10%)
+
+   DEVOLUCIONES: 5% del revenue bruto (estándar Amazon)
+
+   AMAZON MEMBERSHIP: $39.99/mes (costo fijo real, no amortizado)
+  */
+
+  // Marketing % curve: empieza alto, baja conforme crece el orgánico
+  var mktgCurve = [0.45, 0.44, 0.40, 0.38, 0.35, 0.33, 0.31, 0.29, 0.28, 0.27, 0.26, 0.25];
+  // Growth multiplier por mes (lento al inicio, acelera con reviews)
+  var growthCurve = [1.0, 1.03, 1.08, 1.16, 1.26, 1.37, 1.50, 1.64, 1.79, 1.95, 2.13, 2.33];
+
+  // If user has custom growthRate, blend it with the curve
+  var customGrowth = cfg.growthRate || 0.08;
+  var growthScale = customGrowth / 0.10; // normalize against our base rate
+
+  return Array.from({length:12}, function(_,i){
+    var units = Math.round(cfg.unitsM1 * growthCurve[i] * growthScale);
+    var grossRev = units * cfg.sellingPrice;
+    var returns = grossRev * 0.05; // 5% devoluciones Amazon
+    var rev = grossRev - returns;
+
+    // Marketing: use curve as base, but respect user override if they changed it from default
+    var baseMktgPct = cfg.mktgPct === 0.25 ? mktgCurve[i] : Math.max(mktgCurve[i], cfg.mktgPct * (1 - i*0.01));
+    var mktg = rev * baseMktgPct;
+
+    var amzFee = rev * (cfg.amzFeePct || 0.15);
+    var fba = units * (cfg.fbaFee || 5.58);
+    var cogs = units * cfg.supplierCost;
+    var membership = 39.99; // full monthly fee, not amortized
+    var agency = cfg.agencyFee || 0;
+    var costs = mktg + amzFee + fba + membership + agency;
+    var net = rev - costs - cogs;
+    var tax = Math.max(0, net * (cfg.taxRate || 0.08));
+    var roas = mktg > 0 ? rev / mktg : 0;
+
+    return {
+      m: i+1,
+      label: 'Mes '+(i+1),
+      rev: rev,
+      grossRev: grossRev,
+      returns: returns,
+      units: units,
+      mktg: mktg,
+      mktgPct: baseMktgPct,
+      amzFee: amzFee,
+      fba: fba,
+      cogs: cogs,
+      costs: costs + cogs,
+      net: net,
+      tax: tax,
+      netTax: net - tax,
+      roas: roas
+    };
+  });
+}
+
+
+/* ===========================================
+   FORMATTERS
+=========================================== */
+function C$(n){ return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0); }
+function C(n){ return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0}).format(n||0); }
+function N(n){ return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(n||0)); }
+function PCT(n){ return ((n||0)*100).toFixed(1)+'%'; }
+
+function showDashboard({cfg,months,ue,title,productPlans}){
+  show('l-dash');
+  document.getElementById('dash-plan-name').textContent=title;
+  var _Ts=months.reduce(function(a,m){return{rev:a.rev+m.rev,netTax:a.netTax+m.netTax};},{rev:0,netTax:0});
+  S.currentPlan={id:(S.currentPlan&&S.currentPlan.id)||Date.now().toString(36),cfg:cfg,months:months,ue:ue,title:title,
+    productPlans:productPlans||null,
+    summary:'$'+Math.round(_Ts.rev/1000)+'k ingresos | $'+Math.round(_Ts.netTax/1000)+'k ganancia',savedAt:new Date().toISOString()};
+  // Store productPlans globally for per-product simulation
+  window._productPlans = productPlans ? JSON.parse(JSON.stringify(productPlans)) : null;
+  showURLBtn(false);
+  _simCfg=JSON.parse(JSON.stringify(cfg));
+  var T=months.reduce(function(a,m){return{rev:a.rev+m.rev,units:a.units+m.units,mktg:a.mktg+m.mktg,
+    amzFee:a.amzFee+m.amzFee,fba:a.fba+m.fba,cogs:a.cogs+m.cogs,costs:a.costs+m.costs,
+    net:a.net+m.net,tax:a.tax+m.tax,netTax:a.netTax+m.netTax};},
+    {rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0});
+  var ok=T.netTax>0;
+  var status=document.getElementById('dash-status');
+  status.className='status-pill '+(ok?'pill-ok':'pill-bad');
+  status.innerHTML='<div class="dot '+(ok?'dot-ok':'dot-bad')+'"></div>'+(ok?'Negocio Rentable':'Revisar Numeros');
+
+  // Break-even = month when cumulative net profit turns POSITIVE (after recovering all losses)
+  // Amazon reality: first months are losses due to high PPC, no organic, membership
+  var cumNet=0, beMonth=null;
+  for(var i=0;i<months.length;i++){
+    cumNet+=months[i].netTax;
+    if(cumNet>0 && !beMonth){ beMonth=i+1; break; }
+  }
+  // Note: We don't count initial inventory purchase as it's a separate capital outlay
+
+  // ROAS real
+  var roasReal = T.mktg>0 ? T.rev/T.mktg : 0;
+  // Per-month ROAS (from buildMonths .roas field)
+  var roasMonth1 = months[0] && months[0].roas ? months[0].roas : 2.2;
+  var roasMonth12 = months[11] && months[11].roas ? months[11].roas : roasReal;
+
+  // KPIs
+  var kpiHTML='<div class="kpi-grid">'
+    +'<div class="kpi"><div class="kpi-icon ki-b">$</div><div class="kpi-val">'+C(T.rev)+'</div><div class="kpi-lbl">Ingresos 12 meses</div></div>'
+    +'<div class="kpi"><div class="kpi-icon ki-p">#</div><div class="kpi-val">'+N(T.units)+'</div><div class="kpi-lbl">Unidades vendidas</div></div>'
+    +'<div class="kpi"><div class="kpi-icon '+(ok?'ki-g':'ki-r')+'">+</div><div class="kpi-val '+(T.net<0?'neg':'')+'">'+C(T.net)+'</div><div class="kpi-lbl">Ganancia neta</div></div>'
+    +'<div class="kpi"><div class="kpi-icon '+(ok?'ki-g':'ki-r')+'">$</div><div class="kpi-val '+(T.netTax<0?'neg':'')+'">'+C(T.netTax)+'</div><div class="kpi-lbl">Ganancia despues imp.</div><div class="kpi-hint">Margen: '+PCT(T.rev?T.netTax/T.rev:0)+'</div></div>'
+    +(beMonth
+      ?'<div class="kpi" style="border:2px solid #22c55e;background:#f0fdf4"><div class="kpi-icon ki-g">M</div><div class="kpi-val" style="color:#15803d">Mes '+beMonth+'</div><div class="kpi-lbl">Punto de equilibrio</div><div class="kpi-hint">Primer mes rentable acumulado</div></div>'
+      :'<div class="kpi" style="border:2px solid #ef4444;background:#fef2f2"><div class="kpi-icon ki-r">!</div><div class="kpi-val neg">No alcanzado</div><div class="kpi-lbl">Punto de equilibrio</div><div class="kpi-hint">No cubre costos en 12m</div></div>')
+    +'</div>';
+
+  // Economics
+  var econHTML='<div class="econ-grid">'
+    +'<div class="econ-card"><div class="econ-title">Economia por Unidad</div>'
+    +'<div class="econ-row"><span>Precio de venta</span><span>'+C$(cfg.sellingPrice)+'</span></div>'
+    +'<div class="econ-row"><span>Costo proveedor</span><span class="econ-neg">- '+C$(cfg.supplierCost)+'</span></div>'
+    +'<div class="econ-row"><span>FBA logistica</span><span class="econ-neg">- '+C$(cfg.fbaFee)+'</span></div>'
+    +'<div class="econ-row"><span>Comision Amazon ('+PCT(cfg.amzFeePct)+')</span><span class="econ-neg">- '+C$(cfg.sellingPrice*cfg.amzFeePct)+'</span></div>'
+    +'<div class="econ-row"><span>Marketing mes 1 ('+PCT(ue.displayMktgPct||0.45)+')</span><span class="econ-neg">- '+C$((cfg.sellingPrice*0.95)*(ue.displayMktgPct||0.45))+'</span></div>'
+    +'<div class="econ-row"><span><strong>Ganancia por unidad</strong></span><span class="'+(ue.profit>=0?'econ-pos':'econ-neg')+'">'+C$(ue.profit)+'</span></div>'
+    +'</div>'
+    +'<div class="econ-card"><div class="econ-title">Indicadores Clave</div>'
+    +'<div class="econ-row"><span>Margen neto</span><span class="'+(ue.margin>=0.15?'econ-pos':ue.margin>0?'':'econ-neg')+'">'+PCT(ue.margin)+'</span></div>'
+    +'<div class="econ-row"><span>ROI sobre costo</span><span class="'+(ue.roi>0?'econ-pos':'econ-neg')+'">'+PCT(ue.roi)+'</span></div>'
+    +'<div class="econ-row"><span>ROAS publicitario</span><span class="'+(roasReal>=3?'econ-pos':roasReal>=2?'':'econ-neg')+'" title="Por cada $1 en marketing generates $'+roasReal.toFixed(1)+' en ventas">'+roasReal.toFixed(1)+'x = $1 mktg → $'+roasReal.toFixed(1)+' ventas</span></div>'
+    +'<div class="econ-row"><span>Inversion mktg 12m</span><span>'+C(T.mktg)+'</span></div>'
+    +'<div class="econ-row"><span>Es rentable</span><span class="'+(ue.margin>0.15?'econ-pos':ue.margin>0?'':'econ-neg')+'">'+(ue.margin>0.2?'Si, muy bien':ue.margin>0.1?'Si, ajustado':ue.margin>0?'Apenas':'No rentable')+'</span></div>'
+    +'</div></div>';
+
+  var chartHTML='<div class="chart-card"><div class="chart-title">Proyeccion de Ingresos, Costos y Ganancia - 12 meses</div><div class="chart-area" id="chart-svg"></div></div>';
+
+  // Table with per-product detail + break-even highlight
+  var cumArr=[],cumS=0;
+  months.forEach(function(m){cumS+=m.netTax;cumArr.push(cumS);});
+
+  var rankColors=['#f97316','#6366f1','#06b6d4','#10b981','#8b5cf6','#ec4899','#f59e0b'];
+
+  var tbl='<div class="table-card"><div class="table-head" style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">Plan Financiero Detallado 12 Meses'
+    +(beMonth?' <span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 10px;border-radius:99px;">Punto equilibrio: Mes '+beMonth+'</span>':'')
+    +'</div><div class="table-scroll"><table class="fin-table"><thead><tr><th class="lft" style="min-width:220px">Métrica</th>'
+    +months.map(function(m,i){
+      return '<th style="'+(i+1===beMonth?'background:#dcfce7;color:#15803d;font-weight:800;':'')+'">'
+        +m.label+(i+1===beMonth?'<br><small style="font-size:8px">✓EQUIL.</small>':'')+'</th>';
+    }).join('')
+    +'<th class="tc">TOTAL</th></tr></thead><tbody>';
+
+  // ── ROW: INGRESOS TOTALES ──
+  tbl+='<tr class="tr-rev"><td class="lft">INGRESOS POR VENTAS</td>';
+  months.forEach(function(m,i){var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';tbl+='<td style="'+st+'">'+C$(m.rev)+'</td>';});
+  tbl+='<td class="tc">'+C$(months.reduce(function(s,m){return s+m.rev;},0))+'</td></tr>';
+
+  // ── UNIDADES TOTAL (editable) ──
+  tbl+='<tr><td class="lft" style="font-weight:700;background:#fafafa">UNIDADES VENDIDAS (TOTAL) <span style="font-size:9px;color:#94a3b8;font-weight:400">✏️ click para editar</span></td>';
+  months.forEach(function(m,i){
+    var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';
+    tbl+='<td style="font-weight:700;background:#fafafa;'+st+';cursor:pointer" '
+      +'contenteditable="true" '
+      +'data-month="'+i+'" data-field="units" '
+      +'onblur="cellBlur(this);handleCellEdit(this)" '
+      +'onfocus="cellFocus(this)" '
+      +'title="Clic para editar — presiona Enter para aplicar">'+N(m.units)+'</td>';
+  });
+  tbl+='<td class="tc" style="font-weight:700;background:#fafafa">'+N(months.reduce(function(s,m){return s+m.units;},0))+'</td></tr>';
+
+  // ── Per-product UNITS rows ──
+  if(productPlans && productPlans.length>1){
+    productPlans.forEach(function(pp,idx){
+      var col = rankColors[idx%rankColors.length];
+      tbl+='<tr style="background:#fafafa">'
+        +'<td class="lft" style="padding-left:22px;font-size:11px;color:#555;border-left:3px solid '+col+'">'
+          +'<span style="display:inline-flex;align-items:center;gap:5px">'
+          +'<span style="width:14px;height:14px;border-radius:50%;background:'+col+';color:#fff;font-size:8px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</span>'
+          +pp.cfg.productName
+          +(function(){var p=pp.product||{};var u=p.sourceUrl||(p.alibabaTerm?'https://www.alibaba.com/trade/search?SearchText='+encodeURIComponent(p.alibabaTerm)+'&IndexArea=product_en':'');return u?'<a href="'+u+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="margin-left:6px;font-size:9px;color:#94a3b8;text-decoration:none" onmouseover="this.style.color=\'#f97316\'" onmouseout="this.style.color=\'#94a3b8\'">🔗</a>':'';}())
+          +(pp.ue&&pp.ue.margin<0?'<button onclick="removePortfolioProduct('+idx+')" style="margin-left:6px;background:#fee2e2;border:none;color:#dc2626;cursor:pointer;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;font-family:inherit" title="No rentable — eliminar">✕ quitar</button>':'<button onclick="removePortfolioProduct('+idx+')" style="margin-left:6px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:10px;padding:0;font-family:inherit;opacity:.5" title="Eliminar">✕</button>')
+          +'</span>'
+        +'</td>';
+      var ppIdx=idx;
+      pp.months.forEach(function(m,i){
+        var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';
+        tbl+='<td style="font-size:11px;color:#555;'+st+';cursor:pointer" '
+          +'contenteditable="true" '
+          +'data-month="'+i+'" data-field="units" data-product="'+ppIdx+'" '
+          +'onblur="cellBlur(this);handleCellEdit(this)" '
+          +'onfocus="cellFocus(this)" '
+          +'>'+N(m.units)+'</td>';
+      });
+      tbl+='<td class="tc" style="font-size:11px;color:#666">'+N(pp.months.reduce(function(s,m){return s+m.units;},0))+'</td></tr>';
+    });
+  }
+
+  // ── COGS TOTAL ──
+  tbl+='<tr><td class="lft" style="font-weight:700;background:#fafafa">COSTO PRODUCTO / COGS (TOTAL)</td>';
+  months.forEach(function(m,i){var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';tbl+='<td style="font-weight:700;background:#fafafa;'+st+'">'+C$(m.cogs)+'</td>';});
+  tbl+='<td class="tc" style="font-weight:700;background:#fafafa">'+C$(months.reduce(function(s,m){return s+m.cogs;},0))+'</td></tr>';
+
+  // ── Per-product COGS rows ──
+  if(productPlans && productPlans.length>1){
+    productPlans.forEach(function(pp,idx){
+      var col = rankColors[idx%rankColors.length];
+      tbl+='<tr style="background:#fafafa">'
+        +'<td class="lft" style="padding-left:22px;font-size:11px;color:#555;border-left:3px solid '+col+'">'
+          +'<span style="display:inline-flex;align-items:center;gap:5px">'
+          +'<span style="width:14px;height:14px;border-radius:50%;background:'+col+';color:#fff;font-size:8px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</span>'
+          +pp.cfg.productName
+          +' <span style="color:#94a3b8;font-size:10px">($'+pp.cfg.supplierCost.toFixed(2)+'/ud)</span>'
+          +'</span>'
+        +'</td>';
+      pp.months.forEach(function(m,i){
+        var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';
+        tbl+='<td style="font-size:11px;color:#666;'+st+'">'+C$(m.cogs)+'</td>';
+      });
+      tbl+='<td class="tc" style="font-size:11px;color:#666">'+C$(pp.months.reduce(function(s,m){return s+m.cogs;},0))+'</td></tr>';
+    });
+  }
+
+  // ── Remaining rows ──
+  var remainRows=[
+    {key:'mktg',label:'GASTOS MARKETING (45%→25% real)',cls:'',fmt:C$},
+    {key:'amzFee',label:'COMISION AMAZON',cls:'',fmt:C$},
+    {key:'fba',label:'LOGISTICA FBA',cls:'',fmt:C$},
+    {key:'net',label:'GANANCIAS NETAS',cls:'tr-net',fmt:C$},
+    {key:'tax',label:'IMPUESTOS ('+Math.round(cfg.taxRate*100)+'%)',cls:'',fmt:C$},
+    {key:'netTax',label:'GANANCIAS DESPUES IMP.',cls:'tr-fin',fmt:C$},
+  ];
+  remainRows.forEach(function(row){
+    tbl+='<tr class="'+row.cls+'"><td class="lft">'+row.label+'</td>';
+    months.forEach(function(m,i){var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';tbl+='<td style="'+st+'">'+row.fmt(m[row.key])+'</td>';});
+    tbl+='<td class="tc">'+row.fmt(months.reduce(function(sum,m){return sum+m[row.key];},0))+'</td></tr>';
+  });
+
+  // ── Cumulative row ──
+  tbl+='<tr style="background:#f0f9ff"><td class="lft" style="color:#0369a1;font-weight:700;">GANANCIA ACUMULADA</td>';
+  cumArr.forEach(function(c2,i){
+    var be=i+1===beMonth;
+    tbl+='<td style="font-weight:700;color:'+(c2>=0?'#15803d':'#dc2626')+';'+(be?'background:#dcfce7;outline:2px solid #22c55e;outline-offset:-2px;':'')+'">'+C$(c2)+'</td>';
+  });
+  tbl+='<td class="tc" style="font-weight:800;color:'+(T.netTax>=0?'#15803d':'#dc2626')+'">'+C$(T.netTax)+'</td></tr>';
+  tbl+='</tbody></table></div></div>';
+
+  // AI panel
+  var aiHTML = '<div class="ai-panel-v2" id="ai-panel">'
+    // Header
+    +'<div class="ai-panel-header">'
+    +'<div class="ai-panel-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.5 7H22l-6 4.5 2.5 7L12 17l-6.5 3.5 2.5-7L2 9h7.5z"/></svg></div>'
+    +'<div><div class="ai-panel-title">Asesor IA</div>'
+    +'<div class="ai-panel-sub">Ajusta cualquier parámetro en lenguaje natural</div></div>'
+    +'<span class="ai-live-badge">EN VIVO</span>'
+    +'</div>'
+    // Thinking indicator
+    +'<div id="ai-thinking" style="padding:14px 20px;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:10px;">'
+    +'<span style="display:inline-flex;gap:4px">'
+    +'<span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;animation:bounce 1.2s infinite"></span>'
+    +'<span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;animation:bounce 1.2s .15s infinite"></span>'
+    +'<span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;animation:bounce 1.2s .3s infinite"></span>'
+    +'</span>Analizando tu plan...</div>'
+    // Recs area
+    +'<div id="ai-recs-area" style="display:none">'
+    +'<div id="ai-bullets" style="padding:14px 20px 0"></div>'
+    +'<div id="ai-rec-list" style="padding:10px 20px 6px;display:flex;flex-direction:column;gap:8px"></div>'
+    +'<div id="ai-scenarios" style="display:flex;flex-wrap:wrap;gap:6px;padding:6px 20px 14px"></div>'
+    +'</div>'
+    // Input row
+    +'<div class="ai-input-row">'
+    +'<input class="ai-input-field" id="ai-sim-input" '
+    +'placeholder="Ej: sube unidades del producto 2 a 40 · quita el mouse pad · baja precio $3..."/>'
+    +'<button class="btn-simulate-ia" id="btn-ai-sim" onclick="runAISim()">'
+    +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
+    +'Simular con IA</button>'
+    +'</div>'
+    +'</div>';
+
+  var insightHTML='';
+  if(S.aiInsight){
+    var cls2=ok?'ins-ok':ue.margin>0?'ins-warn':'ins-bad';
+    insightHTML='<div class="insight '+cls2+'">💡 '+S.aiInsight+'</div>';
+  }
+
+  // Per-product breakdown (only when portfolio)
+  var perProdHTML = '';
+  if(productPlans && productPlans.length > 1){
+    perProdHTML = '<div style="background:#fff;border-radius:16px;border:1px solid #e8e8e8;margin-bottom:18px;overflow:hidden">'
+      +'<div style="padding:13px 18px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:8px">'
+      +'<div style="font-size:13px;font-weight:800;color:#1a1a1a">Detalle por Producto</div>'
+      +'<span style="font-size:11px;color:#94a3b8">— proyección individual a 12 meses</span></div>'
+      +'<div style="padding:14px 18px;display:flex;flex-direction:column;gap:12px">';
+
+    var rankColors=['#f97316','#6366f1','#06b6d4','#10b981','#8b5cf6','#ec4899','#f59e0b'];
+    productPlans.forEach(function(pp, idx){
+      var T12 = pp.months.reduce(function(a,m){return{rev:a.rev+m.rev,net:a.net+m.netTax};},{rev:0,net:0});
+      var col = rankColors[idx % rankColors.length];
+      var isRent = T12.net > 0;
+
+      // Mini 12-month sparkline bar chart
+      var maxRev = Math.max.apply(null, pp.months.map(function(m){return m.rev;}));
+      var bars = pp.months.map(function(m, i){
+        var pct = maxRev>0 ? Math.round(m.rev/maxRev*100) : 0;
+        var netPct = maxRev>0 ? Math.round(m.netTax/maxRev*100) : 0;
+        return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">'
+          +'<div style="width:100%;background:#e8e8e8;border-radius:3px 3px 0 0;position:relative;height:40px">'
+          +'<div style="position:absolute;bottom:0;width:100%;background:'+col+';opacity:.3;height:'+pct+'%;border-radius:3px 3px 0 0"></div>'
+          +'<div style="position:absolute;bottom:0;width:100%;background:'+(isRent?'#10b981':'#ef4444')+';height:'+Math.max(0,netPct)+'%;border-radius:3px 3px 0 0"></div>'
+          +'</div>'
+          +(i%3===0?'<div style="font-size:7px;color:#bbb">M'+(i+1)+'</div>':'<div style="height:9px"></div>')
+          +'</div>';
+      }).join('');
+
+      perProdHTML += '<div class="prod-detail-card">'
+        // Header row
+        +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+          +'<div style="width:22px;height:22px;border-radius:50%;background:'+col+';color:#fff;'
+            +'font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</div>'
+          +'<div style="font-size:13px;font-weight:800;color:#1a1a1a;flex:1">'+pp.cfg.productName+'</div>'
+          +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:'+(isRent?'#dcfce7':'#fee2e2')+';color:'+(isRent?'#15803d':'#dc2626')+'">'+(isRent?'Rentable':'No rentable')+'</span>'
+        +'</div>'
+        // Key numbers
+        +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'
+          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
+            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Precio venta</div>'
+            +'<div style="font-size:14px;font-weight:800;color:#1a1a1a">$'+pp.cfg.sellingPrice.toFixed(2)+'</div>'
+          +'</div>'
+          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
+            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Costo proveedor</div>'
+            +'<div style="font-size:14px;font-weight:800;color:#1a1a1a">$'+pp.cfg.supplierCost.toFixed(2)+'</div>'
+          +'</div>'
+          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
+            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Ganancia/unidad</div>'
+            +'<div style="font-size:14px;font-weight:800;color:'+(pp.ue.profit>=0?'#15803d':'#dc2626')+'">$'+pp.ue.profit.toFixed(2)+'</div>'
+          +'</div>'
+          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
+            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Margen</div>'
+            +'<div style="font-size:14px;font-weight:800;color:'+(pp.ue.margin>=0.15?'#15803d':'#d97706')+'">'+(pp.ue.margin*100).toFixed(1)+'%</div>'
+          +'</div>'
+          +'<div style="flex:1;min-width:120px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
+            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Ganancia 12m</div>'
+            +'<div style="font-size:14px;font-weight:800;color:'+(T12.net>=0?'#15803d':'#dc2626')+'">$'+Math.round(T12.net).toLocaleString()+'</div>'
+          +'</div>'
+          +'<div style="flex:1;min-width:80px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
+            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Uds. mes 1</div>'
+            +'<div style="font-size:14px;font-weight:800;color:#1a1a1a">'+pp.cfg.unitsM1+'</div>'
+          +'</div>'
+        +'</div>'
+        // Sparkline
+        +'<div style="display:flex;gap:1px;align-items:flex-end;height:52px;margin-bottom:4px">'+bars+'</div>'
+        +'<div style="display:flex;gap:12px;font-size:10px;color:#94a3b8">'
+          +'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:'+col+';opacity:.4;display:inline-block"></span>Ingresos</span>'
+          +'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:'+(isRent?'#10b981':'#ef4444')+';display:inline-block"></span>Ganancia neta</span>'
+        +'</div>'
+        +buildProductLinks(pp.product)
+        +'</div>';
+    });
+
+    perProdHTML += '</div></div>';
+  }
+
+  document.getElementById('dash-inner').innerHTML = insightHTML + aiHTML + kpiHTML + econHTML + chartHTML + perProdHTML + tbl;
+
+  setTimeout(function(){
+    var inp = document.getElementById('ai-sim-input');
+    if(inp) inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')runAISim();});
+  },100);
+  setTimeout(function(){renderChart(months,beMonth);},60);
+  setTimeout(function(){loadAIAdvisor(cfg,months,ue,T,beMonth);},400);
+}
+
+function renderChart(months,beMonth){
+  var wrap=document.getElementById('chart-svg'); if(!wrap) return;
+  var W=800,H=180,PL=55,PR=15,PT=10,PB=28;
+  var pw=W-PL-PR,ph=H-PT-PB;
+  var maxV=months.reduce(function(m,d){return Math.max(m,d.rev,d.costs);},0)*1.1||1;
+  function sx(i){return PL+i*(pw/(months.length-1));}
+  function sy(v){return PT+ph-(v/maxV)*ph;}
+  function poly(vals,col,dash){
+    var pts=vals.map(function(v,i){return sx(i)+','+sy(v);}).join(' ');
+    return '<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" '+(dash?'stroke-dasharray="6 3"':'')+'/>';
+  }
+  function area(vals,col){
+    var pts=vals.map(function(v,i){return sx(i)+','+sy(v);}).join(' ');
+    return '<polygon points="'+sx(0)+','+sy(0)+' '+pts+' '+sx(months.length-1)+','+sy(0)+'" fill="'+col+'" opacity="0.07"/>';
+  }
+  var revV=months.map(function(m){return m.rev;});
+  var costV=months.map(function(m){return m.costs;});
+  var netV=months.map(function(m){return m.netTax;});
+  var grid='',xl='';
+  for(var i=0;i<=3;i++){
+    var v=maxV*i/3,y=sy(v);
+    grid+='<line x1="'+PL+'" y1="'+y+'" x2="'+(W-PR)+'" y2="'+y+'" stroke="#f1f5f9" stroke-width="1"/>';
+    grid+='<text x="'+(PL-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="10" fill="#94a3b8">$'+(v/1000).toFixed(0)+'k</text>';
+  }
+  months.forEach(function(m,i){
+    if(i%2===0||i===11)
+      xl+='<text x="'+sx(i)+'" y="'+(H-4)+'" text-anchor="middle" font-size="9.5" fill="#94a3b8">'+m.label+'</text>';
+  });
+  var beLine='';
+  if(beMonth>=1&&beMonth<=12){
+    var bx=sx(beMonth-1);
+    beLine='<line x1="'+bx+'" y1="'+PT+'" x2="'+bx+'" y2="'+(H-PB)+'" stroke="#22c55e" stroke-width="2" stroke-dasharray="4 3"/>'
+      +'<text x="'+(bx+4)+'" y="'+(PT+12)+'" font-size="9" fill="#15803d" font-weight="700">Mes '+beMonth+'</text>';
+  }
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:100%" xmlns="http://www.w3.org/2000/svg">'
+    +grid+xl+beLine
+    +area(revV,'#3b82f6')+area(netV,'#10b981')
+    +poly(revV,'#3b82f6')+poly(costV,'#f97316',true)+poly(netV,'#10b981')
+    +'<rect x="20" y="6" width="8" height="8" rx="2" fill="#3b82f6"/><text x="32" y="14" font-size="10" fill="#64748b">Ingresos</text>'
+    +'<rect x="100" y="6" width="8" height="8" rx="2" fill="#f97316" opacity=".7"/><text x="112" y="14" font-size="10" fill="#64748b">Costos</text>'
+    +'<rect x="165" y="6" width="8" height="8" rx="2" fill="#10b981"/><text x="177" y="14" font-size="10" fill="#64748b">Ganancia Neta</text>'
+    +(beMonth?'<line x1="255" y1="10" x2="263" y2="10" stroke="#22c55e" stroke-width="2" stroke-dasharray="3 2"/><text x="267" y="14" font-size="10" fill="#15803d" font-weight="700">Punto equilibrio</text>':'')
+    +'</svg>';
+  wrap.innerHTML=svg;
+}
+
+async function loadAIAdvisor(cfg, months, ue, T, beMonth) {
+  _simCfg=JSON.parse(JSON.stringify(cfg));
+  var profitable=T.netTax>0;
+  var roasReal=T.mktg>0?(T.rev/T.mktg).toFixed(2):'0';
+  var prompt='Eres asesor experto en Amazon FBA. Responde SOLO con JSON sin markdown.'
+    +' Producto: '+cfg.productName
+    +', Precio: $'+cfg.sellingPrice+', Costo: $'+cfg.supplierCost+', FBA: $'+cfg.fbaFee
+    +', Marketing: '+(cfg.mktgPct*100).toFixed(0)+'%, Amazon fee: '+(cfg.amzFeePct*100).toFixed(0)+'%'
+    +', Margen: '+(ue.margin*100).toFixed(1)+'%, ROAS real: '+roasReal+'x'
+    +', Ganancia 12m: $'+Math.round(T.netTax)+', Rentable: '+(profitable?'SI':'NO')
+    +', Punto equilibrio: '+(beMonth?'Mes '+beMonth:'No alcanzado')
+    +', Unidades mes1: '+cfg.unitsM1+', Crecimiento: '+(cfg.growthRate*100).toFixed(0)+'%/mes'
+    +'. JSON: {"bullets":["punto1","punto2","punto3","punto4","punto5"]'
+    +',"recommendations":[{"icon":"emoji","title":"titulo","text":"accion con numeros","type":"price","action":{"field":"sellingPrice","newValue":0,"label":"Aplicar"}}]'
+    +',"scenarios":["Simular 50 uds mes 1","Reducir marketing 15%","Subir precio $2","Crecimiento 15%/mes"]}';
+  try{
+    var raw=await callAI([{role:'user',content:prompt}]);
+    var m=raw.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('no json');
+    var data=JSON.parse(m[0]);
+    renderAIAdvisor(data,cfg);
+  } catch(err){
+    var el=document.getElementById('ai-thinking');
+    if(el) el.innerHTML='<span style="color:#f97316;font-size:12px">Error al cargar analisis IA. Usa el simulador.</span>';
+    var ar=document.getElementById('ai-recs-area');
+    if(ar) ar.style.display='block';
+  }
+}
+
+function renderAIAdvisor(data, cfg) {
+  var thinking=document.getElementById('ai-thinking');
+  var area=document.getElementById('ai-recs-area');
+  var bulletsDiv=document.getElementById('ai-bullets');
+  var list=document.getElementById('ai-rec-list');
+  var scenDiv=document.getElementById('ai-scenarios');
+  if(thinking) thinking.style.display='none';
+  if(area) area.style.display='block';
+
+  if(bulletsDiv&&data.bullets&&data.bullets.length){
+    bulletsDiv.innerHTML='<div style="background:#f8fafc;border-radius:10px;padding:12px 16px;margin-bottom:4px">'
+      +'<div style="font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Analisis de tu plan</div>'
+      +data.bullets.map(function(b,i){
+        return '<div style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:12.5px;color:#374151;border-bottom:'+(i<data.bullets.length-1?'1px solid #f1f5f9':'none')+'">'
+          +'<span style="color:#f97316;font-weight:800;flex-shrink:0">'+(i+1)+'.</span><span>'+b+'</span></div>';
+      }).join('')
+      +'</div>';
+  }
+
+  var colors={price:'#dbeafe',cost:'#dcfce7',marketing:'#fef9c3',units:'#ede9fe',fba:'#ffedd5'};
+  if(list){
+    window._aiRecs=data.recommendations||[];
+    list.innerHTML=(data.recommendations||[]).map(function(r,i){
+      var bg=colors[r.type]||'#f5f5f5';
+      return '<div style="display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border-radius:10px;border:1px solid #f0f0f0;background:#fafafa">'
+        +'<div style="flex-shrink:0;width:28px;height:28px;border-radius:8px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:14px">'+r.icon+'</div>'
+        +'<div style="flex:1"><div style="font-weight:700;font-size:12.5px;margin-bottom:2px">'+r.title+'</div>'
+        +'<div style="color:#666;font-size:12px">'+r.text+'</div></div>'
+        +(r.action?'<button onclick="applyRec('+i+')" style="flex-shrink:0;padding:4px 11px;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;background:#f97316;color:#fff;font-family:inherit;white-space:nowrap">'+(r.action.label||'Aplicar')+'</button>':'')
+        +'</div>';
+    }).join('');
+  }
+
+  if(scenDiv){
+    scenDiv.innerHTML='<span style="font-size:11px;color:#aaa;margin-right:4px">Simular:</span>'
+      +(data.scenarios||[]).map(function(sc){
+        var safe=sc.replace(/['"]/g,'');
+        return '<button style="padding:5px 12px;border:1.5px solid #e8e8e8;border-radius:99px;font-size:11.5px;font-weight:600;color:#555;cursor:pointer;background:#fff;font-family:inherit" '
+          +'onclick="var i2=document.getElementById(\"ai-sim-input\");if(i2)i2.value=this.textContent">'
+          +sc+'</button>';
+      }).join('');
+  }
+}
+
+function applyRec(idx) {
+  var rec = window._aiRecs && window._aiRecs[idx];
+  if (!rec || !rec.action || !rec.action.field) return;
+  var field = rec.action.field;
+  var val = parseFloat(rec.action.newValue);
+  S.aiInsight = rec.text || '';
+
+  // If we have a portfolio, apply to all products and rebuild
+  var plans = window._productPlans;
+  if(plans && plans.length > 0){
+    plans.forEach(function(pp){
+      // Apply the field change to each product
+      if(field === 'sellingPrice') pp.cfg.sellingPrice = val;
+      else if(field === 'supplierCost') pp.cfg.supplierCost = val;
+      else if(field === 'mktgPct') pp.cfg.mktgPct = val;
+      else if(field === 'growthRate') pp.cfg.growthRate = val;
+      else if(field === 'unitsM1'){
+        // Distribute total proportionally
+        var total = plans.reduce(function(s,p){return s+p.cfg.unitsM1;},0)||plans.length;
+        pp.cfg.unitsM1 = Math.max(1, Math.round(val * (pp.cfg.unitsM1/total)));
+      } else {
+        pp.cfg[field] = val;
+      }
+    });
+    rebuildWithOverrides(plans);
+  } else {
+    // Single product
+    var newCfg = JSON.parse(JSON.stringify(_simCfg));
+    newCfg[field] = val;
+    var newUe = calcUnitEconomics(newCfg);
+    var newMonths = buildMonths(newCfg);
+    _simCfg = newCfg;
+    showDashboard({cfg:newCfg, months:newMonths, ue:newUe, title: newCfg.productName + ' (ajustado)'});
+  }
+}
+
+async function runAISim() {
+  var inp = document.getElementById('ai-sim-input');
+  var query = inp ? inp.value.trim() : '';
+  if (!query) return;
+  var btn = document.getElementById('btn-ai-sim');
+  if (btn) { btn.disabled=true; btn.textContent='Calculando...'; }
+  var thinking = document.getElementById('ai-thinking');
+  var area = document.getElementById('ai-recs-area');
+  if (thinking) { thinking.style.display='flex'; thinking.innerHTML='<span style="display:inline-flex;gap:4px"><span style="width:5px;height:5px;background:#f97316;border-radius:50%;display:inline-block;animation:bounce 1.2s infinite"></span><span style="width:5px;height:5px;background:#f97316;border-radius:50%;display:inline-block;animation:bounce 1.2s .15s infinite"></span><span style="width:5px;height:5px;background:#f97316;border-radius:50%;display:inline-block;animation:bounce 1.2s .3s infinite"></span></span> Calculando ajuste...'; }
+  if (area) area.style.display='none';
+
+  var cfg = _simCfg || (S.currentPlan && S.currentPlan.cfg);
+  var currentProductPlans = window._productPlans || (S.currentPlan && S.currentPlan.productPlans);
+  if (!cfg) { if(btn){btn.disabled=false;btn.textContent='Simular';} return; }
+
+  // ── ADD MORE PRODUCTS ──
+  var qLow = query.toLowerCase();
+  var addWords = ['añadir','agregar','añade','agrega','mas productos','más productos','nuevo producto','nuevos productos','buscar mas','buscar más','otro producto','otros productos'];
+  if(addWords.some(function(w){return qLow.includes(w);})){
+    if(inp) inp.value='';
+    if(btn){btn.disabled=false;btn.textContent='Simular';}
+    // Save current plan state before going to chat
+    var savedPlan = S.currentPlan ? JSON.parse(JSON.stringify(S.currentPlan)) : null;
+    var savedProductPlans = window._productPlans ? JSON.parse(JSON.stringify(window._productPlans)) : null;
+    var savedConfirmed = S.confirmedProducts ? S.confirmedProducts.slice() : [];
+    // Go to chat in discover mode
+    show('l-chat');
+    document.getElementById('chat-body').innerHTML='';
+    document.getElementById('quick-area').innerHTML='';
+    S.path='discover'; S.products=[]; S.currentBatchPicks=[]; S.chatLocked=false;
+    document.getElementById('topbar-mode').textContent='Buscador IA';
+    showURLBtn(true);
+    // Restore confirmed so new picks merge
+    S.confirmedProducts = savedConfirmed;
+    var n = savedConfirmed.length;
+    setTimeout(function(){
+      botMsg('Perfecto! Tienes <strong>'+(n||0)+' producto'+(n!==1?'s':'')+' en tu plan actual</strong>. Busquemos los que quieres añadir 🔍').then(function(){
+        setTimeout(function(){ showAISearchOptions(); }, 400);
+      });
+    }, 200);
+    return;
+  }
+
+  // ── REMOVE PRODUCT ──
+  var removeWords = ['quita','elimina','retira','borra','saca','sin '];
+  if(S.confirmedProducts && S.confirmedProducts.length > 1 && removeWords.some(function(w){return qLow.includes(w);})){
+    var matchIdx = -1;
+    S.confirmedProducts.forEach(function(p,i){
+      var nameLow = p.name.toLowerCase();
+      if(qLow.includes(nameLow.substring(0,8))) matchIdx=i;
+      if(qLow.includes('producto '+(i+1)) || qLow.includes('el '+(i+1)) || qLow.includes('#'+(i+1))) matchIdx=i;
+    });
+    if(matchIdx>=0){
+      var removedName=S.confirmedProducts[matchIdx].name;
+      S.confirmedProducts.splice(matchIdx,1);
+      if(currentProductPlans) currentProductPlans.splice(matchIdx,1);
+      if(inp) inp.value='';
+      if(btn){btn.disabled=false;btn.textContent='Simular';}
+      await botMsg('Listo! Eliminé <strong>'+removedName+'</strong>. Recalculando...');
+      setTimeout(function(){
+        if(currentProductPlans && currentProductPlans.length){
+          window._productPlans=currentProductPlans;
+          rebuildWithOverrides(currentProductPlans);
+        } else { buildDiscoverPlan(); }
+      },400);
+      return;
+    }
+  }
+
+  // ── BUILD CONTEXT FOR AI ──
+  var productContext = '';
+  if(currentProductPlans && currentProductPlans.length > 1){
+    productContext = '\nPRODUCTOS EN EL PORTAFOLIO:'
+      + currentProductPlans.map(function(pp,i){
+          return '\n  Producto '+(i+1)+': '+pp.cfg.productName
+            +' | Precio: $'+pp.cfg.sellingPrice
+            +' | Costo: $'+pp.cfg.supplierCost
+            +' | Uds mes1: '+pp.cfg.unitsM1
+            +' | Crecimiento: '+(pp.cfg.growthRate*100).toFixed(0)+'%/mes';
+        }).join('');
+  }
+
+  var prompt = 'Eres experto Amazon FBA. El usuario quiere ajustar su plan.'
+    + '\nPlan actual: precio_promedio=$'+cfg.sellingPrice.toFixed(2)
+    + ', uds_mes1_total='+cfg.unitsM1
+    + ', crecimiento='+(cfg.growthRate*100).toFixed(0)+'%/mes'
+    + productContext
+    + '\n\nSOLICITUD: "'+query+'"'
+    + '\n\nResponde SOLO con JSON (sin markdown). Debes interpretar la solicitud y devolver LOS CAMBIOS necesarios.'
+    + '\nSi la solicitud es sobre TODOS los productos: modifica "globalCfgChanges"'
+    + '\nSi es sobre UN PRODUCTO específico: usa "productChanges" con el índice (0=primero)'
+    + '\nSi es sobre UN MES específico de un producto: usa "monthOverrides"'
+    + '\n\nJSON:'
+    + '\n{"explanation":"qué cambio se aplica y por qué",'
+    + '"globalCfgChanges":{"unitsM1":null,"growthRate":null,"mktgPct":null,"sellingPrice":null},'
+    + '"productChanges":[{"productIndex":0,"unitsM1":null,"growthRate":null,"mktgPct":null,"sellingPrice":null}],'
+    + '"monthOverrides":[{"productIndex":0,"monthIndex":2,"units":50}],'
+    + '"scenarioName":"nombre del escenario"}';
+
+  try {
+    var raw = await callAI([{role:'user',content:prompt}]);
+    var m = raw.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('no JSON');
+    var data = JSON.parse(m[0]);
+
+    // Apply changes
+    var hasPortfolio = currentProductPlans && currentProductPlans.length > 0;
+
+    if(hasPortfolio){
+      // Apply globalCfgChanges to ALL products
+      var gc = data.globalCfgChanges || {};
+      if(gc.unitsM1 != null){
+        // unitsM1 in AI response = TOTAL units. Distribute proportionally.
+        var totalRequested = parseFloat(gc.unitsM1);
+        var currentTotal = currentProductPlans.reduce(function(s,pp){return s+pp.cfg.unitsM1;},0)||currentProductPlans.length;
+        currentProductPlans.forEach(function(pp){
+          var share = pp.cfg.unitsM1 / currentTotal;
+          pp.cfg.unitsM1 = Math.max(1, Math.round(totalRequested * share));
+        });
+      }
+      currentProductPlans.forEach(function(pp){
+        if(gc.growthRate != null) pp.cfg.growthRate = parseFloat(gc.growthRate);
+        if(gc.mktgPct != null) pp.cfg.mktgPct = parseFloat(gc.mktgPct);
+        if(gc.sellingPrice != null) pp.cfg.sellingPrice = parseFloat(gc.sellingPrice);
+      });
+
+      // Apply productChanges to specific products
+      (data.productChanges || []).forEach(function(pc){
+        var pp = currentProductPlans[pc.productIndex];
+        if(!pp) return;
+        if(pc.unitsM1 != null) pp.cfg.unitsM1 = parseFloat(pc.unitsM1);
+        if(pc.growthRate != null) pp.cfg.growthRate = parseFloat(pc.growthRate);
+        if(pc.mktgPct != null) pp.cfg.mktgPct = parseFloat(pc.mktgPct);
+        if(pc.sellingPrice != null) pp.cfg.sellingPrice = parseFloat(pc.sellingPrice);
+      });
+
+      // Apply monthOverrides
+      (data.monthOverrides || []).forEach(function(mo){
+        var pp = currentProductPlans[mo.productIndex];
+        if(!pp) return;
+        if(!pp.unitOverrides) pp.unitOverrides = {};
+        pp.unitOverrides[mo.monthIndex] = parseInt(mo.units);
+      });
+
+      S.aiInsight = data.explanation || '';
+      if(inp) inp.value='';
+      await botMsg('Aplicado: <strong>'+data.explanation+'</strong> ✓');
+      setTimeout(function(){ rebuildWithOverrides(currentProductPlans); }, 300);
+
+    } else {
+      // Single product - apply globalCfgChanges
+      var newCfg = Object.assign({}, cfg);
+      var gc2 = data.globalCfgChanges || {};
+      if(gc2.unitsM1 != null) newCfg.unitsM1 = parseFloat(gc2.unitsM1);
+      if(gc2.growthRate != null) newCfg.growthRate = parseFloat(gc2.growthRate);
+      if(gc2.mktgPct != null) newCfg.mktgPct = parseFloat(gc2.mktgPct);
+      if(gc2.sellingPrice != null) newCfg.sellingPrice = parseFloat(gc2.sellingPrice);
+
+      // Month overrides for single product
+      var overrides = {};
+      (data.monthOverrides || []).forEach(function(mo){
+        overrides[mo.monthIndex] = parseInt(mo.units);
+      });
+
+      var newMonths = Object.keys(overrides).length > 0
+        ? buildMonthsWithOverrides(newCfg, overrides)
+        : buildMonths(newCfg);
+      var newUe = calcUnitEconomics(newCfg);
+      _simCfg = newCfg;
+      S.aiInsight = data.explanation || '';
+      if(inp) inp.value='';
+      await botMsg('Aplicado: <strong>'+data.explanation+'</strong> ✓');
+      setTimeout(function(){
+        showDashboard({cfg:newCfg,months:newMonths,ue:newUe,
+          title:(data.scenarioName||cfg.productName)+' (ajustado)'});
+      }, 300);
+    }
+
+  } catch(err) {
+    if(thinking) thinking.innerHTML='<span style="color:#dc2626;font-size:12px">Error: '+err.message+'</span>';
+    if(area) area.style.display='block';
+  }
+  if(btn){ btn.disabled=false; btn.textContent='Simular'; }
+}
+
+function savePlanToStorage() {
+  if (!S.currentPlan) { alert('No hay plan activo.'); return; }
+  var plans = JSON.parse(localStorage.getItem('sp_plans')||'[]');
+  var idx = plans.findIndex(function(p){return p.id===S.currentPlan.id;});
+  var entry = Object.assign({}, S.currentPlan, {savedAt:new Date().toISOString()});
+  if (idx>=0) plans[idx]=entry; else plans.unshift(entry);
+  if (plans.length>20) plans.length=20;
+  localStorage.setItem('sp_plans', JSON.stringify(plans));
+  var btn = document.getElementById('btn-save-plan');
+  if (btn) {
+    var orig = btn.innerHTML;
+    btn.textContent = 'Guardado!';
+    btn.style.background = 'rgba(16,185,129,.2)'; btn.style.color = '#10b981';
+    setTimeout(function(){ btn.innerHTML=orig; btn.style.background=''; btn.style.color=''; }, 2000);
+  }
+}
+
+function openSavedPanel() {
+  renderSavedList();
+  var p = document.getElementById('saved-panel');
+  var o = document.getElementById('panel-overlay');
+  if (p) p.classList.add('open');
+  if (o) o.style.display = 'block';
+}
+function closeSavedPanel() {
+  var p = document.getElementById('saved-panel');
+  var o = document.getElementById('panel-overlay');
+  if (p) p.classList.remove('open');
+  if (o) o.style.display = 'none';
+}
+function renderSavedList() {
+  var plans = JSON.parse(localStorage.getItem('sp_plans')||'[]');
+  var list = document.getElementById('saved-list');
+  if (!list) return;
+  if (!plans.length) { list.innerHTML='<div style="text-align:center;padding:40px 20px;color:#bbb;font-size:13px">No tienes planes guardados.<br><br>Genera un plan y haz clic en Guardar.</div>'; return; }
+  list.innerHTML = plans.map(function(p,i){
+    return '<div style="background:#f8f8f8;border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;border:2px solid transparent;transition:all .15s" onclick="loadSavedPlan('+i+')" onmouseover="this.style.borderColor=\'#f97316\'" onmouseout="this.style.borderColor=\'transparent\'">'
+      +'<div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:2px">' + (p.title||'Plan sin nombre') + '</div>'
+      +'<div style="font-size:11px;color:#999">' + new Date(p.savedAt).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) + '</div>'
+      +'<div style="font-size:11px;color:#f97316;font-weight:600;margin-top:2px">' + (p.summary||'') + '</div>'
+      +'<div style="display:flex;gap:6px;margin-top:8px">'
+      +'<button style="flex:1;padding:5px 10px;background:rgba(16,185,129,.15);color:#10b981;border:none;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();downloadExcelFromPlan('+i+')">Descargar Excel</button>'
+      +'<button style="padding:5px 10px;background:#fee2e2;color:#dc2626;border:none;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();deleteSavedPlan('+i+')">Borrar</button>'
+      +'</div></div>';
+  }).join('');
+}
+function loadSavedPlan(idx) {
+  var plans = JSON.parse(localStorage.getItem('sp_plans')||'[]');
+  var p = plans[idx]; if(!p) return;
+  closeSavedPanel(); S.currentPlan=p;
+  showDashboard({cfg:p.cfg,months:p.months,ue:p.ue,title:p.title});
+}
+function deleteSavedPlan(idx) {
+  if (!confirm('Eliminar este plan?')) return;
+  var plans = JSON.parse(localStorage.getItem('sp_plans')||'[]');
+  plans.splice(idx,1);
+  localStorage.setItem('sp_plans',JSON.stringify(plans));
+  renderSavedList();
+}
+
+/* EXCEL EXPORT */
+function downloadExcel() { if(S.currentPlan) downloadExcelFromData(S.currentPlan); else alert('No hay plan activo.'); }
+function downloadExcelFromPlan(idx) { var plans=JSON.parse(localStorage.getItem('sp_plans')||'[]'); if(plans[idx]) downloadExcelFromData(plans[idx]); }
+function downloadExcelFromData(plan) {
+  var cfg=plan.cfg, months=plan.months, ue=plan.ue, title=plan.title;
+  var f=function(n){return parseFloat((n||0).toFixed(2));};
+  var rows=[
+    ['SELLERPLUS FORECAST - PLAN DE NEGOCIO AMAZON'],[],
+    ['PRODUCTO',title],['Fecha',new Date().toLocaleDateString('es-CO')],[],
+    ['ECONOMIA POR UNIDAD'],
+    ['Precio de Venta',f(cfg.sellingPrice)],['Costo Proveedor',f(cfg.supplierCost)],
+    ['FBA Fee',f(cfg.fbaFee)],['Comision Amazon',f(cfg.sellingPrice*cfg.amzFeePct)],
+    ['Marketing',f(cfg.sellingPrice*cfg.mktgPct)],
+    ['GANANCIA POR UNIDAD',f(ue.profit)],['MARGEN NETO',(ue.margin*100).toFixed(1)+'%'],
+    ['ROI',(ue.roi*100).toFixed(0)+'%'],[],
+    ['PROYECCION 12 MESES'],
+    ['Mes','Ingresos','Unidades','Marketing','Fee Amazon','Logistica','Costo Producto','Ganancia Neta','Impuestos','Ganancia Final']
+  ];
+  months.forEach(function(m){rows.push([m.label,f(m.rev),m.units,f(m.mktg),f(m.amzFee),f(m.fba),f(m.cogs),f(m.net),f(m.tax),f(m.netTax)]);});
+  var T=months.reduce(function(a,m){return{rev:a.rev+m.rev,units:a.units+m.units,net:a.net+m.net,netTax:a.netTax+m.netTax};},{rev:0,units:0,net:0,netTax:0});
+  rows.push([],[' TOTAL ANUAL',f(T.rev),Math.round(T.units),'','','','',f(T.net),'',f(T.netTax)],[],
+    ['RESUMEN'],['Total Ingresos',f(T.rev)],['Ganancia Final',f(T.netTax)],
+    ['Margen',T.rev>0?(T.netTax/T.rev*100).toFixed(1)+'%':'0%'],
+    ['Rentable',T.netTax>0?'SI':'NO']);
+  var csv=rows.map(function(r){return r.map(function(c){var s=String(c);return s.includes(',')||s.includes('"')?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');}).join('\n');
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a'); a.href=url;
+  a.download='SellerPlus_'+((title||'plan').replace(/[^a-z0-9]/gi,'_'))+'_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function showURLBtn(visible){ /* btn removed */ }
+
+
+/* ===========================================
+   SAVE / LOAD PLANS (localStorage)
+=========================================== */
+
+function suggestMoreProducts(){
+  document.getElementById('prod-grid')&&document.getElementById('prod-grid').remove();
+  document.getElementById('btn-confirm-picks')&&document.getElementById('btn-confirm-picks').remove();
+  S.products=[]; S.currentBatchPicks=[];
+  botMsg('¡Vamos por más! ¿En qué categoría buscamos esta vez?').then(function(){
+    var cats=['🏠 Hogar y Cocina','💪 Fitness','🐾 Mascotas','💄 Belleza','📱 Gadgets','☕ Gourmet','👶 Bebés','🌿 Salud'];
+    showQuickReplies(cats, function(v){ userMsg(v); clearQuick(); searchWinningProducts(v); });
+    unlockInput();
+  });
+}
+
+
+/* ===========================================
+   REBUILD WITH UNIT OVERRIDES
+   Supports: global change, per-product, per-month
+=========================================== */
+function rebuildWithOverrides(productPlans){
+  // Recalculate months for each product with their current cfg + overrides
+  var updated = productPlans.map(function(pp){
+    var months = pp.unitOverrides
+      ? buildMonthsWithOverrides(pp.cfg, pp.unitOverrides)
+      : buildMonths(pp.cfg);
+    var ue = calcUnitEconomics(pp.cfg);
+    return Object.assign({}, pp, {months: months, ue: ue});
+  });
+
+  // Consolidate
+  var consolidated = Array.from({length:12}, function(_,i){
+    return updated.reduce(function(acc, pp){
+      var m = pp.months[i];
+      return {m:i+1,label:'Mes '+(i+1),
+        rev:acc.rev+m.rev, units:acc.units+m.units,
+        mktg:acc.mktg+m.mktg, amzFee:acc.amzFee+m.amzFee,
+        fba:acc.fba+m.fba, cogs:acc.cogs+m.cogs,
+        costs:acc.costs+m.costs, net:acc.net+m.net,
+        tax:acc.tax+m.tax, netTax:acc.netTax+m.netTax, roas:0};
+    }, {m:i+1,label:'Mes '+(i+1),rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0,roas:0});
+  });
+  consolidated.forEach(function(m){ m.roas=m.mktg>0?m.rev/m.mktg:0; });
+
+  var totalUnitsM1 = updated.reduce(function(s,pp){return s+pp.cfg.unitsM1;},0);
+  var consolidatedCfg = Object.assign({}, (window._productPlans||updated)[0].cfg, {
+    productName: S.currentPlan ? S.currentPlan.title : 'Portafolio',
+    unitsM1: totalUnitsM1
+  });
+  var consolidatedUe = calcUnitEconomics(consolidatedCfg);
+
+  window._productPlans = updated;
+  S.currentPlan = Object.assign({}, S.currentPlan, {
+    productPlans: updated, months: consolidated, cfg: consolidatedCfg, ue: consolidatedUe
+  });
+
+  showDashboard({
+    cfg: consolidatedCfg,
+    months: consolidated,
+    ue: consolidatedUe,
+    title: consolidatedCfg.productName,
+    productPlans: updated
+  });
+}
+
+function buildMonthsWithOverrides(cfg, overrides){
+  // overrides: {0: 25, 2: 30, 5: 45} — month index → forced units
+  var base = buildMonths(cfg);
+  return base.map(function(m, i){
+    if(overrides && overrides[i] !== undefined){
+      var forcedUnits = overrides[i];
+      var rev = forcedUnits * cfg.sellingPrice * 0.95;
+      var mktgCurve = [0.45,0.44,0.40,0.38,0.35,0.33,0.31,0.29,0.28,0.27,0.26,0.25];
+      var mktgPct = mktgCurve[i];
+      var mktg = rev * mktgPct;
+      var amzFee = rev * (cfg.amzFeePct||0.15);
+      var fba = forcedUnits * (cfg.fbaFee||5.58);
+      var cogs = forcedUnits * cfg.supplierCost;
+      var memb = cfg.membership||39.99;
+      var net = rev - mktg - amzFee - fba - memb - cogs;
+      var tax = Math.max(0, net*(cfg.taxRate||0.08));
+      return {m:i+1,label:'Mes '+(i+1),rev:rev,units:forcedUnits,
+        mktg:mktg,mktgPct:mktgPct,amzFee:amzFee,fba:fba,cogs:cogs,
+        costs:mktg+amzFee+fba+memb+cogs,net:net,tax:tax,netTax:net-tax,
+        roas:mktg>0?rev/mktg:0};
+    }
+    return m;
+  });
+}
+function removePortfolioProduct(idx){
+  if(S.confirmedProducts.length <= 1){
+    // Only one product - confirm then go back to search
+    var prod = S.confirmedProducts[idx];
+    if(!confirm('Eliminar "'+prod.name+'" y buscar un reemplazo?')) return;
+    S.confirmedProducts = [];
+    window._productPlans = null;
+    show('l-chat');
+    document.getElementById('chat-body').innerHTML='';
+    document.getElementById('quick-area').innerHTML='';
+    S.path='discover'; S.products=[]; S.currentBatchPicks=[]; S.chatLocked=false;
+    document.getElementById('topbar-mode').textContent='Buscador IA';
+    showURLBtn(true);
+    setTimeout(function(){runDiscoverStep(0);},200);
+    return;
+  }
+  var removed = S.confirmedProducts[idx];
+  S.confirmedProducts.splice(idx, 1);
+  if(window._productPlans) window._productPlans.splice(idx,1);
+  // Immediate rebuild + offer to add replacement
+  buildDiscoverPlan().then ? buildDiscoverPlan() : buildDiscoverPlan();
+  // Show offer to add replacement after short delay
+  setTimeout(function(){
+    var offerDiv = document.createElement('div');
+    offerDiv.id='add-product-offer';
+    offerDiv.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);'
+      +'background:#1d1d1f;color:#fff;border-radius:14px;padding:14px 20px;'
+      +'display:flex;align-items:center;gap:14px;z-index:300;box-shadow:0 8px 32px rgba(0,0,0,.25);'
+      +'animation:fadeIn .3s ease;max-width:500px;width:calc(100%-40px)';
+    offerDiv.innerHTML='<div style="flex:1"><div style="font-size:13px;font-weight:700">Eliminaste <em>'+removed.name+'</em></div>'
+      +'<div style="font-size:12px;opacity:.7;margin-top:2px">¿Quieres buscar un producto de reemplazo?</div></div>'
+      +'<button onclick="searchReplacement()" style="padding:8px 16px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">Buscar ↗</button>'
+      +'<button onclick="document.getElementById(\'add-product-offer\').remove()" style="padding:8px;background:rgba(255,255,255,.15);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:inherit;font-size:13px">✕</button>';
+    document.body.appendChild(offerDiv);
+    setTimeout(function(){offerDiv.remove&&offerDiv.remove();},8000);
+  }, 800);
+}
+
+function searchReplacement(){
+  document.getElementById('add-product-offer')&&document.getElementById('add-product-offer').remove();
+  // Go to chat in discover mode, preserving existing confirmed products
+  var existingProducts = S.confirmedProducts.slice();
+  show('l-chat');
+  document.getElementById('chat-body').innerHTML='';
+  document.getElementById('quick-area').innerHTML='';
+  S.path='discover'; S.products=[]; S.currentBatchPicks=[]; S.chatLocked=false;
+  document.getElementById('topbar-mode').textContent='Buscador IA';
+  showURLBtn(true);
+  setTimeout(function(){
+    botMsg('Perfecto! Tienes <strong>'+existingProducts.length+' producto'+(existingProducts.length>1?'s':'')+' ya seleccionados</strong>. Busquemos el o los reemplazos que necesitas 🔍');
+    setTimeout(function(){showAISearchOptions();},600);
+  },200);
+}
+
+function cellFocus(c){c.style.outline="2px solid #f97316";c.style.background="#fff7ed";c.dataset.original=c.textContent;}
+function cellBlur(c){c.style.outline="";c.style.background="";}
+function handleCellEdit(cell){
+  cell.style.outline='';
+  cell.style.background='';
+  var rawVal = cell.textContent.replace(/[^0-9.]/g,'').trim();
+  var newVal = parseFloat(rawVal);
+  if(isNaN(newVal)||newVal<0){ cell.textContent=cell.dataset.original||cell.textContent; return; }
+
+  var monthIdx = parseInt(cell.dataset.month);
+  var productIdx = cell.dataset.product!=null ? parseInt(cell.dataset.product) : -1;
+  var field = cell.dataset.field; // 'units'
+
+  var plans = window._productPlans;
+
+  if(plans && plans.length > 1 && productIdx >= 0 && productIdx < plans.length){
+    // Edit specific product, specific month
+    if(!plans[productIdx].unitOverrides) plans[productIdx].unitOverrides={};
+    plans[productIdx].unitOverrides[monthIdx] = Math.round(newVal);
+    cell.textContent = Math.round(newVal).toLocaleString();
+    // Show feedback
+    cell.style.background='#f0fdf4';
+    setTimeout(function(){ cell.style.background=''; }, 1200);
+    // Rebuild
+    setTimeout(function(){ rebuildWithOverrides(plans); }, 300);
+
+  } else if(plans && plans.length > 0 && productIdx === -1){
+    // Edit total units row — distribute proportionally across products
+    var currentTotal = plans.reduce(function(s,pp){
+      var mo=pp.unitOverrides&&pp.unitOverrides[monthIdx]!=null?pp.unitOverrides[monthIdx]:pp.months[monthIdx].units;
+      return s+mo;
+    },0)||1;
+    plans.forEach(function(pp){
+      var curr=pp.unitOverrides&&pp.unitOverrides[monthIdx]!=null?pp.unitOverrides[monthIdx]:pp.months[monthIdx].units;
+      if(!pp.unitOverrides) pp.unitOverrides={};
+      pp.unitOverrides[monthIdx]=Math.max(1,Math.round(newVal*(curr/currentTotal)));
+    });
+    cell.textContent = Math.round(newVal).toLocaleString();
+    cell.style.background='#f0fdf4';
+    setTimeout(function(){ cell.style.background=''; }, 1200);
+    setTimeout(function(){ rebuildWithOverrides(plans); }, 300);
+
+  } else if(S.currentPlan && !plans){
+    // Single product: use monthOverrides on the cfg
+    var cfg = _simCfg || S.currentPlan.cfg;
+    if(!window._singleOverrides) window._singleOverrides={};
+    window._singleOverrides[monthIdx]=Math.round(newVal);
+    cell.textContent=Math.round(newVal).toLocaleString();
+    cell.style.background='#f0fdf4';
+    setTimeout(function(){ cell.style.background=''; }, 1200);
+    var newMonths=buildMonthsWithOverrides(cfg,window._singleOverrides);
+    var newUe=calcUnitEconomics(cfg);
+    S.aiInsight='Editado manualmente: mes '+(monthIdx+1)+' → '+Math.round(newVal)+' uds';
+    setTimeout(function(){
+      showDashboard({cfg:cfg,months:newMonths,ue:newUe,title:S.currentPlan.title||cfg.productName});
+    },300);
+  }
+}
+</script>
+<div id="saved-panel" style="position:fixed;right:0;top:0;bottom:0;width:320px;background:#fff;box-shadow:-4px 0 40px rgba(0,0,0,.12);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)">
+  <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+    <span style="font-size:15px;font-weight:800;color:var(--text)">Mis Planes</span>
+    <button onclick="closeSavedPanel()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1">&times;</button>
+  </div>
+  <div id="saved-list" style="flex:1;overflow-y:auto;padding:14px"></div>
+</div>
+<div id="panel-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199" onclick="closeSavedPanel()"></div>
+
+</body>
+</html>
