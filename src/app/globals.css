@@ -1,0 +1,38 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red: #CC0000;
+  --red-h: #A80000;
+  --blk: #0D0D0D;
+  --wh: #ffffff;
+  --g1: #F7F7F7;
+  --g2: #EFEFEF;
+  --g3: #E0E0E0;
+  --g4: #999999;
+  --g5: #555555;
+  --bd: #E8E8E8;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body { -webkit-font-smoothing: antialiased; background: var(--wh); color: var(--blk); }
+button { cursor: pointer; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-5px); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(100%); }
+  to { transform: translateX(-50%) translateY(0); }
+}
