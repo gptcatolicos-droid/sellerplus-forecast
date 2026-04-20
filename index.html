@@ -889,23 +889,23 @@ const GF_NOMBRE  = 'entry.1207475632';
 const GF_CORREO  = 'emailAddress';   // ⚠️ especial
 const GF_CELULAR = 'entry.1522207022';
 
-function sendToGoogleSheets(data){
-  try {
-    if(!document.getElementById('_gf_frame')){
-      var fr=document.createElement('iframe');
-      fr.name='_gf_hidden'; fr.id='_gf_frame'; fr.style.display='none';
-      document.body.appendChild(fr);
-    }
-    var f=document.createElement('form');
-    f.method='POST'; f.action=GF_ACTION; f.target='_gf_hidden'; f.style.display='none';
-    [{n:GF_NOMBRE,v:data.nombre},{n:GF_CORREO,v:data.correo},{n:GF_CELULAR,v:data.celular}]
-      .forEach(function(p){ var i=document.createElement('input');i.type='hidden';i.name=p.n;i.value=p.v||'';f.appendChild(i); });
-    document.body.appendChild(f); f.submit();
-    setTimeout(function(){ try{f.remove();}catch(e){} },3000);
-  } catch(e){}
-}
+  function sendToGoogleSheets(data) {
+  const formData = new URLSearchParams();
 
-/* ===========================================
+  formData.append('entry.1207475632', data.nombre);
+  formData.append('entry.1522207022', data.celular);
+  formData.append('emailAddress', data.correo);
+
+  fetch('https://docs.google.com/forms/d/e/1FAIpQLSd1z10YyqitAdDz9ajrTd4MB02Qby6z4PkIJLbjmEL3IB5MwA/formResponse', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: formData
+  });
+}
+===========
    WELCOME
 =========================================== */
 function quickStart(path){
