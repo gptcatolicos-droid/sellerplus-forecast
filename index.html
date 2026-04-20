@@ -521,6 +521,8 @@ body { font-family: var(--font-sans); font-size: 14px; line-height: 1.5; color: 
 #content-pane { flex: 1; overflow: hidden; position: relative; }
 .content-view { position: absolute; inset: 0; overflow-y: auto; display: none; }
 .content-view.active { display: block; }
+#view-chat.active { display: flex !important; flex-direction: column; }
+#view-chat.active { display: flex !important; flex-direction: column; }
 
 /* Chat view overrides inside app shell */
 #view-chat { display: none; flex-direction: column; }
@@ -855,7 +857,7 @@ body { font-family: var(--font-sans); font-size: 14px; line-height: 1.5; color: 
     <div id="content-pane">
 
       <!-- VIEW: CHAT (simulador / buscador) -->
-      <div class="content-view" id="view-chat" style="display:flex;flex-direction:column">
+      <div class="content-view" id="view-chat">
         <div class="chat-body-wrap" id="chat-body"></div>
         <div id="quick-area"></div>
         <div class="chat-footer-wrap">
@@ -869,7 +871,7 @@ body { font-family: var(--font-sans); font-size: 14px; line-height: 1.5; color: 
       </div>
 
       <!-- VIEW: DASHBOARD (results from simulation) -->
-      <div class="content-view" id="view-dash">
+      <div class="content-view" id="view-dash" style="display:flex;flex-direction:column;height:100%;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;border-bottom:1px solid var(--gray-100);flex-shrink:0;background:white">
           <span class="dash-plan-name" id="dash-plan-name"></span>
           <div style="display:flex;gap:8px;align-items:center">
@@ -929,7 +931,8 @@ function showOnboarding(){
 function showAppShell(view){
   document.getElementById('layer-onboarding').classList.remove('active');
   document.getElementById('app-shell').classList.add('active');
-  activateView(view || 'chat');
+  // Small delay to ensure DOM is ready
+  setTimeout(function(){ activateView(view || 'chat'); }, 10);
 }
 
 function activateView(view){
