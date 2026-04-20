@@ -708,8 +708,8 @@ body { font-family: var(--font-sans); font-size: 14px; line-height: 1.5; color: 
           onmouseover="this.style.borderColor='#F58220';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';this.style.transform='translateY(-1px)'"
           onmouseout="this.style.borderColor='#DFE2E7';this.style.boxShadow='0 1px 2px rgba(16,24,40,0.05)';this.style.transform='translateY(0)'">
           <div style="display:flex;align-items:flex-start;gap:12px">
-            <div style="width:40px;height:40px;border-radius:10px;background:#FFF5EC;border:1px solid rgba(245,130,32,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F58220" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg>
+            <div style="width:48px;height:40px;border-radius:10px;background:#F8F9FB;border:1px solid #EAECEF;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px">
+              <img src="/amazon-logo.png" alt="Amazon" style="height:26px;width:auto;object-fit:contain"/>
             </div>
             <div style="flex:1;min-width:0">
               <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
@@ -729,8 +729,8 @@ body { font-family: var(--font-sans); font-size: 14px; line-height: 1.5; color: 
           onmouseover="this.style.borderColor='#7B5CFF';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';this.style.transform='translateY(-1px)'"
           onmouseout="this.style.borderColor='#DFE2E7';this.style.boxShadow='0 1px 2px rgba(16,24,40,0.05)';this.style.transform='translateY(0)'">
           <div style="display:flex;align-items:flex-start;gap:12px">
-            <div style="width:40px;height:40px;border-radius:10px;background:#F3F0FF;border:1px solid rgba(123,92,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7B5CFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.5 5.5l2 2M16.5 16.5l2 2M5.5 18.5l2-2M16.5 7.5l2-2"/></svg>
+            <div style="width:48px;height:40px;border-radius:10px;background:#F8F9FB;border:1px solid #EAECEF;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px">
+              <img src="/alibaba-logo.png" alt="Alibaba" style="height:24px;width:auto;object-fit:contain"/>
             </div>
             <div style="flex:1;min-width:0">
               <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
@@ -1064,10 +1064,13 @@ function quickStart(path){
   document.getElementById('path-hi') && (document.getElementById('path-hi').textContent='Hola '+name+'!');
   document.getElementById('topbar-user') && (document.getElementById('topbar-user').textContent=name);
   setTopbarUser && setTopbarUser(name);
+  // Update sidebar active state based on path
+  var _navEl = document.getElementById(path==='simulate'?'nav-simulator':'nav-search');
+  if(_navEl){ document.querySelectorAll('.sidebar-item').forEach(function(x){x.classList.remove('active');}); _navEl.classList.add('active'); }
   S.path=path; S.step=0; S.data={}; S.products=[]; S.confirmedProducts=[]; S.currentBatchPicks=[]; S.chatLocked=false;
   document.getElementById('chat-body').innerHTML='';
   document.getElementById('quick-area').innerHTML='';
-  document.getElementById('topbar-mode').textContent=path==='simulate'?'Simulador':'Buscador IA';
+  var _tm=document.getElementById('topbar-mode'); if(_tm) _tm.textContent=path==='simulate'?'Simulador':'Buscador IA';
   showURLBtn(path==='discover');
   show('l-chat');
   setTimeout(function(){path==='simulate'?runSimulateStep(0):runDiscoverStep(0);},300);
@@ -1102,7 +1105,7 @@ function startPath(path){
   S.chatLocked = false;
   document.getElementById('chat-body').innerHTML = '';
   document.getElementById('quick-area').innerHTML = '';
-  document.getElementById('topbar-mode').textContent = path==='simulate' ? '📊 Simulador' : '🔍 Buscador IA';
+  var _tm2=document.getElementById('topbar-mode'); if(_tm2) _tm2.textContent=path==='simulate'?'Simulador':'Buscador IA';
   showURLBtn(path==='discover');
   show('l-chat');
   setTimeout(()=>{ path==='simulate' ? runSimulateStep(0) : runDiscoverStep(0); }, 300);
@@ -1285,7 +1288,7 @@ const SIM_STEPS = [
             showQuickReplies(['🏠 Hogar','💪 Fitness','🐾 Mascotas','💄 Belleza','📱 Gadgets','☕ Cocina'],function(v){
               userMsg(v); clearQuick();
               S.path='discover'; S.products=[]; S.confirmedProducts=[]; S.currentBatchPicks=[];
-              document.getElementById('topbar-mode').textContent='Buscador IA';
+              var _tm3=document.getElementById('topbar-mode'); if(_tm3) _tm3.textContent='Buscador IA';
               showURLBtn(true);
               discoverCategory=v;
               searchWinningProducts(v);
@@ -1542,14 +1545,14 @@ Da una recomendación clave de 1 oración.`}]);
                 // Redirect to discover for new product
                 S.path='discover'; S.products=[]; S.currentBatchPicks=[];
                 if(!S.confirmedProducts) S.confirmedProducts=[];
-                document.getElementById('topbar-mode').textContent='Buscador IA';
+                var _tm3=document.getElementById('topbar-mode'); if(_tm3) _tm3.textContent='Buscador IA';
                 showURLBtn(true);
                 showAISearchOptions();
               });
             } else if(opt.v==='suggest'){
               S.path='discover'; S.products=[]; S.currentBatchPicks=[];
               if(!S.confirmedProducts) S.confirmedProducts=[];
-              document.getElementById('topbar-mode').textContent='Buscador IA';
+              var _tm3=document.getElementById('topbar-mode'); if(_tm3) _tm3.textContent='Buscador IA';
               showURLBtn(true);
               botMsg('¡Vamos! ¿En qué categoría buscamos productos complementarios?').then(function(){
                 showAISearchOptions();
@@ -2198,301 +2201,439 @@ function PCT(n){ return ((n||0)*100).toFixed(1)+'%'; }
 
 function showDashboard({cfg,months,ue,title,productPlans}){
   show('l-dash');
-  document.getElementById('dash-plan-name').textContent=title;
-  var _Ts=months.reduce(function(a,m){return{rev:a.rev+m.rev,netTax:a.netTax+m.netTax};},{rev:0,netTax:0});
-  S.currentPlan={id:(S.currentPlan&&S.currentPlan.id)||Date.now().toString(36),cfg:cfg,months:months,ue:ue,title:title,
+  var planNameEl = document.getElementById('dash-plan-name'); if(planNameEl) planNameEl.textContent = title;
+  var _Ts = months.reduce(function(a,m){return{rev:a.rev+m.rev,netTax:a.netTax+m.netTax};},{rev:0,netTax:0});
+  S.currentPlan = {
+    id:(S.currentPlan&&S.currentPlan.id)||Date.now().toString(36),
+    cfg:cfg, months:months, ue:ue, title:title,
     productPlans:productPlans||null,
-    summary:'$'+Math.round(_Ts.rev/1000)+'k ingresos | $'+Math.round(_Ts.netTax/1000)+'k ganancia',savedAt:new Date().toISOString()};
-  // Store productPlans globally for per-product simulation
+    summary:'$'+Math.round(_Ts.rev/1000)+'k ingresos | $'+Math.round(_Ts.netTax/1000)+'k ganancia',
+    savedAt:new Date().toISOString()
+  };
   window._productPlans = productPlans ? JSON.parse(JSON.stringify(productPlans)) : null;
   showURLBtn(false);
-  _simCfg=JSON.parse(JSON.stringify(cfg));
-  var T=months.reduce(function(a,m){return{rev:a.rev+m.rev,units:a.units+m.units,mktg:a.mktg+m.mktg,
-    amzFee:a.amzFee+m.amzFee,fba:a.fba+m.fba,cogs:a.cogs+m.cogs,costs:a.costs+m.costs,
-    net:a.net+m.net,tax:a.tax+m.tax,netTax:a.netTax+m.netTax};},
-    {rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0});
-  var ok=T.netTax>0;
-  var status=document.getElementById('dash-status');
-  status.className='status-pill '+(ok?'pill-ok':'pill-bad');
-  status.innerHTML='<div class="dot '+(ok?'dot-ok':'dot-bad')+'"></div>'+(ok?'Negocio Rentable':'Revisar Numeros');
+  _simCfg = JSON.parse(JSON.stringify(cfg));
 
-  // Break-even = month when cumulative net profit turns POSITIVE (after recovering all losses)
-  // Amazon reality: first months are losses due to high PPC, no organic, membership
+  var T = months.reduce(function(a,m){return{
+    rev:a.rev+m.rev, units:a.units+m.units, mktg:a.mktg+m.mktg,
+    amzFee:a.amzFee+m.amzFee, fba:a.fba+m.fba, cogs:a.cogs+m.cogs,
+    costs:a.costs+m.costs, net:a.net+m.net, tax:a.tax+m.tax, netTax:a.netTax+m.netTax
+  };},{rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0});
+
+  var ok = T.netTax > 0;
+  var statusEl = document.getElementById('dash-status');
+  if(statusEl){
+    statusEl.className = 'status-pill '+(ok?'pill-ok':'pill-bad');
+    statusEl.innerHTML = '<div class="dot '+(ok?'dot-ok':'dot-bad')+'"></div>'+(ok?'Negocio Rentable':'Revisar Números');
+  }
+
+  // Breakeven
   var cumNet=0, beMonth=null;
-  for(var i=0;i<months.length;i++){
-    cumNet+=months[i].netTax;
-    if(cumNet>0 && !beMonth){ beMonth=i+1; break; }
-  }
-  // Note: We don't count initial inventory purchase as it's a separate capital outlay
+  for(var i=0;i<months.length;i++){ cumNet+=months[i].netTax; if(cumNet>0&&!beMonth){beMonth=i+1;break;} }
 
-  // ROAS real
   var roasReal = T.mktg>0 ? T.rev/T.mktg : 0;
-  // Per-month ROAS (from buildMonths .roas field)
-  var roasMonth1 = months[0] && months[0].roas ? months[0].roas : 2.2;
-  var roasMonth12 = months[11] && months[11].roas ? months[11].roas : roasReal;
+  var numProds = productPlans ? productPlans.length : 1;
+  var invInicial = cfg.supplierCost * cfg.unitsM1;
 
-  // KPIs
-  var kpiHTML='<div class="kpi-grid">'
-    +'<div class="kpi"><div class="kpi-icon ki-b">$</div><div class="kpi-val">'+C(T.rev)+'</div><div class="kpi-lbl">Ingresos 12 meses</div></div>'
-    +'<div class="kpi"><div class="kpi-icon ki-p">#</div><div class="kpi-val">'+N(T.units)+'</div><div class="kpi-lbl">Unidades vendidas</div></div>'
-    +'<div class="kpi"><div class="kpi-icon '+(ok?'ki-g':'ki-r')+'">+</div><div class="kpi-val '+(T.net<0?'neg':'')+'">'+C(T.net)+'</div><div class="kpi-lbl">Ganancia neta</div></div>'
-    +'<div class="kpi"><div class="kpi-icon '+(ok?'ki-g':'ki-r')+'">$</div><div class="kpi-val '+(T.netTax<0?'neg':'')+'">'+C(T.netTax)+'</div><div class="kpi-lbl">Ganancia despues imp.</div><div class="kpi-hint">Margen: '+PCT(T.rev?T.netTax/T.rev:0)+'</div></div>'
-    +(beMonth
-      ?'<div class="kpi" style="border:2px solid #22c55e;background:#f0fdf4"><div class="kpi-icon ki-g">M</div><div class="kpi-val" style="color:#15803d">Mes '+beMonth+'</div><div class="kpi-lbl">Punto de equilibrio</div><div class="kpi-hint">Primer mes rentable acumulado</div></div>'
-      :'<div class="kpi" style="border:2px solid #ef4444;background:#fef2f2"><div class="kpi-icon ki-r">!</div><div class="kpi-val neg">No alcanzado</div><div class="kpi-lbl">Punto de equilibrio</div><div class="kpi-hint">No cubre costos en 12m</div></div>')
-    +'</div>';
+  // ── 1. HEADER BREADCRUMB ──
+  var breadcrumbEl = document.getElementById('topbar-breadcrumb');
+  if(breadcrumbEl) breadcrumbEl.innerHTML = '<span style="color:var(--text-secondary)">Simulador</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:.4"><path d="m9 6 6 6-6 6"/></svg><span style="color:var(--text-primary);font-weight:550">Proyección 12 meses</span>';
 
-  // Economics
-  var econHTML='<div class="econ-grid">'
-    +'<div class="econ-card"><div class="econ-title">Economia por Unidad</div>'
-    +'<div class="econ-row"><span>Precio de venta</span><span>'+C$(cfg.sellingPrice)+'</span></div>'
-    +'<div class="econ-row"><span>Costo proveedor</span><span class="econ-neg">- '+C$(cfg.supplierCost)+'</span></div>'
-    +'<div class="econ-row"><span>FBA logistica</span><span class="econ-neg">- '+C$(cfg.fbaFee)+'</span></div>'
-    +'<div class="econ-row"><span>Comision Amazon ('+PCT(cfg.amzFeePct)+')</span><span class="econ-neg">- '+C$(cfg.sellingPrice*cfg.amzFeePct)+'</span></div>'
-    +'<div class="econ-row"><span>Marketing mes 1 ('+PCT(ue.displayMktgPct||0.45)+')</span><span class="econ-neg">- '+C$((cfg.sellingPrice*0.95)*(ue.displayMktgPct||0.45))+'</span></div>'
-    +'<div class="econ-row"><span><strong>Ganancia por unidad</strong></span><span class="'+(ue.profit>=0?'econ-pos':'econ-neg')+'">'+C$(ue.profit)+'</span></div>'
-    +'</div>'
-    +'<div class="econ-card"><div class="econ-title">Indicadores Clave</div>'
-    +'<div class="econ-row"><span>Margen neto</span><span class="'+(ue.margin>=0.15?'econ-pos':ue.margin>0?'':'econ-neg')+'">'+PCT(ue.margin)+'</span></div>'
-    +'<div class="econ-row"><span>ROI sobre costo</span><span class="'+(ue.roi>0?'econ-pos':'econ-neg')+'">'+PCT(ue.roi)+'</span></div>'
-    +'<div class="econ-row"><span>ROAS publicitario</span><span class="'+(roasReal>=3?'econ-pos':roasReal>=2?'':'econ-neg')+'" title="Por cada $1 en marketing generates $'+roasReal.toFixed(1)+' en ventas">'+roasReal.toFixed(1)+'x = $1 mktg → $'+roasReal.toFixed(1)+' ventas</span></div>'
-    +'<div class="econ-row"><span>Inversion mktg 12m</span><span>'+C(T.mktg)+'</span></div>'
-    +'<div class="econ-row"><span>Es rentable</span><span class="'+(ue.margin>0.15?'econ-pos':ue.margin>0?'':'econ-neg')+'">'+(ue.margin>0.2?'Si, muy bien':ue.margin>0.1?'Si, ajustado':ue.margin>0?'Apenas':'No rentable')+'</span></div>'
-    +'</div></div>';
-
-  var chartHTML='<div class="chart-card"><div class="chart-title">Proyeccion de Ingresos, Costos y Ganancia - 12 meses</div><div class="chart-area" id="chart-svg"></div></div>';
-
-  // Table with per-product detail + break-even highlight
-  var cumArr=[],cumS=0;
-  months.forEach(function(m){cumS+=m.netTax;cumArr.push(cumS);});
-
-  var rankColors=['#f97316','#6366f1','#06b6d4','#10b981','#8b5cf6','#ec4899','#f59e0b'];
-
-  var tbl='<div class="table-card"><div class="table-head" style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">Plan Financiero Detallado 12 Meses'
-    +(beMonth?' <span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 10px;border-radius:99px;">Punto equilibrio: Mes '+beMonth+'</span>':'')
-    +'</div><div class="table-scroll"><table class="fin-table"><thead><tr><th class="lft" style="min-width:220px">Métrica</th>'
-    +months.map(function(m,i){
-      return '<th style="'+(i+1===beMonth?'background:#dcfce7;color:#15803d;font-weight:800;':'')+'">'
-        +m.label+(i+1===beMonth?'<br><small style="font-size:8px">✓EQUIL.</small>':'')+'</th>';
-    }).join('')
-    +'<th class="tc">TOTAL</th></tr></thead><tbody>';
-
-  // ── ROW: INGRESOS TOTALES ──
-  tbl+='<tr class="tr-rev"><td class="lft">INGRESOS POR VENTAS</td>';
-  months.forEach(function(m,i){var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';tbl+='<td style="'+st+'">'+C$(m.rev)+'</td>';});
-  tbl+='<td class="tc">'+C$(months.reduce(function(s,m){return s+m.rev;},0))+'</td></tr>';
-
-  // ── UNIDADES TOTAL (editable) ──
-  tbl+='<tr><td class="lft" style="font-weight:700;background:#fafafa">UNIDADES VENDIDAS (TOTAL) <span style="font-size:9px;color:#94a3b8;font-weight:400">✏️ click para editar</span></td>';
-  months.forEach(function(m,i){
-    var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';
-    tbl+='<td style="font-weight:700;background:#fafafa;'+st+';cursor:pointer" '
-      +'contenteditable="true" '
-      +'data-month="'+i+'" data-field="units" '
-      +'onblur="cellBlur(this);handleCellEdit(this)" '
-      +'onfocus="cellFocus(this)" '
-      +'title="Clic para editar — presiona Enter para aplicar">'+N(m.units)+'</td>';
-  });
-  tbl+='<td class="tc" style="font-weight:700;background:#fafafa">'+N(months.reduce(function(s,m){return s+m.units;},0))+'</td></tr>';
-
-  // ── Per-product UNITS rows ──
-  if(productPlans && productPlans.length>1){
-    productPlans.forEach(function(pp,idx){
-      var col = rankColors[idx%rankColors.length];
-      tbl+='<tr style="background:#fafafa">'
-        +'<td class="lft" style="padding-left:22px;font-size:11px;color:#555;border-left:3px solid '+col+'">'
-          +'<span style="display:inline-flex;align-items:center;gap:5px">'
-          +'<span style="width:14px;height:14px;border-radius:50%;background:'+col+';color:#fff;font-size:8px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</span>'
-          +pp.cfg.productName
-          +(function(){var p=pp.product||{};var u=p.sourceUrl||(p.alibabaTerm?'https://www.alibaba.com/trade/search?SearchText='+encodeURIComponent(p.alibabaTerm)+'&IndexArea=product_en':'');return u?'<a href="'+u+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="margin-left:6px;font-size:9px;color:#94a3b8;text-decoration:none" onmouseover="this.style.color=\'#f97316\'" onmouseout="this.style.color=\'#94a3b8\'">🔗</a>':'';}())
-          +(pp.ue&&pp.ue.margin<0?'<button onclick="removePortfolioProduct('+idx+')" style="margin-left:6px;background:#fee2e2;border:none;color:#dc2626;cursor:pointer;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;font-family:inherit" title="No rentable — eliminar">✕ quitar</button>':'<button onclick="removePortfolioProduct('+idx+')" style="margin-left:6px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:10px;padding:0;font-family:inherit;opacity:.5" title="Eliminar">✕</button>')
-          +'</span>'
-        +'</td>';
-      var ppIdx=idx;
-      pp.months.forEach(function(m,i){
-        var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';
-        tbl+='<td style="font-size:11px;color:#555;'+st+';cursor:pointer" '
-          +'contenteditable="true" '
-          +'data-month="'+i+'" data-field="units" data-product="'+ppIdx+'" '
-          +'onblur="cellBlur(this);handleCellEdit(this)" '
-          +'onfocus="cellFocus(this)" '
-          +'>'+N(m.units)+'</td>';
-      });
-      tbl+='<td class="tc" style="font-size:11px;color:#666">'+N(pp.months.reduce(function(s,m){return s+m.units;},0))+'</td></tr>';
-    });
-  }
-
-  // ── COGS TOTAL ──
-  tbl+='<tr><td class="lft" style="font-weight:700;background:#fafafa">COSTO PRODUCTO / COGS (TOTAL)</td>';
-  months.forEach(function(m,i){var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';tbl+='<td style="font-weight:700;background:#fafafa;'+st+'">'+C$(m.cogs)+'</td>';});
-  tbl+='<td class="tc" style="font-weight:700;background:#fafafa">'+C$(months.reduce(function(s,m){return s+m.cogs;},0))+'</td></tr>';
-
-  // ── Per-product COGS rows ──
-  if(productPlans && productPlans.length>1){
-    productPlans.forEach(function(pp,idx){
-      var col = rankColors[idx%rankColors.length];
-      tbl+='<tr style="background:#fafafa">'
-        +'<td class="lft" style="padding-left:22px;font-size:11px;color:#555;border-left:3px solid '+col+'">'
-          +'<span style="display:inline-flex;align-items:center;gap:5px">'
-          +'<span style="width:14px;height:14px;border-radius:50%;background:'+col+';color:#fff;font-size:8px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</span>'
-          +pp.cfg.productName
-          +' <span style="color:#94a3b8;font-size:10px">($'+pp.cfg.supplierCost.toFixed(2)+'/ud)</span>'
-          +'</span>'
-        +'</td>';
-      pp.months.forEach(function(m,i){
-        var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';
-        tbl+='<td style="font-size:11px;color:#666;'+st+'">'+C$(m.cogs)+'</td>';
-      });
-      tbl+='<td class="tc" style="font-size:11px;color:#666">'+C$(pp.months.reduce(function(s,m){return s+m.cogs;},0))+'</td></tr>';
-    });
-  }
-
-  // ── Remaining rows ──
-  var remainRows=[
-    {key:'mktg',label:'GASTOS MARKETING (45%→25% real)',cls:'',fmt:C$},
-    {key:'amzFee',label:'COMISION AMAZON',cls:'',fmt:C$},
-    {key:'fba',label:'LOGISTICA FBA',cls:'',fmt:C$},
-    {key:'net',label:'GANANCIAS NETAS',cls:'tr-net',fmt:C$},
-    {key:'tax',label:'IMPUESTOS ('+Math.round(cfg.taxRate*100)+'%)',cls:'',fmt:C$},
-    {key:'netTax',label:'GANANCIAS DESPUES IMP.',cls:'tr-fin',fmt:C$},
-  ];
-  remainRows.forEach(function(row){
-    tbl+='<tr class="'+row.cls+'"><td class="lft">'+row.label+'</td>';
-    months.forEach(function(m,i){var st=i+1===beMonth?'outline:2px solid #22c55e;outline-offset:-2px;':'';tbl+='<td style="'+st+'">'+row.fmt(m[row.key])+'</td>';});
-    tbl+='<td class="tc">'+row.fmt(months.reduce(function(sum,m){return sum+m[row.key];},0))+'</td></tr>';
-  });
-
-  // ── Cumulative row ──
-  tbl+='<tr style="background:#f0f9ff"><td class="lft" style="color:#0369a1;font-weight:700;">GANANCIA ACUMULADA</td>';
-  cumArr.forEach(function(c2,i){
-    var be=i+1===beMonth;
-    tbl+='<td style="font-weight:700;color:'+(c2>=0?'#15803d':'#dc2626')+';'+(be?'background:#dcfce7;outline:2px solid #22c55e;outline-offset:-2px;':'')+'">'+C$(c2)+'</td>';
-  });
-  tbl+='<td class="tc" style="font-weight:800;color:'+(T.netTax>=0?'#15803d':'#dc2626')+'">'+C$(T.netTax)+'</td></tr>';
-  tbl+='</tbody></table></div></div>';
-
-  // AI panel
-  var aiHTML = '<div class="ai-panel-v2" id="ai-panel">'
-    // Header
-    +'<div class="ai-panel-header">'
-    +'<div class="ai-panel-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.5 7H22l-6 4.5 2.5 7L12 17l-6.5 3.5 2.5-7L2 9h7.5z"/></svg></div>'
-    +'<div><div class="ai-panel-title">Asesor IA</div>'
-    +'<div class="ai-panel-sub">Ajusta cualquier parámetro en lenguaje natural</div></div>'
-    +'<span class="ai-live-badge">EN VIVO</span>'
-    +'</div>'
-    // Thinking indicator
-    +'<div id="ai-thinking" style="padding:14px 20px;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:10px;">'
-    +'<span style="display:inline-flex;gap:4px">'
-    +'<span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;animation:bounce 1.2s infinite"></span>'
-    +'<span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;animation:bounce 1.2s .15s infinite"></span>'
-    +'<span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;animation:bounce 1.2s .3s infinite"></span>'
-    +'</span>Analizando tu plan...</div>'
-    // Recs area
-    +'<div id="ai-recs-area" style="display:none">'
-    +'<div id="ai-bullets" style="padding:14px 20px 0"></div>'
-    +'<div id="ai-rec-list" style="padding:10px 20px 6px;display:flex;flex-direction:column;gap:8px"></div>'
-    +'<div id="ai-scenarios" style="display:flex;flex-wrap:wrap;gap:6px;padding:6px 20px 14px"></div>'
-    +'</div>'
-    // Input row
-    +'<div class="ai-input-row">'
-    +'<input class="ai-input-field" id="ai-sim-input" '
-    +'placeholder="Ej: sube unidades del producto 2 a 40 · quita el mouse pad · baja precio $3..."/>'
-    +'<button class="btn-simulate-ia" id="btn-ai-sim" onclick="runAISim()">'
-    +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
-    +'Simular con IA</button>'
-    +'</div>'
-    +'</div>';
-
-  var insightHTML='';
+  // ── 2. INSIGHT BANNER ──
+  var insightBanner = '';
   if(S.aiInsight){
-    var cls2=ok?'ins-ok':ue.margin>0?'ins-warn':'ins-bad';
-    insightHTML='<div class="insight '+cls2+'">💡 '+S.aiInsight+'</div>';
+    var iCls = ok?'ins-ok':ue.margin>0?'ins-warn':'ins-bad';
+    insightBanner = '<div class="insight '+iCls+'">💡 '+S.aiInsight+'</div>';
   }
 
-  // Per-product breakdown (only when portfolio)
-  var perProdHTML = '';
-  if(productPlans && productPlans.length > 1){
-    perProdHTML = '<div style="background:#fff;border-radius:16px;border:1px solid #e8e8e8;margin-bottom:18px;overflow:hidden">'
-      +'<div style="padding:13px 18px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:8px">'
-      +'<div style="font-size:13px;font-weight:800;color:#1a1a1a">Detalle por Producto</div>'
-      +'<span style="font-size:11px;color:#94a3b8">— proyección individual a 12 meses</span></div>'
-      +'<div style="padding:14px 18px;display:flex;flex-direction:column;gap:12px">';
+  // ── 3. PAGE HEADER (like mockup) ──
+  var pageHeader = '<div style="margin-bottom:20px">'
+    +'<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gray-400);margin-bottom:8px">'
+    +'<span>Simulador</span>'
+    +'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>'
+    +'<span style="color:var(--text-primary);font-weight:550">Proyección 12 meses</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">'
+    +'<div>'
+    +'<h1 style="font-size:24px;font-weight:700;letter-spacing:-0.02em;margin:0 0 4px;color:var(--gray-900)">Simulación financiera</h1>'
+    +'<p style="font-size:13px;color:var(--text-secondary);margin:0">'
+    +numProds+' producto'+(numProds>1?'s':'')+' · inversión inicial '
+    +'<span style="font-family:var(--font-mono);font-weight:600;color:var(--text-primary)">$'+Math.round(invInicial).toLocaleString()+'</span>'
+    +' · horizonte 12 meses'
+    +'</p>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button onclick="downloadExcel()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;background:white;border:1px solid var(--gray-150);border-radius:8px;font-size:13px;font-weight:550;color:var(--text-primary);cursor:pointer;font-family:inherit;box-shadow:var(--shadow-xs)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v14M7 12l5 5 5-5M5 21h14"/></svg> Exportar</button>'
+    +'<button onclick="savePlanToStorage()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;background:white;border:1px solid var(--gray-150);border-radius:8px;font-size:13px;font-weight:550;color:var(--text-primary);cursor:pointer;font-family:inherit;box-shadow:var(--shadow-xs)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1-.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg> Supuestos</button>'
+    +'<button onclick="showPlanView&&showPlanView()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--orange-500);border:none;border-radius:8px;font-size:13px;font-weight:600;color:white;cursor:pointer;font-family:inherit;box-shadow:0 1px 2px rgba(245,130,32,0.25)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg> Ver plan detallado</button>'
+    +'</div>'
+    +'</div>'
+    +'</div>';
 
-    var rankColors=['#f97316','#6366f1','#06b6d4','#10b981','#8b5cf6','#ec4899','#f59e0b'];
+  // ── 4. AI ADJUST BAR ──
+  var aiBar = '<div style="background:white;border:1px solid var(--orange-200);border-radius:var(--r-lg);padding:10px 14px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">'
+    +'<div style="width:32px;height:32px;border-radius:8px;background:var(--orange-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+    +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--orange-600)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.5 5.5l2 2M16.5 16.5l2 2M5.5 18.5l2-2M16.5 7.5l2-2"/></svg>'
+    +'</div>'
+    +'<input id="ai-sim-input" class="ai-input-field" style="border:none;padding:6px 0;font-size:13px;background:transparent;flex:1;" placeholder="Ajustar con IA — Ej: «sube unidades del producto 2 a 40» o «quita el mes pico, baja precio $5»"/>'
+    +'<button onclick="runAISim()" class="btn-simulate-ia">Simular con IA</button>'
+    +'</div>';
+
+  // ── 5. KPI GRID 5 columnas (exacto al mockup) ──
+  var beKpiStyle = beMonth
+    ? 'background:linear-gradient(135deg,#FFF8F1,#FFFFFF);border-color:var(--orange-200);box-shadow:0 0 0 4px rgba(245,130,32,0.04);'
+    : 'background:var(--danger-50);border-color:var(--danger-200);';
+  var beKpiVal = beMonth
+    ? '<div style="font-family:var(--font-mono);font-size:28px;font-weight:600;letter-spacing:-0.5px;color:var(--orange-700);line-height:1.1">Mes '+beMonth+'</div>'
+    : '<div style="font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--danger-600)">No alcanzado</div>';
+
+  var kpiGrid = '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;">'
+    // KPI 1 – Ingresos
+    +'<div style="background:white;border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:16px 18px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    +'<div style="font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;">Ingresos · 12 meses</div>'
+    +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
+    +'</div>'
+    +'<div style="font-family:var(--font-mono);font-size:24px;font-weight:600;letter-spacing:-0.5px;color:var(--gray-900);line-height:1.1;font-variant-numeric:tabular-nums;">'+C(T.rev)+'</div>'
+    +'<div style="font-size:11px;color:var(--success-600);margin-top:6px;display:flex;align-items:center;gap:4px;font-weight:550;">+12.4% vs proyección base</div>'
+    +'</div>'
+    // KPI 2 – Unidades
+    +'<div style="background:white;border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:16px 18px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    +'<div style="font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;">Unidades vendidas</div>'
+    +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/></svg>'
+    +'</div>'
+    +'<div style="font-family:var(--font-mono);font-size:24px;font-weight:600;letter-spacing:-0.5px;color:var(--gray-900);line-height:1.1;font-variant-numeric:tabular-nums;">'+N(T.units)+'</div>'
+    +'<div style="font-size:11px;color:var(--text-secondary);margin-top:6px;">Distribuidas en '+numProds+' SKU'+(numProds>1?'s':'')+'</div>'
+    +'</div>'
+    // KPI 3 – Ganancia neta
+    +'<div style="background:white;border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:16px 18px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    +'<div style="font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;">Ganancia neta</div>'
+    +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>'
+    +'</div>'
+    +'<div style="font-family:var(--font-mono);font-size:24px;font-weight:600;letter-spacing:-0.5px;color:'+(T.net>=0?'var(--gray-900)':'var(--danger-600)')+';line-height:1.1;font-variant-numeric:tabular-nums;">'+C(T.net)+'</div>'
+    +'<div style="font-size:11px;color:var(--text-secondary);margin-top:6px;">Margen '+PCT(T.rev?T.net/T.rev:0)+'</div>'
+    +'</div>'
+    // KPI 4 – Ganancia tras breakeven
+    +'<div style="background:white;border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:16px 18px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    +'<div style="font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;">Ganancia tras punto eq.</div>'
+    +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l3-3 4 4 7-7"/></svg>'
+    +'</div>'
+    +'<div style="font-family:var(--font-mono);font-size:24px;font-weight:600;letter-spacing:-0.5px;color:'+(T.netTax>=0?'var(--gray-900)':'var(--danger-600)')+';line-height:1.1;font-variant-numeric:tabular-nums;">'+C(T.netTax)+'</div>'
+    +'<div style="font-size:11px;color:var(--success-600);margin-top:6px;font-weight:550;">+'+PCT(T.rev?T.netTax/T.rev:0)+' de rentabilidad</div>'
+    +'</div>'
+    // KPI 5 – Breakeven (highlighted orange)
+    +'<div style="border:1px solid var(--orange-200);border-radius:var(--r-lg);padding:16px 18px;'+beKpiStyle+'">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    +'<div style="font-size:11px;font-weight:600;color:var(--orange-700);text-transform:uppercase;letter-spacing:0.06em;">Punto de equilibrio</div>'
+    +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange-500)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>'
+    +'</div>'
+    +beKpiVal
+    +'<div style="font-size:11px;color:var(--orange-600);margin-top:6px;">'+( beMonth?'Primer mes rentable':'No se alcanza en 12m')+'</div>'
+    +'</div>'
+    +'</div>';
+
+  // ── 6. ECONOMICS + INDICATORS (2 cols side by side like mockup) ──
+  var econCard = '<div style="background:white;border:1px solid var(--gray-100);border-radius:var(--r-lg);overflow:hidden;">'
+    +'<div style="padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;">'
+    +'<div style="font-size:13px;font-weight:600;color:var(--text-primary);">Economía por unidad</div>'
+    +'<span style="font-size:11px;font-weight:550;padding:3px 8px;border-radius:99px;background:var(--gray-75);color:var(--gray-600);border:1px solid var(--gray-150);">Producto promedio</span>'
+    +'</div>'
+    +'<div>'
+    +[
+      {l:'Precio de venta',v:C$(cfg.sellingPrice),c:'var(--text-primary)',bold:false,sep:false},
+      {l:'Costo proveedor',v:'−'+C$(cfg.supplierCost),c:'var(--danger-600)',bold:false,sep:false},
+      {l:'FBA logística',v:'−'+C$(cfg.fbaFee),c:'var(--danger-600)',bold:false,sep:false},
+      {l:'Comisión Amazon ('+PCT(cfg.amzFeePct)+')',v:'−'+C$(cfg.sellingPrice*cfg.amzFeePct),c:'var(--danger-600)',bold:false,sep:false},
+      {l:'Marketing ads ('+PCT(ue.displayMktgPct||0.45)+')',v:'−'+C$((cfg.sellingPrice*0.95)*(ue.displayMktgPct||0.45)),c:'var(--danger-600)',bold:false,sep:false},
+      {l:'Ganancia por unidad',v:C$(ue.profit),c:ue.profit>=0?'var(--success-600)':'var(--danger-600)',bold:true,sep:true},
+    ].map(function(e){
+      return '<div style="padding:10px 18px;display:flex;justify-content:space-between;align-items:center;'+(e.sep?'border-top:1px solid var(--gray-150);background:var(--gray-25);':'border-top:1px solid var(--gray-75);')+(e.bold?'font-weight:600;':'')+'">'
+        +'<div style="font-size:13px;color:var(--text-secondary);">'+e.l+'</div>'
+        +'<div style="font-family:var(--font-mono);font-size:13px;font-weight:'+(e.bold?'700':'550')+';color:'+e.c+';font-variant-numeric:tabular-nums;">'+e.v+'</div>'
+        +'</div>';
+    }).join('')
+    +'</div>'
+    +'</div>';
+
+  var indics = [
+    {l:'Margen neto',v:PCT(ue.margin),bar:Math.min(100,Math.round(ue.margin*100*2)),c:'var(--success-500)'},
+    {l:'ROI sobre costo',v:'+'+PCT(ue.roi),bar:Math.min(100,Math.round(ue.roi*50)),c:'var(--orange-500)'},
+    {l:'ROAS publicitario',v:roasReal.toFixed(1)+'×',bar:Math.min(100,Math.round(roasReal/5*100)),c:'var(--info-500)'},
+    {l:'Inventario: meses de cobertura',v:(cfg.unitsM1/(T.units/12)).toFixed(1),bar:55,c:'var(--gray-400)'},
+  ];
+  var isRentable = ue.margin > 0.15;
+  var indCard = '<div style="background:white;border:1px solid var(--gray-100);border-radius:var(--r-lg);overflow:hidden;">'
+    +'<div style="padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;">'
+    +'<div style="font-size:13px;font-weight:600;color:var(--text-primary);">Indicadores clave</div>'
+    +'<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;background:'+(isRentable?'var(--success-50)':'var(--warn-50)')+';color:'+(isRentable?'var(--success-700)':'var(--warn-600)')+';border:1px solid '+(isRentable?'#A6F4C5':'#FEDF89')+';">'+(isRentable?'✓ Rentable':'⚠ Revisar')+'</span>'
+    +'</div>'
+    +'<div>'
+    +indics.map(function(ind){
+      return '<div style="padding:12px 18px;border-top:1px solid var(--gray-75);">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
+        +'<div style="font-size:13px;color:var(--text-secondary);">'+ind.l+'</div>'
+        +'<div style="font-family:var(--font-mono);font-size:14px;font-weight:600;color:'+ind.c+';font-variant-numeric:tabular-nums;">'+ind.v+'</div>'
+        +'</div>'
+        +'<div style="height:4px;background:var(--gray-100);border-radius:999px;overflow:hidden;">'
+        +'<div style="height:100%;background:'+ind.c+';border-radius:999px;width:'+ind.bar+'%;transition:width 600ms ease;"></div>'
+        +'</div>'
+        +'</div>';
+    }).join('')
+    +'<div style="padding:12px 18px;border-top:1px solid var(--gray-75);display:flex;justify-content:space-between;align-items:center;">'
+    +'<div style="font-size:13px;color:var(--text-secondary);">¿Es rentable?</div>'
+    +'<div style="font-size:13px;font-weight:600;color:'+(ue.margin>0.2?'var(--success-600)':ue.margin>0.1?'var(--warn-600)':'var(--danger-600)')+';">'+(ue.margin>0.2?'Sí, fuertemente':ue.margin>0.1?'Sí, ajustado':ue.margin>0?'Apenas':'No rentable')+'</div>'
+    +'</div>'
+    +'</div>'
+    +'</div>';
+
+  var econRow = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">'
+    + econCard + indCard
+    +'</div>';
+
+  // ── 7. SVG CHART (real, like mockup) ──
+  var W=760,H=240,Pt=24,Pr=24,Pb=32,Pl=52;
+  var iW=W-Pl-Pr, iH=H-Pt-Pb;
+  var maxV=0,minV=0;
+  var cumArr=[],cumS=0;
+  months.forEach(function(m){ cumS+=m.netTax; cumArr.push(cumS); maxV=Math.max(maxV,m.rev,cumS); minV=Math.min(minV,m.cost||m.costs,cumS); });
+  maxV=Math.ceil(maxV/1000)*1000+500; minV=Math.floor(minV/1000)*1000-500;
+  var range=maxV-minV;
+  function xAt(i){ return Pl+(i/11)*iW; }
+  function yAt(v){ return Pt+iH-((v-minV)/range)*iH; }
+  var revPath=months.map(function(m,i){return (i===0?'M':'L')+xAt(i).toFixed(1)+','+yAt(m.rev).toFixed(1);}).join(' ');
+  var costPath=months.map(function(m,i){return (i===0?'M':'L')+xAt(i).toFixed(1)+','+yAt(m.costs||m.cost||0).toFixed(1);}).join(' ');
+  var profPath=cumArr.map(function(c,i){return (i===0?'M':'L')+xAt(i).toFixed(1)+','+yAt(c).toFixed(1);}).join(' ');
+  var revArea=revPath+' L'+xAt(11).toFixed(1)+','+yAt(0).toFixed(1)+' L'+xAt(0).toFixed(1)+','+yAt(0).toFixed(1)+' Z';
+  var yTicks=[];
+  var tickStep=Math.round((maxV-minV)/4/500)*500||1000;
+  for(var tv=Math.ceil(minV/tickStep)*tickStep;tv<=maxV;tv+=tickStep) yTicks.push(tv);
+  var breakevenX = beMonth ? xAt(beMonth-1) : null;
+
+  var svgChart = '<svg width="100%" viewBox="0 0 '+W+' '+H+'" style="display:block;overflow:visible">'
+    +'<defs>'
+    +'<linearGradient id="rg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F58220" stop-opacity="0.14"/><stop offset="1" stop-color="#F58220" stop-opacity="0"/></linearGradient>'
+    +'<linearGradient id="pg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#12B76A" stop-opacity="0.12"/><stop offset="1" stop-color="#12B76A" stop-opacity="0"/></linearGradient>'
+    +'</defs>'
+    // y-grid
+    +yTicks.map(function(t){
+      return '<line x1="'+Pl+'" x2="'+(W-Pr)+'" y1="'+yAt(t).toFixed(1)+'" y2="'+yAt(t).toFixed(1)+'" stroke="#EAECEF" stroke-dasharray="'+(t===0?'0':'3 4')+'"/>'
+        +'<text x="'+(Pl-8)+'" y="'+(yAt(t)+4).toFixed(1)+'" font-size="10" fill="#A8AFBB" text-anchor="end" font-family="\'JetBrains Mono\',monospace">'
+        +'$'+(Math.abs(t)>=1000?(t/1000).toFixed(0)+'k':t)+'</text>';
+    }).join('')
+    // x-axis labels
+    +months.map(function(m,i){
+      return '<text x="'+xAt(i).toFixed(1)+'" y="'+(H-10)+'" font-size="10" fill="#A8AFBB" text-anchor="middle">M'+m.m+'</text>';
+    }).join('')
+    // Breakeven line
+    +(breakevenX?'<line x1="'+breakevenX.toFixed(1)+'" x2="'+breakevenX.toFixed(1)+'" y1="'+Pt+'" y2="'+(H-Pb)+'" stroke="#F58220" stroke-dasharray="4 4" stroke-width="1.5"/>'
+      +'<rect x="'+(breakevenX-40).toFixed(1)+'" y="'+(Pt-4)+'" width="80" height="20" rx="4" fill="#F58220"/>'
+      +'<text x="'+breakevenX.toFixed(1)+'" y="'+(Pt+9)+'" font-size="10" fill="white" text-anchor="middle" font-weight="600">Breakeven · M'+beMonth+'</text>':'')
+    // Zero line
+    +'<line x1="'+Pl+'" x2="'+(W-Pr)+'" y1="'+yAt(0).toFixed(1)+'" y2="'+yAt(0).toFixed(1)+'" stroke="#CBD0D8" stroke-width="1"/>'
+    // Rev area + line
+    +'<path d="'+revArea+'" fill="url(#rg)"/>'
+    +'<path d="'+revPath+'" stroke="#F58220" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+    // Cost line
+    +'<path d="'+costPath+'" stroke="#A8AFBB" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>'
+    // Cumulative profit
+    +'<path d="'+profPath+'" stroke="#12B76A" stroke-width="2.25" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+    // Dots on rev
+    +months.map(function(m,i){
+      var r=i+1===beMonth?4:2.5;
+      return '<circle cx="'+xAt(i).toFixed(1)+'" cy="'+yAt(m.rev).toFixed(1)+'" r="'+r+'" fill="white" stroke="#F58220" stroke-width="1.5"/>';
+    }).join('')
+    +'</svg>';
+
+  var chartCard = '<div style="background:white;border:1px solid var(--gray-100);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px;">'
+    +'<div style="padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;">'
+    +'<div>'
+    +'<div style="font-size:13px;font-weight:600;color:var(--text-primary);">Proyección de Ingresos, Costos y Ganancia</div>'
+    +'<div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;">12 meses · generado con IA</div>'
+    +'</div>'
+    +'<div style="display:flex;gap:14px;font-size:11px;color:var(--text-secondary);">'
+    +[{c:'#F58220',l:'Ingresos'},{c:'#A8AFBB',l:'Costos',d:true},{c:'#12B76A',l:'Ganancia acumulada'},{c:'#F58220',l:'Punto equilibrio',d:true}]
+      .map(function(x){
+        return '<div style="display:flex;align-items:center;gap:5px;">'
+          +'<div style="width:14px;height:2px;background:'+(x.d?'transparent':x.c)+';border-radius:2px;'+(x.d?'border-bottom:2px dashed '+x.c+';':'')+'"></div>'
+          +x.l+'</div>';
+      }).join('')
+    +'</div>'
+    +'</div>'
+    +'<div style="padding:18px;">'+svgChart+'</div>'
+    +'</div>';
+
+  // ── 8. PRODUCTS DETAIL (with sparklines, like mockup) ──
+  var rankColors=['#7B5CFF','#F59340','#12B76A','#F58220','#2E90FA','#F04438','#8b5cf6'];
+  var prodDetailHTML = '';
+  if(productPlans && productPlans.length > 0){
+    prodDetailHTML = '<div style="background:white;border:1px solid var(--gray-100);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px;">'
+      +'<div style="padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;">'
+      +'<div style="font-size:13px;font-weight:600;color:var(--text-primary);">Detalle por producto</div>'
+      +'<div style="font-size:11px;color:var(--text-tertiary);">Proyección individual · 12 meses</div>'
+      +'</div>';
     productPlans.forEach(function(pp, idx){
       var T12 = pp.months.reduce(function(a,m){return{rev:a.rev+m.rev,net:a.net+m.netTax};},{rev:0,net:0});
-      var col = rankColors[idx % rankColors.length];
-      var isRent = T12.net > 0;
-
-      // Mini 12-month sparkline bar chart
+      var col = rankColors[idx%rankColors.length];
+      var isR = T12.net > 0;
       var maxRev = Math.max.apply(null, pp.months.map(function(m){return m.rev;}));
-      var bars = pp.months.map(function(m, i){
-        var pct = maxRev>0 ? Math.round(m.rev/maxRev*100) : 0;
-        var netPct = maxRev>0 ? Math.round(m.netTax/maxRev*100) : 0;
-        return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">'
-          +'<div style="width:100%;background:#e8e8e8;border-radius:3px 3px 0 0;position:relative;height:40px">'
-          +'<div style="position:absolute;bottom:0;width:100%;background:'+col+';opacity:.3;height:'+pct+'%;border-radius:3px 3px 0 0"></div>'
-          +'<div style="position:absolute;bottom:0;width:100%;background:'+(isRent?'#10b981':'#ef4444')+';height:'+Math.max(0,netPct)+'%;border-radius:3px 3px 0 0"></div>'
+      var sparkBars = pp.months.map(function(m,j){
+        var h=Math.max(4,Math.round(m.rev/maxRev*32));
+        return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;">'
+          +'<div style="width:100%;height:32px;position:relative;">'
+          +'<div style="position:absolute;bottom:0;left:0;right:0;background:'+col+';opacity:0.25;height:'+h+'px;border-radius:2px 2px 0 0;"></div>'
+          +(m.netTax>0?'<div style="position:absolute;bottom:0;left:0;right:0;background:'+(isR?'#12B76A':'#F04438')+';height:'+Math.max(2,Math.round(Math.max(0,m.netTax)/maxRev*32))+'px;border-radius:2px 2px 0 0;"></div>':'')
           +'</div>'
-          +(i%3===0?'<div style="font-size:7px;color:#bbb">M'+(i+1)+'</div>':'<div style="height:9px"></div>')
+          +(j===5?'<div style="font-size:7px;color:#A8AFBB;font-weight:600;">M6</div>':'<div style="height:9px;"></div>')
           +'</div>';
       }).join('');
-
-      perProdHTML += '<div class="prod-detail-card">'
-        // Header row
-        +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
-          +'<div style="width:22px;height:22px;border-radius:50%;background:'+col+';color:#fff;'
-            +'font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</div>'
-          +'<div style="font-size:13px;font-weight:800;color:#1a1a1a;flex:1">'+pp.cfg.productName+'</div>'
-          +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:'+(isRent?'#dcfce7':'#fee2e2')+';color:'+(isRent?'#15803d':'#dc2626')+'">'+(isRent?'Rentable':'No rentable')+'</span>'
+      var p = pp.product||{};
+      var aliUrl = p.sourceUrl||(p.alibabaTerm?'https://www.alibaba.com/trade/search?SearchText='+encodeURIComponent(p.alibabaTerm)+'&IndexArea=product_en':'');
+      prodDetailHTML += '<div style="padding:16px 18px;'+(idx?'border-top:1px solid var(--gray-75);':'')+';">'
+        +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
+        +'<div style="width:32px;height:32px;border-radius:8px;background:'+col+'22;border:1px solid '+col+'33;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">'+(p.emoji||'📦')+'</div>'
+        +'<div style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);">'+pp.cfg.productName+'</div>'
+        +'<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;background:'+(isR?'var(--success-50)':'var(--danger-50)')+';color:'+(isR?'var(--success-700)':'var(--danger-700)')+';border:1px solid '+(isR?'#A6F4C5':'#FECDCA')+';">'+(isR?'Rentable':'No rentable')+'</span>'
+        +'<button onclick="removePortfolioProduct('+idx+')" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:13px;padding:4px;line-height:1;">✕</button>'
         +'</div>'
-        // Key numbers
-        +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'
-          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Precio venta</div>'
-            +'<div style="font-size:14px;font-weight:800;color:#1a1a1a">$'+pp.cfg.sellingPrice.toFixed(2)+'</div>'
-          +'</div>'
-          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Costo proveedor</div>'
-            +'<div style="font-size:14px;font-weight:800;color:#1a1a1a">$'+pp.cfg.supplierCost.toFixed(2)+'</div>'
-          +'</div>'
-          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Ganancia/unidad</div>'
-            +'<div style="font-size:14px;font-weight:800;color:'+(pp.ue.profit>=0?'#15803d':'#dc2626')+'">$'+pp.ue.profit.toFixed(2)+'</div>'
-          +'</div>'
-          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Margen</div>'
-            +'<div style="font-size:14px;font-weight:800;color:'+(pp.ue.margin>=0.15?'#15803d':'#d97706')+'">'+(pp.ue.margin*100).toFixed(1)+'%</div>'
-          +'</div>'
-          +'<div style="flex:1;min-width:120px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Ganancia 12m</div>'
-            +'<div style="font-size:14px;font-weight:800;color:'+(T12.net>=0?'#15803d':'#dc2626')+'">$'+Math.round(T12.net).toLocaleString()+'</div>'
-          +'</div>'
-          +'<div style="flex:1;min-width:80px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Uds. mes 1</div>'
-            +'<div style="font-size:14px;font-weight:800;color:#1a1a1a">'+pp.cfg.unitsM1+'</div>'
-          +'</div>'
+        +'<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px;">'
+        +[
+          {l:'Precio venta',v:'$'+pp.cfg.sellingPrice.toFixed(2),c:'var(--text-primary)'},
+          {l:'Costo unitario',v:'$'+pp.cfg.supplierCost.toFixed(2),c:'var(--text-primary)'},
+          {l:'Ganancia/u',v:'$'+pp.ue.profit.toFixed(2),c:pp.ue.profit>=0?'var(--success-600)':'var(--danger-600)'},
+          {l:'Margen',v:PCT(pp.ue.margin),c:pp.ue.margin>=0.15?'var(--success-600)':pp.ue.margin>0?'var(--warn-600)':'var(--danger-600)'},
+          {l:'Ganancia 12m',v:'$'+Math.round(T12.net).toLocaleString(),c:T12.net>=0?'var(--success-600)':'var(--danger-600)'},
+          {l:'Uds mes 1',v:pp.cfg.unitsM1,c:'var(--text-primary)'},
+        ].map(function(m){
+          return '<div>'
+            +'<div style="font-size:10px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">'+m.l+'</div>'
+            +'<div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:'+m.c+';font-variant-numeric:tabular-nums;">'+m.v+'</div>'
+            +'</div>';
+        }).join('')
         +'</div>'
-        // Sparkline
-        +'<div style="display:flex;gap:1px;align-items:flex-end;height:52px;margin-bottom:4px">'+bars+'</div>'
-        +'<div style="display:flex;gap:12px;font-size:10px;color:#94a3b8">'
-          +'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:'+col+';opacity:.4;display:inline-block"></span>Ingresos</span>'
-          +'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:'+(isRent?'#10b981':'#ef4444')+';display:inline-block"></span>Ganancia neta</span>'
+        +'<div style="display:flex;gap:2px;align-items:flex-end;height:44px;margin-bottom:6px;">'+sparkBars+'</div>'
+        +'<div style="display:flex;gap:6px;margin-top:10px;">'
+        +(aliUrl?'<a href="'+aliUrl+'" target="_blank" rel="noopener" style="flex:1;padding:7px 12px;background:var(--orange-50);border:1px solid var(--orange-200);border-radius:7px;font-size:12px;font-weight:600;color:var(--orange-700);text-decoration:none;text-align:center;display:block;">Ver proveedor Alibaba ↗</a>':'')
+        +'<a href="https://www.amazon.com/s?k='+encodeURIComponent(pp.cfg.productName)+'" target="_blank" rel="noopener" style="flex:1;padding:7px 12px;background:var(--info-50);border:1px solid #BFDBFE;border-radius:7px;font-size:12px;font-weight:600;color:var(--info-600);text-decoration:none;text-align:center;display:block;">Ver en Amazon ↗</a>'
         +'</div>'
-        +buildProductLinks(pp.product)
         +'</div>';
     });
-
-    perProdHTML += '</div></div>';
+    prodDetailHTML += '</div>';
   }
 
-  document.getElementById('dash-inner').innerHTML = insightHTML + aiHTML + kpiHTML + econHTML + chartHTML + perProdHTML + tbl;
+  // ── 9. AI PANEL ──
+  var aiPanel = '<div class="ai-panel-v2" id="ai-panel" style="margin-bottom:20px;">'
+    +'<div class="ai-panel-header">'
+    +'<div class="ai-panel-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.5 7H22l-6 4.5 2.5 7L12 17l-6.5 3.5 2.5-7L2 9h7.5z"/></svg></div>'
+    +'<div><div class="ai-panel-title">Asesor IA</div><div class="ai-panel-sub">Ajusta cualquier parámetro en lenguaje natural</div></div>'
+    +'<span class="ai-live-badge">EN VIVO</span>'
+    +'</div>'
+    +'<div id="ai-thinking" style="padding:14px 20px;font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:10px;">'
+    +'<span style="display:inline-flex;gap:4px;">'
+    +'<span style="width:6px;height:6px;background:var(--orange-500);border-radius:50%;display:inline-block;animation:dotBounce 1.2s infinite;"></span>'
+    +'<span style="width:6px;height:6px;background:var(--orange-500);border-radius:50%;display:inline-block;animation:dotBounce 1.2s .15s infinite;"></span>'
+    +'<span style="width:6px;height:6px;background:var(--orange-500);border-radius:50%;display:inline-block;animation:dotBounce 1.2s .3s infinite;"></span>'
+    +'</span>Analizando tu plan...</div>'
+    +'<div id="ai-recs-area" style="display:none;">'
+    +'<div id="ai-bullets" style="padding:14px 20px 0;"></div>'
+    +'<div id="ai-rec-list" style="padding:10px 20px 6px;display:flex;flex-direction:column;gap:8px;"></div>'
+    +'<div id="ai-scenarios" style="display:flex;flex-wrap:wrap;gap:6px;padding:6px 20px 14px;"></div>'
+    +'</div>'
+    +'<div class="ai-input-row">'
+    +'<input class="ai-input-field" id="ai-sim-input2" placeholder="Ej: sube unidades del producto 2 a 40 · quita el mes pico, baja precio $3..."/>'
+    +'<button class="btn-simulate-ia" id="btn-ai-sim" onclick="runAISim()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Simular con IA</button>'
+    +'</div>'
+    +'</div>';
 
+  // ── 10. FINANCIAL TABLE (Apex style) ──
+  var cumArr2=[],cumS2=0;
+  months.forEach(function(m){cumS2+=m.netTax;cumArr2.push(cumS2);});
+  var rankColors2=['#7B5CFF','#F59340','#12B76A','#F58220','#2E90FA','#F04438','#8b5cf6'];
+
+  var finTable = '<div style="background:white;border:1px solid var(--gray-100);border-radius:var(--r-lg);overflow:hidden;">'
+    +'<div style="padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:3;background:white;">'
+    +'<div style="font-size:13px;font-weight:600;color:var(--text-primary);">Flujo financiero mensual</div>'
+    +(beMonth?'<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--orange-50);color:var(--orange-700);border:1px solid var(--orange-200);">Breakeven: Mes '+beMonth+'</span>':'')
+    +'<div style="margin-left:auto;font-size:11px;color:var(--text-tertiary);">Valores en USD · columna naranja = punto de equilibrio</div>'
+    +'</div>'
+    +'<div style="overflow-x:auto;">'
+    +'<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:1100px;">'
+    +'<thead><tr>'
+    +'<th style="padding:9px 14px;background:var(--gray-50);font-weight:600;color:var(--text-tertiary);font-size:10.5px;white-space:nowrap;border-bottom:1px solid var(--gray-150);text-align:left;text-transform:uppercase;letter-spacing:.04em;position:sticky;left:0;z-index:2;min-width:220px;">Métrica</th>'
+    +months.map(function(m,i){
+      var be=i+1===beMonth;
+      return '<th style="padding:9px 12px;font-weight:600;font-size:10.5px;white-space:nowrap;border-bottom:1px solid var(--gray-150);text-align:right;'
+        +(be?'background:var(--orange-500)!important;color:white;':'background:var(--gray-50);color:var(--text-tertiary);')
+        +'">M'+m.m+(be?'<br><span style="font-size:9px;font-weight:500;opacity:.85;">⦿ Breakeven</span>':'')+'</th>';
+    }).join('')
+    +'<th style="padding:9px 12px;background:var(--gray-50);font-weight:700;font-size:10.5px;border-bottom:1px solid var(--gray-150);text-align:right;color:var(--text-primary);text-transform:uppercase;letter-spacing:.04em;">TOTAL</th>'
+    +'</tr></thead><tbody>';
+
+  // Rows
+  var tRows = [
+    {label:'Ingresos por ventas',key:'rev',fmt:C$,cls:'font-weight:700;color:var(--info-600);',bg:'white'},
+    {label:'Unidades vendidas (total)',key:'units',fmt:N,cls:'font-weight:700;',bg:'var(--gray-25)'},
+    {label:'Costo producto (COGS)',key:'cogs',fmt:C$,cls:'color:var(--danger-600);font-weight:600;',bg:'white'},
+    {label:'Gastos marketing',key:'mktg',fmt:C$,cls:'color:var(--danger-600);',bg:'white'},
+    {label:'Comisión Amazon',key:'amzFee',fmt:C$,cls:'color:var(--danger-600);',bg:'white'},
+    {label:'Logística FBA',key:'fba',fmt:C$,cls:'color:var(--danger-600);',bg:'white'},
+    {label:'Ganancia neta mensual',key:'net',fmt:C$,cls:'font-weight:700;',bg:'var(--success-50)',totalFn:function(v){return v>=0?'color:var(--success-700);':'color:var(--danger-600);';}},
+    {label:'Ganancia acumulada',key:'_acum',fmt:C$,cls:'font-weight:700;',bg:'var(--orange-50)',totalFn:function(v){return v>=0?'color:var(--success-700);':'color:var(--danger-600)';},acumData:cumArr2},
+  ];
+
+  tRows.forEach(function(row){
+    finTable += '<tr style="background:'+row.bg+';">'
+      +'<td style="padding:9px 14px;border-bottom:1px solid var(--gray-75);font-size:12.5px;'+row.cls+'position:sticky;left:0;z-index:1;background:'+row.bg+';">'+row.label+'</td>';
+    months.forEach(function(m,i){
+      var be=i+1===beMonth;
+      var val = row.key==='_acum' ? cumArr2[i] : m[row.key];
+      var clr = row.totalFn ? row.totalFn(val) : '';
+      finTable += '<td style="padding:8px 12px;border-bottom:1px solid var(--gray-75);text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:11.5px;'+row.cls+(be?'background:var(--orange-50)!important;font-weight:700;':'')+clr+'">'+row.fmt(val)+'</td>';
+    });
+    var total = row.key==='_acum' ? cumArr2[11] : months.reduce(function(s,m){return s+m[row.key];},0);
+    var totalClr = row.totalFn ? row.totalFn(total) : '';
+    finTable += '<td style="padding:8px 12px;border-bottom:1px solid var(--gray-75);text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:11.5px;font-weight:700;'+totalClr+'">'+row.fmt(total)+'</td>';
+    finTable += '</tr>';
+
+    // Product sub-rows for units
+    if(row.key==='units' && productPlans && productPlans.length > 1){
+      productPlans.forEach(function(pp,idx){
+        var col=rankColors2[idx%rankColors2.length];
+        finTable += '<tr style="background:white;">'
+          +'<td style="padding:8px 14px 8px 28px;border-bottom:1px solid var(--gray-75);font-size:11px;color:var(--text-secondary);border-left:3px solid '+col+';position:sticky;left:0;z-index:1;background:white;">'
+          +'<div style="display:flex;align-items:center;gap:6px;">'
+          +'<div style="width:16px;height:16px;border-radius:50%;background:'+col+';color:white;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+(idx+1)+'</div>'
+          +pp.cfg.productName+'</div></td>';
+        pp.months.forEach(function(m,i){
+          var be=i+1===beMonth;
+          finTable += '<td style="padding:8px 12px;border-bottom:1px solid var(--gray-75);text-align:right;font-size:11px;color:var(--text-secondary);'+(be?'background:var(--orange-50)!important;':'')+'">'+N(m.units)+'</td>';
+        });
+        finTable += '<td style="padding:8px 12px;border-bottom:1px solid var(--gray-75);text-align:right;font-size:11px;color:var(--text-secondary);">'+N(pp.months.reduce(function(s,m){return s+m.units;},0))+'</td></tr>';
+      });
+    }
+  });
+
+  finTable += '</tbody></table></div></div>';
+
+  // ── ASSEMBLE ──
+  document.getElementById('dash-inner').innerHTML =
+    insightBanner + pageHeader + aiBar + kpiGrid + econRow + chartCard + prodDetailHTML + aiPanel + finTable;
+
+  // Wire up AI inputs
   setTimeout(function(){
     var inp = document.getElementById('ai-sim-input');
     if(inp) inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')runAISim();});
+    var inp2 = document.getElementById('ai-sim-input2');
+    if(inp2) inp2.addEventListener('keydown',function(ev){if(ev.key==='Enter')runAISim();});
+    // runAISim reads from either input
+    window._getAISimInput = function(){
+      var v1=(document.getElementById('ai-sim-input')||{}).value||'';
+      var v2=(document.getElementById('ai-sim-input2')||{}).value||'';
+      return v1||v2;
+    };
   },100);
-  setTimeout(function(){renderChart(months,beMonth);},60);
   setTimeout(function(){loadAIAdvisor(cfg,months,ue,T,beMonth);},400);
 }
 
@@ -2652,8 +2793,7 @@ function applyRec(idx) {
 }
 
 async function runAISim() {
-  var inp = document.getElementById('ai-sim-input');
-  var query = inp ? inp.value.trim() : '';
+  var query = (window._getAISimInput ? window._getAISimInput() : (document.getElementById('ai-sim-input')||{value:''}).value||'').trim();
   if (!query) return;
   var btn = document.getElementById('btn-ai-sim');
   if (btn) { btn.disabled=true; btn.textContent='Calculando...'; }
@@ -2681,7 +2821,7 @@ async function runAISim() {
     document.getElementById('chat-body').innerHTML='';
     document.getElementById('quick-area').innerHTML='';
     S.path='discover'; S.products=[]; S.currentBatchPicks=[]; S.chatLocked=false;
-    document.getElementById('topbar-mode').textContent='Buscador IA';
+    var _tm3=document.getElementById('topbar-mode'); if(_tm3) _tm3.textContent='Buscador IA';
     showURLBtn(true);
     // Restore confirmed so new picks merge
     S.confirmedProducts = savedConfirmed;
@@ -3030,7 +3170,7 @@ function removePortfolioProduct(idx){
     document.getElementById('chat-body').innerHTML='';
     document.getElementById('quick-area').innerHTML='';
     S.path='discover'; S.products=[]; S.currentBatchPicks=[]; S.chatLocked=false;
-    document.getElementById('topbar-mode').textContent='Buscador IA';
+    var _tm3=document.getElementById('topbar-mode'); if(_tm3) _tm3.textContent='Buscador IA';
     showURLBtn(true);
     setTimeout(function(){runDiscoverStep(0);},200);
     return;
@@ -3065,7 +3205,7 @@ function searchReplacement(){
   document.getElementById('chat-body').innerHTML='';
   document.getElementById('quick-area').innerHTML='';
   S.path='discover'; S.products=[]; S.currentBatchPicks=[]; S.chatLocked=false;
-  document.getElementById('topbar-mode').textContent='Buscador IA';
+  var _tm3=document.getElementById('topbar-mode'); if(_tm3) _tm3.textContent='Buscador IA';
   showURLBtn(true);
   setTimeout(function(){
     botMsg('Perfecto! Tienes <strong>'+existingProducts.length+' producto'+(existingProducts.length>1?'s':'')+' ya seleccionados</strong>. Busquemos el o los reemplazos que necesitas 🔍');
