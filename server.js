@@ -8,35 +8,40 @@ const app      = express();
    Applied to every response — no external dependencies needed
 ═══════════════════════════════════════════════════════════ */
 app.use((req, res, next) => {
-  // Prevent clickjacking
-  res.setHeader('X-Frame-Options', 'DENY');
-  // Prevent MIME sniffing
+
+  // ── Clickjacking protection ──
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+
+  // ── MIME sniffing prevention ──
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  // Force HTTPS (only in production)
+
+  // ── XSS protection (legacy browsers) ──
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+
+  // ── Referrer policy ──
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  // ── Disable unused browser features ──
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+
+  // ── HSTS: force HTTPS in production only ──
   if (process.env.NODE_ENV === 'production') {
     res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
   }
-  // XSS protection (legacy browsers)
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  // Referrer policy — send origin only, not full URL
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  // Permissions policy — disable unused browser features
-  res.setHeader('Permissions-Policy',
-    'camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=()'
-  );
-  // Content Security Policy
-  // Allows: self, Google Fonts, GA, Anthropic API (via our proxy only), CDN scripts
+
+  // ── Content Security Policy ──
+  // 'unsafe-inline' + 'unsafe-eval' required: app uses inline scripts/styles heavily
+  // connect-src includes GA, GTM, Google Forms (lead capture), and our own /api/ai proxy
   res.setHeader('Content-Security-Policy', [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://cdnjs.cloudflare.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://cdnjs.cloudflare.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com",
-    "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://docs.google.com",
-    "frame-src 'none'",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    "img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com",
+    "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://docs.google.com",
+    "frame-src https://docs.google.com",
     "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self' https://docs.google.com"
+    "base-uri 'self'"
   ].join('; '));
 
   next();
@@ -49,6 +54,8 @@ app.use((req, res, next) => {
 const ALLOWED_ORIGINS = [
   'https://sellerplus.ai',
   'https://www.sellerplus.ai',
+  'https://ai.sellerplus.co',
+  'https://www.ai.sellerplus.co',
   'https://sellerplus-ia.onrender.com',
   'http://localhost:3000',
   'http://localhost:3001'
@@ -124,6 +131,8 @@ app.use(express.static(path.join(__dirname), {
 ═══════════════════════════════════════════════════════════ */
 app.get('/sitemap.xml', (req, res) => {
   const today = new Date().toISOString().split('T')[0];
+  const host = req.headers.host || 'ai.sellerplus.co';
+  const base = host.includes('localhost') ? `http://${host}` : `https://${host}`;
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -132,7 +141,7 @@ app.get('/sitemap.xml', (req, res) => {
 
   <!-- Página principal — Simulador + Listing Generator -->
   <url>
-    <loc>https://sellerplus.ai/</loc>
+    <loc>${base}/</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -140,7 +149,7 @@ app.get('/sitemap.xml', (req, res) => {
 
   <!-- Términos y privacidad -->
   <url>
-    <loc>https://sellerplus.ai/terms.html</loc>
+    <loc>${base}/terms.html</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
