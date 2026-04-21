@@ -3,23 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SellerPlus AI — Simulador Amazon FBA | Calculadora de Rentabilidad con IA</title>
-<meta name="description" content="Simula tu negocio en Amazon FBA con inteligencia artificial. Calcula rentabilidad, punto de equilibrio y proyecciones a 12 meses. Busca productos ganadores en Alibaba. 100% gratis.">
-<meta name="keywords" content="simulador amazon fba, amazon business simulator, calculadora amazon fba, simulador rentabilidad amazon, amazon fba colombia, amazon fba mexico, amazon fba españa, roi amazon fba, punto equilibrio amazon, emprender amazon 2025">
+<title>SellerPlus AI — Simulador Amazon FBA + Generador de Listing Rufus IA | Calculadora de Rentabilidad</title>
+<meta name="description" content="Genera listings optimizados para Rufus IA y COSMO Knowledge Graph. Simula tu negocio en Amazon FBA: calcula rentabilidad, punto de equilibrio y proyecciones a 12 meses. Busca productos ganadores. 100% gratis.">
+<meta name="keywords" content="rufus ia listing generator, generador listing rufus amazon, amazon rufus ai listing, listing optimizado rufus ia, cosmo knowledge graph amazon, crear listing amazon ia, amazon listing generator ai, simulador amazon fba, calculadora amazon fba, simulador rentabilidad amazon, amazon fba colombia, amazon fba mexico, amazon fba españa, roi amazon fba, punto equilibrio amazon, emprender amazon 2025, listing amazon optimizado seo, rufus ai product listing, amazon seo listing generator, generador listing amazon gratis, listing amazon bullet points ia, titulo amazon optimizado ia, backend keywords amazon, amazon listing rufus cosmo, amazon ai search optimization">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://sellerplus.ai/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="SellerPlus AI — Simulador Amazon FBA con Inteligencia Artificial">
-<meta property="og:description" content="Calcula si tu producto es rentable en Amazon FBA. Proyecciones 12 meses, punto de equilibrio, ROI y búsqueda de proveedores con IA. 100% gratis.">
+<meta property="og:title" content="SellerPlus AI — Generador de Listing Rufus IA + Simulador Amazon FBA">
+<meta property="og:description" content="Genera listings completos optimizados para Rufus AI (Amazon) y COSMO. Título, bullets, descripción, backend keywords y A+ Content con IA. Simula rentabilidad FBA. 100% gratis.">
 <meta property="og:url" content="https://sellerplus.ai/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="SellerPlus AI — Simulador Amazon FBA Gratis con IA">
+<meta name="twitter:title" content="SellerPlus AI — Listing Rufus IA + Simulador Amazon FBA Gratis">
+<meta name="twitter:description" content="Genera tu listing Amazon optimizado para Rufus IA. Título, 5 bullets, descripción, backend keywords, ITK, A+ Content. + Simulador FBA con proyecciones 12 meses.">
 <meta name="theme-color" content="#F58220">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"SellerPlus AI","url":"https://sellerplus.ai","description":"Simulador Amazon FBA con IA","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "SellerPlus AI — Simulador Amazon FBA",
+      "url": "https://sellerplus.ai",
+      "description": "Simulador Amazon FBA con IA. Calcula rentabilidad, punto de equilibrio y proyecciones 12 meses.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+      "keywords": "simulador amazon fba, calculadora rentabilidad amazon, punto equilibrio amazon"
+    },
+    {
+      "@type": "WebApplication",
+      "name": "SellerPlus AI — Generador de Listing Rufus IA",
+      "url": "https://sellerplus.ai",
+      "description": "Generador de listings Amazon optimizados para Rufus AI y COSMO Knowledge Graph. Crea título, bullet points, descripción, backend keywords, Item Type Keyword y A+ Content con inteligencia artificial.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+      "keywords": "rufus ia listing generator, generador listing rufus amazon, amazon rufus ai listing, cosmo knowledge graph amazon, crear listing amazon ia, amazon listing generator ai, listing optimizado rufus ia, amazon seo listing generator, rufus ai product listing, backend keywords amazon, amazon listing bullet points ia, titulo amazon optimizado ia"
+    }
+  ]
+}
 </script>
 <style>
 /* ═══════════════════════════════════════
@@ -3646,7 +3671,7 @@ function lstGenerate(){
 
   var userMsg = 'Product Name: '+name+'\nShort Description: '+desc;
 
-  fetch('https://api.anthropic.com/v1/messages', {
+  fetch('/api/ai', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
@@ -3663,6 +3688,18 @@ function lstGenerate(){
     stepEls.forEach(function(el){ el.classList.remove('active'); el.classList.add('done'); });
     if(progressBar) progressBar.style.width='100%';
 
+    // Detect API-level errors (e.g. missing key, quota)
+    if(data.error){
+      document.getElementById('lst-loading').style.display='none';
+      document.getElementById('lst-form').style.display='';
+      var errDiv2 = document.createElement('div');
+      errDiv2.className = 'insight ins-bad';
+      errDiv2.style.cssText = 'margin-top:16px';
+      errDiv2.innerHTML = '⚠ Error de API: ' + lstEsc(data.error.message||JSON.stringify(data.error));
+      document.getElementById('lst-form').appendChild(errDiv2);
+      return;
+    }
+
     setTimeout(function(){
       var raw = (data.content&&data.content[0]&&data.content[0].text)||'{}';
       // Strip potential markdown fences
@@ -3678,9 +3715,19 @@ function lstGenerate(){
   })
   .catch(function(err){
     clearInterval(stepInterval);
+    console.error('Listing API error:', err);
     document.getElementById('lst-loading').style.display='none';
     document.getElementById('lst-form').style.display='';
-    alert('Error al conectar con la IA. Por favor intenta de nuevo.');
+    // Show inline error instead of alert
+    var errDiv = document.createElement('div');
+    errDiv.className = 'insight ins-bad';
+    errDiv.style.cssText = 'margin-top:16px;animation:fadeIn .3s ease';
+    errDiv.innerHTML = '⚠ Error al conectar con la IA. Verifica tu conexión e intenta de nuevo. Si el problema persiste, recarga la página.';
+    var formEl = document.getElementById('lst-form');
+    var existing = formEl.querySelector('.insight');
+    if(existing) existing.remove();
+    formEl.appendChild(errDiv);
+    setTimeout(function(){ if(errDiv.parentNode) errDiv.remove(); }, 6000);
   });
 }
 
