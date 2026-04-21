@@ -2224,17 +2224,25 @@ async function buildDiscoverPlan(){
 }
 
 function calcUnitEconomics(cfg){
-  // Use month-1 marketing rate (45%) for honest unit economics display
-  var displayMktgPct = cfg.mktgPct === 0.25 ? 0.45 : cfg.mktgPct;
-  var netPrice = cfg.sellingPrice * 0.95; // after 5% returns
-  var amzFee = netPrice * (cfg.amzFeePct || 0.15);
-  var mktg = netPrice * displayMktgPct;
-  var totalCost = cfg.supplierCost + cfg.fbaFee + amzFee + mktg;
-  var profit = netPrice - totalCost;
-  var margin = netPrice > 0 ? profit / netPrice : 0;
-  var roi = cfg.supplierCost > 0 ? profit / cfg.supplierCost : 0;
-  return {amzFee:amzFee, mktg:mktg, totalCostPerUnit:totalCost,
-          profit:profit, margin:margin, roi:roi, displayMktgPct:displayMktgPct};
+  // Display mktg: if user overrode it, show that; else show month-1 realistic rate (45%)
+  var displayMktgPct = (cfg.mktgPct !== 0.25) ? cfg.mktgPct : 0.45;
+  var netPrice  = cfg.sellingPrice * 0.95; // after 5% returns
+  var amzFee    = netPrice * (cfg.amzFeePct || 0.15);
+  var mktg      = netPrice * displayMktgPct;
+  var fbaFee    = cfg.fbaFee || 5.58;
+  var totalCost = cfg.supplierCost + fbaFee + amzFee + mktg;
+  var profit    = netPrice - totalCost;
+  var margin    = netPrice > 0 ? profit / netPrice : 0;
+  // ROI = ganancia_neta / inversión_total (costo proveedor + fba + comision + marketing)
+  var roi       = totalCost > 0 ? profit / totalCost : 0;
+  // ROAS = revenue / gasto_marketing
+  var roas      = mktg > 0 ? netPrice / mktg : 0;
+  return {
+    amzFee: amzFee, mktg: mktg, fbaFee: fbaFee,
+    totalCostPerUnit: totalCost,
+    profit: profit, margin: margin, roi: roi, roas: roas,
+    displayMktgPct: displayMktgPct
+  };
 }
 
 
@@ -2253,75 +2261,88 @@ function buildProductLinks(p){
 }
 function buildMonths(cfg){
   /*
-   MODELO FINANCIERO REALISTA AMAZON FBA
-   ======================================
-   Basado en métricas reales de vendedores nuevos en Amazon:
-
-   MARKETING (PPC):
-   - Meses 1-2: 45% del revenue (ROAS ~2.2x) — sin reseñas, CPC alto (~$0.50), baja conversión
-   - Mes 3: 40% (ROAS 2.5x) — primeras reseñas orgánicas
-   - Mes 4-5: 35-38% — mejorando ranking
-   - Mes 6+: 30-33% bajando gradualmente (orgánico crece)
-   - Mes 9+: 25-28% — equilibrio paid/organic
-   - ROAS máximo alcanzable para nuevos: ~2.5x (no 4x que es para marcas establecidas)
-
-   CRECIMIENTO DE UNIDADES:
-   - Meses 1-2: muy lento (sin reviews, sin ranking) +3-4%/mes
-   - Mes 3-5: acelerando (+6-8%) con reviews
-   - Mes 6+: crecimiento sostenido (+8-10%)
-
-   DEVOLUCIONES: 5% del revenue bruto (estándar Amazon)
-
-   AMAZON MEMBERSHIP: $39.99/mes (costo fijo real, no amortizado)
+   MODELO FINANCIERO AMAZON FBA — CORREGIDO
+   ==========================================
+   REGLAS CLAVE:
+   - Unidades: curva de crecimiento independiente de precio/marketing
+   - Marketing %: si usuario lo cambió (mktgPct !== 0.25), usar ESE % fijo para todos los meses
+     con una reducción gradual mínima de 0.5%/mes (orgánico crece)
+   - Si mktgPct es 0.25 (default), usar curva realista 45%→25%
+   - Precio: puede variar por mes con _priceOverrides
+   - ROAS = revenue / gasto_marketing (real por mes)
+   - ROI = ganancia_neta / costo_proveedor (real)
   */
 
-  // Marketing % curve: empieza alto, baja conforme crece el orgánico
+  // Marketing % curve realista para vendedor nuevo (mktgPct=0.25 = "usar curva")
   var mktgCurve = [0.45, 0.44, 0.40, 0.38, 0.35, 0.33, 0.31, 0.29, 0.28, 0.27, 0.26, 0.25];
-  // Growth multiplier por mes (lento al inicio, acelera con reviews)
-  var growthCurve = [1.0, 1.03, 1.08, 1.16, 1.26, 1.37, 1.50, 1.64, 1.79, 1.95, 2.13, 2.33];
 
-  // If user has custom growthRate, blend it with the curve
+  // Growth curve: unidades crecen con reseñas y ranking (NO depende de precio/marketing)
+  var growthCurve = [1.0, 1.03, 1.08, 1.16, 1.26, 1.37, 1.50, 1.64, 1.79, 1.95, 2.13, 2.33];
   var customGrowth = cfg.growthRate || 0.08;
-  var growthScale = customGrowth / 0.10; // normalize against our base rate
+  var growthScale = customGrowth / 0.10;
+
+  // User set a specific mktg% (not the default 0.25 sentinel)?
+  var userSetMktg = cfg.mktgPct !== 0.25;
+  var baseMktg = userSetMktg ? cfg.mktgPct : null; // null = use curve
 
   return Array.from({length:12}, function(_,i){
+    // ── UNIDADES: SOLO dependen del crecimiento, NUNCA de precio o marketing ──
     var units = Math.round(cfg.unitsM1 * growthCurve[i] * growthScale);
-    var grossRev = units * cfg.sellingPrice;
-    var returns = grossRev * 0.05; // 5% devoluciones Amazon
-    var rev = grossRev - returns;
 
-    // Marketing: use curve as base, but respect user override if they changed it from default
-    var baseMktgPct = cfg.mktgPct === 0.25 ? mktgCurve[i] : Math.max(mktgCurve[i], cfg.mktgPct * (1 - i*0.01));
-    var mktg = rev * baseMktgPct;
+    // ── PRECIO: puede tener override por mes ──
+    var price = (window._priceOverrides && window._priceOverrides[i] != null)
+      ? window._priceOverrides[i]
+      : cfg.sellingPrice;
 
-    var amzFee = rev * (cfg.amzFeePct || 0.15);
-    var fba = units * (cfg.fbaFee || 5.58);
-    var cogs = units * cfg.supplierCost;
-    var membership = 39.99; // full monthly fee, not amortized
-    var agency = cfg.agencyFee || 0;
-    var costs = mktg + amzFee + fba + membership + agency;
-    var net = rev - costs - cogs;
-    var tax = Math.max(0, net * (cfg.taxRate || 0.08));
+    var grossRev = units * price;
+    var returns  = grossRev * 0.05; // 5% devoluciones Amazon
+    var rev      = grossRev - returns;
+
+    // ── MARKETING %: override por mes o curva ──
+    var monthMktgPct;
+    if(window._mktgOverrides && window._mktgOverrides[i] != null){
+      // Usuario editó celda específica
+      monthMktgPct = window._mktgOverrides[i];
+    } else if(userSetMktg){
+      // Usuario fijó un % global: aplica con reducción mínima (orgánico crece)
+      monthMktgPct = Math.max(0.10, baseMktg - i * 0.005);
+    } else {
+      // Curva default realista
+      monthMktgPct = mktgCurve[i];
+    }
+
+    var mktg    = rev * monthMktgPct;
+    var amzFee  = rev * (cfg.amzFeePct || 0.15);
+    var fba     = units * (cfg.fbaFee  || 5.58);
+    var cogs    = units * cfg.supplierCost;
+    var membership = 39.99;
+    var agency  = cfg.agencyFee || 0;
+    var costs   = mktg + amzFee + fba + membership + agency;
+    var net     = rev - costs - cogs;
+    var tax     = Math.max(0, net * (cfg.taxRate || 0.08));
+    var netTax  = net - tax;
+
+    // ROAS real = ingresos / gasto_publicitario
     var roas = mktg > 0 ? rev / mktg : 0;
 
     return {
-      m: i+1,
-      label: 'Mes '+(i+1),
-      price: cfg.sellingPrice,
-      rev: rev,
+      m:        i+1,
+      label:    'Mes '+(i+1),
+      price:    price,
+      rev:      rev,
       grossRev: grossRev,
-      returns: returns,
-      units: units,
-      mktg: mktg,
-      mktgPct: baseMktgPct,
-      amzFee: amzFee,
-      fba: fba,
-      cogs: cogs,
-      costs: costs + cogs,
-      net: net,
-      tax: tax,
-      netTax: net - tax,
-      roas: roas
+      returns:  returns,
+      units:    units,
+      mktg:     mktg,
+      mktgPct:  monthMktgPct,
+      amzFee:   amzFee,
+      fba:      fba,
+      cogs:     cogs,
+      costs:    costs + cogs,
+      net:      net,
+      tax:      tax,
+      netTax:   netTax,
+      roas:     roas
     };
   });
 }
@@ -2425,6 +2446,12 @@ function showDashboard({cfg,months,ue,title,productPlans}){
       +'</div>')
     +'</div>';
 
+  // ── Real 12-month metrics (from actual months data, not unit economics estimates) ──
+  var realMargin  = T.rev > 0 ? T.netTax / T.rev : 0;
+  var totalInvestment = T.cogs + T.mktg + T.amzFee + T.fba + (39.99 * 12);
+  var realROI     = totalInvestment > 0 ? T.netTax / totalInvestment : 0;
+  var avgMktgPct  = months.reduce(function(s,m){ return s + (m.mktgPct||0); }, 0) / months.length;
+
   // Economics — Apex style with indicator bars + EDITABLE price/mktg
   var displayMktg = (ue.displayMktgPct||0.45);
   var econHTML='<div class="econ-grid">'
@@ -2475,28 +2502,26 @@ function showDashboard({cfg,months,ue,title,productPlans}){
     // Key indicators with bars
     +'<div class="econ-card">'
       +'<div class="econ-title">'
-        +'Indicadores clave'
+        +'Indicadores clave · 12 meses'
         +(ok?'<span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 9px;border-radius:99px;text-transform:none">✓ Rentable</span>':'<span style="background:#fee2e2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 9px;border-radius:99px;text-transform:none">⚠ Revisar</span>')
       +'</div>'
-      // Margen neto
       +'<div class="ind-row">'
-        +'<div class="ind-header"><span style="font-size:13px;color:var(--text2)">Margen neto</span><span style="font-size:13px;font-weight:700;color:'+(ue.margin>=0.15?'var(--green)':'var(--accent)')+'">'+PCT(ue.margin)+'</span></div>'
-        +'<div class="ind-bar-wrap"><div class="ind-bar '+(ue.margin>=0.15?'green':'orange')+'" style="width:'+Math.min(100,Math.max(0,ue.margin*300))+'%"></div></div>'
+        +'<div class="ind-header"><span style="font-size:13px;color:var(--text2)">Margen neto real <span style=\"font-size:10px;opacity:.7\">(ganancia/ingresos 12m)</span></span><span style="font-size:13px;font-weight:700;color:'+(realMargin>=0.15?'var(--green)':realMargin>0?'var(--accent)':'var(--red)')+'">'+PCT(realMargin)+'</span></div>'
+        +'<div class="ind-bar-wrap"><div class="ind-bar '+(realMargin>=0.15?'green':'orange')+'" style="width:'+Math.min(100,Math.max(0,realMargin*300))+'%"></div></div>'
       +'</div>'
-      // ROI
       +'<div class="ind-row">'
-        +'<div class="ind-header"><span style="font-size:13px;color:var(--text2)">ROI sobre costo</span><span style="font-size:13px;font-weight:700;color:'+(ue.roi>0.5?'var(--accent)':'var(--text2)')+'">+'+(ue.roi*100).toFixed(0)+'%</span></div>'
-        +'<div class="ind-bar-wrap"><div class="ind-bar orange" style="width:'+Math.min(100,Math.max(0,ue.roi*100))+'%"></div></div>'
+        +'<div class="ind-header"><span style="font-size:13px;color:var(--text2)">ROI sobre inversión total <span style=\"font-size:10px;opacity:.7\">(12m)</span></span><span style="font-size:13px;font-weight:700;color:'+(realROI>0.5?'var(--accent)':realROI>0?'var(--text2)':'var(--red)')+'">'+(realROI>=0?'+':'')+PCT(realROI)+'</span></div>'
+        +'<div class="ind-bar-wrap"><div class="ind-bar orange" style="width:'+Math.min(100,Math.max(0,realROI*50))+'%"></div></div>'
       +'</div>'
-      // ROAS
       +'<div class="ind-row">'
-        +'<div class="ind-header"><span style="font-size:13px;color:var(--text2)">ROAS publicitario</span><span style="font-size:13px;font-weight:700;color:var(--blue)">'+roasReal.toFixed(1)+'×</span></div>'
+        +'<div class="ind-header"><span style="font-size:13px;color:var(--text2)">ROAS promedio <span style=\"font-size:10px;opacity:.7\">(ingresos/gasto mktg)</span></span><span style="font-size:13px;font-weight:700;color:var(--blue)">'+roasReal.toFixed(2)+'×</span></div>'
         +'<div class="ind-bar-wrap"><div class="ind-bar blue" style="width:'+Math.min(100,Math.max(0,roasReal/5*100))+'%"></div></div>'
+        +'<div style="font-size:10px;color:var(--text3);margin-top:2px">M1: '+months[0].roas.toFixed(2)+'× → M12: '+months[11].roas.toFixed(2)+'×</div>'
       +'</div>'
-      // Inventory coverage
       +'<div class="ind-row">'
-        +'<div class="ind-header"><span style="font-size:13px;color:var(--text2)">Inventario: meses de cobertura</span><span style="font-size:13px;font-weight:700;color:var(--text)">'+(T.units>0?(months[0].units>0?(cfg.initialUnits||cfg.unitsM1||months[0].units*2)/months[0].units:0).toFixed(1):0)+'</span></div>'
-        +'<div class="ind-bar-wrap"><div class="ind-bar green" style="width:60%"></div></div>'
+        +'<div class="ind-header"><span style="font-size:13px;color:var(--text2)">Marketing % promedio real</span><span style="font-size:13px;font-weight:700;color:var(--text2)">'+PCT(avgMktgPct)+'</span></div>'
+        +'<div class="ind-bar-wrap"><div class="ind-bar orange" style="width:'+Math.min(100,avgMktgPct*200)+'%"></div></div>'
+        +'<div style="font-size:10px;color:var(--text3);margin-top:2px">M1: '+PCT(months[0].mktgPct)+' → M12: '+PCT(months[11].mktgPct)+'</div>'
       +'</div>'
     +'</div>'
   +'</div>';
@@ -2922,14 +2947,25 @@ function renderAIAdvisor(data, cfg) {
 function econApply(field, val) {
   if(isNaN(val) || val <= 0) return;
   var plans = window._productPlans;
+
   if(plans && plans.length > 0){
     plans.forEach(function(pp){ pp.cfg[field] = val; });
     rebuildWithOverrides(plans);
   } else if(_simCfg) {
     _simCfg[field] = val;
-    var newUe = calcUnitEconomics(_simCfg);
+    // Global price/mktg change → clear per-cell overrides for that field so they don't conflict
+    if(field === 'sellingPrice') window._priceOverrides = {};
+    if(field === 'mktgPct')      window._mktgOverrides  = {};
+    S.aiInsight = (
+      field === 'sellingPrice' ? 'Precio ajustado a $'+val.toFixed(2) :
+      field === 'supplierCost' ? 'Costo ajustado a $'+val.toFixed(2) :
+      'Marketing ajustado a '+(val*100).toFixed(0)+'%'
+    );
+    // Use _rebuildWithPriceOverrides so keepOverrides logic applies cleanly
+    window._keepOverrides = false;
     var newMonths = buildMonths(_simCfg);
-    S.aiInsight = (field==='sellingPrice'?'Precio ajustado a $'+val.toFixed(2):field==='supplierCost'?'Costo ajustado a $'+val.toFixed(2):'Marketing ajustado a '+(val*100).toFixed(0)+'%');
+    var newUe = calcUnitEconomics(_simCfg);
+    window._keepOverrides = false;
     showDashboard({cfg:_simCfg, months:newMonths, ue:newUe, title:(_simCfg.productName||'Producto')});
   }
 }
@@ -2969,31 +3005,10 @@ function _rebuildWithPriceOverrides(){
   var plans = window._productPlans;
   var cfg = _simCfg || (S.currentPlan && S.currentPlan.cfg);
   if(!cfg) return;
-  var base = buildMonths(cfg);
-  var newMonths = base.map(function(m,i){
-    var price = (window._priceOverrides&&window._priceOverrides[i]!=null) ? window._priceOverrides[i] : cfg.sellingPrice;
-    var mktgPct = (window._mktgOverrides&&window._mktgOverrides[i]!=null) ? window._mktgOverrides[i] : m.mktgPct;
-    var units = m.units;
-    var rev = units * price * 0.95;
-    var mktg = rev * mktgPct;
-    var amzFee = rev * (cfg.amzFeePct||0.15);
-    var fba = units * (cfg.fbaFee||5.58);
-    var cogs = units * cfg.supplierCost;
-    var memb = cfg.membership||39.99;
-    var net = rev - mktg - amzFee - fba - memb - cogs;
-    var tax = Math.max(0, net*(cfg.taxRate||0.08));
-    return Object.assign({}, m, {
-      price:price, mktgPct:mktgPct,
-      rev:rev, mktg:mktg, amzFee:amzFee, fba:fba, cogs:cogs,
-      costs:mktg+amzFee+fba+memb+cogs, net:net, tax:tax, netTax:net-tax,
-      roas:mktg>0?rev/mktg:0
-    });
-  });
+  // buildMonths now reads _priceOverrides and _mktgOverrides natively
+  var newMonths = buildMonths(cfg);
   var newUe = calcUnitEconomics(cfg);
-  S.aiInsight = 'Ajuste manual aplicado en tabla';
-  if(plans && plans.length>0){
-    // Single plan: just rebuild display
-  }
+  S.aiInsight = 'Ajuste manual aplicado';
   window._keepOverrides = true;
   showDashboard({cfg:cfg, months:newMonths, ue:newUe, title:cfg.productName||'Producto', productPlans:plans||null});
 }
