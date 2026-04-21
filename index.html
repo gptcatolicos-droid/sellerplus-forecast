@@ -857,54 +857,6 @@ body {
 ════════════════════════════════ */
 #saved-panel.open { transform: translateX(0) !important; }
 
-<!-- ══ Google Analytics 4 ══ -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7SFT8ZDXBJ"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-7SFT8ZDXBJ', {
-  send_page_view: true,
-  cookie_flags: 'SameSite=None;Secure'
-});
-
-/* ── GA Event Helpers ── */
-function gaEvent(name, params){
-  try{ gtag('event', name, params || {}); }catch(e){}
-}
-
-/* ── Scroll depth tracking ── */
-(function(){
-  var fired = {};
-  var thresholds = [25, 50, 75, 90];
-  function onScroll(){
-    var el = document.scrollingElement || document.documentElement;
-    var pct = Math.round((el.scrollTop + window.innerHeight) / el.scrollHeight * 100);
-    thresholds.forEach(function(t){
-      if(pct >= t && !fired[t]){
-        fired[t] = true;
-        gaEvent('scroll_depth', { depth_threshold: t, depth_percentage: pct });
-      }
-    });
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-})();
-
-/* ── Time on page (30s, 60s, 180s, 300s) ── */
-(function(){
-  var milestones = [30000, 60000, 180000, 300000];
-  milestones.forEach(function(ms){
-    setTimeout(function(){
-      gaEvent('time_on_page', { seconds: ms/1000 });
-    }, ms);
-  });
-})();
-
-/* ── Page visibility — track tab switches ── */
-document.addEventListener('visibilitychange', function(){
-  gaEvent('page_visibility', { state: document.visibilityState });
-});
-</script>
 </head>
 <body>
 
@@ -1244,6 +1196,14 @@ document.addEventListener('visibilitychange', function(){
     </div>
   </div>
 </div>
+
+
+<script>
+// GA placeholder — load analytics separately if needed
+function gtag(){}
+function gaEvent(){}
+window.dataLayer = [];
+</script>
 
 <script>
 /* ===========================================
