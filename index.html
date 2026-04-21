@@ -2563,6 +2563,31 @@ function showDashboard({cfg,months,ue,title,productPlans}){
   });
   tbl+='<td class="tc" style="background:#fafbff;color:var(--text2)">—</td></tr>';
 
+  // ── Per-product PRICE rows (portfolio only) ──
+  if(productPlans && productPlans.length > 1){
+    productPlans.forEach(function(pp,idx){
+      var col = rankColors[idx%rankColors.length];
+      tbl+='<tr style="background:#f9fbff">'
+        +'<td class="lft" style="padding-left:22px;font-size:11px;color:var(--text2);border-left:3px solid '+col+';position:sticky;left:0;z-index:1;background:#f9fbff">'
+          +'<span style="display:inline-flex;align-items:center;gap:5px">'
+          +'<span style="width:13px;height:13px;border-radius:50%;background:'+col+';color:#fff;font-size:8px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</span>'
+          +pp.cfg.productName
+          +' <span style="color:var(--accent);font-size:9px;font-weight:600">✏ precio</span>'
+          +'</span>'
+        +'</td>';
+      pp.months.forEach(function(m,i){
+        var be=i+1===beMonth;
+        tbl+='<td class="'+(be?'breakeven-col':'')+'" style="font-size:11px;color:var(--text2);'+(be?'':'background:#f9fbff;')+';cursor:pointer;font-family:var(--font-mono)"'
+          +' contenteditable="true"'
+          +' data-month="'+i+'" data-field="price" data-product="'+idx+'"'
+          +' onblur="cellBlur(this);handleProductPriceEdit(this)"'
+          +' onfocus="cellFocus(this)"'
+          +' title="Precio de venta de '+pp.cfg.productName+' mes '+(i+1)+'">'+C$(m.price||pp.cfg.sellingPrice)+'</td>';
+      });
+      tbl+='<td class="tc" style="background:#f9fbff;font-size:11px">—</td></tr>';
+    });
+  }
+
   // ── ROW: MARKETING % (editable) ──
   tbl+='<tr style="background:#fffaf7"><td class="lft" style="position:sticky;left:0;z-index:1;background:#fffaf7;font-weight:600;color:var(--text2)">'
     +'MARKETING ADS % <span style="font-size:9px;font-weight:500;color:var(--text3)">✏ click para editar</span>'
@@ -2714,25 +2739,24 @@ function showDashboard({cfg,months,ue,title,productPlans}){
   // Per-product breakdown (only when portfolio)
   var perProdHTML = '';
   if(productPlans && productPlans.length > 1){
-    perProdHTML = '<div style="background:#fff;border-radius:16px;border:1px solid #e8e8e8;margin-bottom:18px;overflow:hidden">'
-      +'<div style="padding:13px 18px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:8px">'
-      +'<div style="font-size:13px;font-weight:800;color:#1a1a1a">Detalle por Producto</div>'
-      +'<span style="font-size:11px;color:#94a3b8">— proyección individual a 12 meses</span></div>'
+    var rankColors2=['#f97316','#6366f1','#06b6d4','#10b981','#8b5cf6','#ec4899','#f59e0b'];
+    perProdHTML = '<div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:4px;overflow:hidden;box-shadow:var(--shadow)">'
+      +'<div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">'
+        +'<div style="font-size:13px;font-weight:700;color:var(--text)">Detalle por Producto</div>'
+        +'<span style="font-size:11px;color:var(--text3)">— edita precio, costo o unidades y el sistema recalcula todo</span>'
+      +'</div>'
       +'<div style="padding:14px 18px;display:flex;flex-direction:column;gap:12px">';
 
-    var rankColors=['#f97316','#6366f1','#06b6d4','#10b981','#8b5cf6','#ec4899','#f59e0b'];
     productPlans.forEach(function(pp, idx){
-      var T12 = pp.months.reduce(function(a,m){return{rev:a.rev+m.rev,net:a.net+m.netTax};},{rev:0,net:0});
-      var col = rankColors[idx % rankColors.length];
-      var isRent = T12.net > 0;
-
-      // Mini 12-month sparkline bar chart
-      var maxRev = Math.max.apply(null, pp.months.map(function(m){return m.rev;}));
-      var bars = pp.months.map(function(m, i){
-        var pct = maxRev>0 ? Math.round(m.rev/maxRev*100) : 0;
-        var netPct = maxRev>0 ? Math.round(m.netTax/maxRev*100) : 0;
+      var T12=pp.months.reduce(function(a,m){return{rev:a.rev+m.rev,net:a.net+m.netTax};},{rev:0,net:0});
+      var col=rankColors2[idx%rankColors2.length];
+      var isRent=T12.net>0;
+      var maxRev=Math.max.apply(null,pp.months.map(function(m){return m.rev;}));
+      var bars=pp.months.map(function(m,i){
+        var pct=maxRev>0?Math.round(m.rev/maxRev*100):0;
+        var netPct=maxRev>0?Math.round(m.netTax/maxRev*100):0;
         return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">'
-          +'<div style="width:100%;background:#e8e8e8;border-radius:3px 3px 0 0;position:relative;height:40px">'
+          +'<div style="width:100%;background:#e8e8e8;border-radius:3px 3px 0 0;position:relative;height:36px">'
           +'<div style="position:absolute;bottom:0;width:100%;background:'+col+';opacity:.3;height:'+pct+'%;border-radius:3px 3px 0 0"></div>'
           +'<div style="position:absolute;bottom:0;width:100%;background:'+(isRent?'#10b981':'#ef4444')+';height:'+Math.max(0,netPct)+'%;border-radius:3px 3px 0 0"></div>'
           +'</div>'
@@ -2740,53 +2764,63 @@ function showDashboard({cfg,months,ue,title,productPlans}){
           +'</div>';
       }).join('');
 
-      perProdHTML += '<div class="prod-detail-card">'
-        // Header row
-        +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
-          +'<div style="width:22px;height:22px;border-radius:50%;background:'+col+';color:#fff;'
-            +'font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</div>'
-          +'<div style="font-size:13px;font-weight:800;color:#1a1a1a;flex:1">'+pp.cfg.productName+'</div>'
-          +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:'+(isRent?'#dcfce7':'#fee2e2')+';color:'+(isRent?'#15803d':'#dc2626')+'">'+(isRent?'Rentable':'No rentable')+'</span>'
+      function ppInp(field,val,pfx,sfx,neg,w){
+        return '<span style="display:inline-flex;align-items:center;gap:1px">'
+          +(pfx?'<span style="font-size:12px;font-weight:700;color:'+(neg?'var(--red)':'var(--text)')+'">'+pfx+'</span>':'')
+          +'<input type="number" value="'+val+'" step="'+(field==='unitsM1'?'1':'0.01')+'" min="'+(field==='unitsM1'?'1':'0.01')+'" '
+            +'style="width:'+(w||64)+'px;border:none;border-bottom:1.5px dashed var(--border-md);'
+            +'background:transparent;font-family:var(--font-mono);font-size:13px;font-weight:800;'
+            +'color:'+(neg?'var(--red)':'var(--text)')+';text-align:right;outline:none;padding:1px 2px;'
+            +'-moz-appearance:textfield;-webkit-appearance:none;" '
+            +'onchange="prodCfgEdit('+idx+',\''+field+'\',parseFloat(this.value)||0)" '
+            +'onblur="prodCfgEdit('+idx+',\''+field+'\',parseFloat(this.value)||0)" />'
+          +(sfx?'<span style="font-size:11px;color:var(--text3)"> '+sfx+'</span>':'')
+          +'</span>';
+      }
+
+      perProdHTML += '<div class="prod-detail-card" id="pp-card-'+idx+'">'
+        +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
+          +'<div style="width:22px;height:22px;border-radius:50%;background:'+col+';color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(idx+1)+'</div>'
+          +'<div style="font-size:13px;font-weight:700;color:var(--text);flex:1">'+pp.cfg.productName+'</div>'
+          +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:'+(isRent?'var(--green-bg)':'var(--red-bg)')+';color:'+(isRent?'var(--green)':'var(--red)')+';">'+(isRent?'✓ Rentable':'✗ No rentable')+'</span>'
         +'</div>'
-        // Key numbers
-        +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'
-          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Precio venta</div>'
-            +'<div style="font-size:14px;font-weight:800;color:#1a1a1a">$'+pp.cfg.sellingPrice.toFixed(2)+'</div>'
+        +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px">'
+          +'<div style="background:var(--bg);border-radius:8px;padding:8px 10px;border:1px solid var(--border)">'
+            +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:4px">Precio venta ✏</div>'
+            +ppInp('sellingPrice',pp.cfg.sellingPrice.toFixed(2),'$','',false,70)
           +'</div>'
-          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Costo proveedor</div>'
-            +'<div style="font-size:14px;font-weight:800;color:#1a1a1a">$'+pp.cfg.supplierCost.toFixed(2)+'</div>'
+          +'<div style="background:var(--bg);border-radius:8px;padding:8px 10px;border:1px solid var(--border)">'
+            +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:4px">Costo proveedor ✏</div>'
+            +ppInp('supplierCost',pp.cfg.supplierCost.toFixed(2),'$','',true,70)
           +'</div>'
-          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Ganancia/unidad</div>'
-            +'<div style="font-size:14px;font-weight:800;color:'+(pp.ue.profit>=0?'#15803d':'#dc2626')+'">$'+pp.ue.profit.toFixed(2)+'</div>'
+          +'<div style="background:var(--bg);border-radius:8px;padding:8px 10px;border:1px solid var(--border)">'
+            +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:4px">Uds mes 1 ✏</div>'
+            +ppInp('unitsM1',pp.cfg.unitsM1,'','uds',false,48)
           +'</div>'
-          +'<div style="flex:1;min-width:100px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Margen</div>'
-            +'<div style="font-size:14px;font-weight:800;color:'+(pp.ue.margin>=0.15?'#15803d':'#d97706')+'">'+(pp.ue.margin*100).toFixed(1)+'%</div>'
+          +'<div style="background:var(--bg);border-radius:8px;padding:8px 10px;border:1px solid var(--border)">'
+            +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px">Ganancia/ud</div>'
+            +'<div style="font-size:13px;font-weight:800;color:'+(pp.ue.profit>=0?'var(--green)':'var(--red)')+';font-family:var(--font-mono)" id="pp-profit-'+idx+'">'+C$(pp.ue.profit)+'</div>'
           +'</div>'
-          +'<div style="flex:1;min-width:120px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Ganancia 12m</div>'
-            +'<div style="font-size:14px;font-weight:800;color:'+(T12.net>=0?'#15803d':'#dc2626')+'">$'+Math.round(T12.net).toLocaleString()+'</div>'
+          +'<div style="background:var(--bg);border-radius:8px;padding:8px 10px;border:1px solid var(--border)">'
+            +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px">Margen</div>'
+            +'<div style="font-size:13px;font-weight:800;color:'+(pp.ue.margin>=0.15?'var(--green)':pp.ue.margin>0?'var(--accent)':'var(--red)')+';font-family:var(--font-mono)" id="pp-margin-'+idx+'">'+(pp.ue.margin*100).toFixed(1)+'%</div>'
           +'</div>'
-          +'<div style="flex:1;min-width:80px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e8e8e8">'
-            +'<div style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;margin-bottom:2px">Uds. mes 1</div>'
-            +'<div style="font-size:14px;font-weight:800;color:#1a1a1a">'+pp.cfg.unitsM1+'</div>'
+          +'<div style="background:var(--bg);border-radius:8px;padding:8px 10px;border:1px solid var(--border)">'
+            +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px">Ganancia 12m</div>'
+            +'<div style="font-size:13px;font-weight:800;color:'+(T12.net>=0?'var(--green)':'var(--red)')+';font-family:var(--font-mono)" id="pp-net12-'+idx+'">'+C(T12.net)+'</div>'
           +'</div>'
         +'</div>'
-        // Sparkline
-        +'<div style="display:flex;gap:1px;align-items:flex-end;height:52px;margin-bottom:4px">'+bars+'</div>'
+        +'<div style="display:flex;gap:1px;align-items:flex-end;height:40px;margin-bottom:4px">'+bars+'</div>'
         +'<div style="display:flex;gap:12px;font-size:10px;color:#94a3b8">'
-          +'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:'+col+';opacity:.4;display:inline-block"></span>Ingresos</span>'
-          +'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:'+(isRent?'#10b981':'#ef4444')+';display:inline-block"></span>Ganancia neta</span>'
+          +'<span style="display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:2px;background:'+col+';opacity:.4;display:inline-block"></span>Ingresos</span>'
+          +'<span style="display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:2px;background:'+(isRent?'#10b981':'#ef4444')+';display:inline-block"></span>Ganancia neta</span>'
         +'</div>'
         +buildProductLinks(pp.product)
         +'</div>';
     });
-
     perProdHTML += '</div></div>';
   }
+
 
   // Page header — Apex style (matches mockup)
   var numProds = productPlans ? productPlans.length : 1;
@@ -2944,6 +2978,56 @@ function renderAIAdvisor(data, cfg) {
 }
 
 /* ─── Inline econ editor ─────────────────────────────────── */
+/* ─── Per-product cfg editor (cards + table) ────────────── */
+function prodCfgEdit(idx, field, val){
+  if(isNaN(val) || val <= 0) return;
+  var plans = window._productPlans;
+  if(!plans || !plans[idx]) return;
+
+  plans[idx].cfg[field] = field === 'unitsM1' ? Math.max(1, Math.round(val)) : val;
+
+  // Rebuild that product's months
+  var ppCfg = plans[idx].cfg;
+  plans[idx].months = buildMonths(ppCfg);
+  plans[idx].ue = calcUnitEconomics(ppCfg);
+
+  // Rebuild consolidated and re-render
+  window._keepOverrides = true;
+  rebuildWithOverrides(plans);
+}
+
+function handleProductPriceEdit(cell){
+  cell.style.outline=''; cell.style.background='';
+  var raw = cell.textContent.replace(/[^0-9.]/g,'').trim();
+  var newVal = parseFloat(raw);
+  if(isNaN(newVal) || newVal <= 0){ cell.textContent = cell.dataset.original||cell.textContent; return; }
+  var monthIdx = parseInt(cell.dataset.month);
+  var prodIdx  = parseInt(cell.dataset.product);
+  var plans = window._productPlans;
+  if(!plans || !plans[prodIdx]) return;
+  // Store per-product, per-month price override
+  if(!plans[prodIdx].priceOverrides) plans[prodIdx].priceOverrides = {};
+  plans[prodIdx].priceOverrides[monthIdx] = newVal;
+  cell.textContent = C$(newVal);
+  cell.style.background = '#fff8f2';
+  setTimeout(function(){ cell.style.background=''; }, 1200);
+  // Rebuild that product's months using its price overrides
+  var ppCfg = plans[prodIdx].cfg;
+  plans[prodIdx].months = buildMonthsForProduct(ppCfg, plans[prodIdx].priceOverrides);
+  plans[prodIdx].ue = calcUnitEconomics(ppCfg);
+  window._keepOverrides = true;
+  rebuildWithOverrides(plans);
+}
+
+function buildMonthsForProduct(cfg, priceOverrides){
+  // buildMonths but with per-month price overrides for this specific product
+  var saved = window._priceOverrides;
+  window._priceOverrides = priceOverrides || {};
+  var months = buildMonths(cfg);
+  window._priceOverrides = saved;
+  return months;
+}
+
 function econApply(field, val) {
   if(isNaN(val) || val <= 0) return;
   var plans = window._productPlans;
@@ -3362,9 +3446,36 @@ function suggestMoreProducts(){
 function rebuildWithOverrides(productPlans){
   // Recalculate months for each product with their current cfg + overrides
   var updated = productPlans.map(function(pp){
-    var months = pp.unitOverrides
-      ? buildMonthsWithOverrides(pp.cfg, pp.unitOverrides)
-      : buildMonths(pp.cfg);
+    var months;
+    if(pp.priceOverrides && Object.keys(pp.priceOverrides).length > 0){
+      // Has per-month price overrides for this product
+      months = buildMonthsForProduct(pp.cfg, pp.priceOverrides);
+      // Then apply unit overrides on top if any
+      if(pp.unitOverrides){
+        months = months.map(function(m,i){
+          if(pp.unitOverrides[i] == null) return m;
+          var forcedUnits = pp.unitOverrides[i];
+          var price = (pp.priceOverrides && pp.priceOverrides[i] != null) ? pp.priceOverrides[i] : pp.cfg.sellingPrice;
+          var rev = forcedUnits * price * 0.95;
+          var mktgCurve = [0.45,0.44,0.40,0.38,0.35,0.33,0.31,0.29,0.28,0.27,0.26,0.25];
+          var mktgPct = (pp.cfg.mktgPct !== 0.25) ? Math.max(0.10, pp.cfg.mktgPct - i*0.005) : mktgCurve[i];
+          var mktg = rev * mktgPct;
+          var amzFee = rev * (pp.cfg.amzFeePct||0.15);
+          var fba = forcedUnits * (pp.cfg.fbaFee||5.58);
+          var cogs = forcedUnits * pp.cfg.supplierCost;
+          var memb = 39.99;
+          var net = rev - mktg - amzFee - fba - memb - cogs;
+          var tax = Math.max(0, net*(pp.cfg.taxRate||0.08));
+          return Object.assign({},m,{price:price,units:forcedUnits,rev:rev,mktg:mktg,mktgPct:mktgPct,
+            amzFee:amzFee,fba:fba,cogs:cogs,costs:mktg+amzFee+fba+memb+cogs,
+            net:net,tax:tax,netTax:net-tax,roas:mktg>0?rev/mktg:0});
+        });
+      }
+    } else if(pp.unitOverrides){
+      months = buildMonthsWithOverrides(pp.cfg, pp.unitOverrides);
+    } else {
+      months = buildMonths(pp.cfg);
+    }
     var ue = calcUnitEconomics(pp.cfg);
     return Object.assign({}, pp, {months: months, ue: ue});
   });
@@ -3374,12 +3485,14 @@ function rebuildWithOverrides(productPlans){
     return updated.reduce(function(acc, pp){
       var m = pp.months[i];
       return {m:i+1,label:'Mes '+(i+1),
+        price: acc.price!=null ? acc.price : m.price, // use first product's price for display
+        mktgPct: acc.mktgPct!=null ? (acc.mktgPct + m.mktgPct)/2 : m.mktgPct, // avg mktg%
         rev:acc.rev+m.rev, units:acc.units+m.units,
         mktg:acc.mktg+m.mktg, amzFee:acc.amzFee+m.amzFee,
         fba:acc.fba+m.fba, cogs:acc.cogs+m.cogs,
         costs:acc.costs+m.costs, net:acc.net+m.net,
         tax:acc.tax+m.tax, netTax:acc.netTax+m.netTax, roas:0};
-    }, {m:i+1,label:'Mes '+(i+1),rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0,roas:0});
+    }, {m:i+1,label:'Mes '+(i+1),price:null,mktgPct:null,rev:0,units:0,mktg:0,amzFee:0,fba:0,cogs:0,costs:0,net:0,tax:0,netTax:0,roas:0});
   });
   consolidated.forEach(function(m){ m.roas=m.mktg>0?m.rev/m.mktg:0; });
 
