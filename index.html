@@ -953,30 +953,14 @@ body {
         Buscador IA
       </button>
       <div class="sb-section-label">Herramientas</div>
+      <button class="sb-item" onclick="show('l-listing')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Listing Rufus IA
+      </button>
       <button class="sb-item">
         <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         Proveedores
       </button>
-      <button class="sb-item">
-        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="9 3 15 3 20 8 20 21 4 21 4 8 9 3"/></svg>
-        Pricing
-      </button>
-      <button class="sb-item">
-        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        Insights IA
-      </button>
-      <div class="sb-section-label">Cuenta</div>
-      <button class="sb-item">
-        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        <span id="topbar-user">Usuario</span>
-      </button>
-    </div>
-    <div class="sb-plan-badge">
-      <div class="sb-plan-name">✦ Plan Pro</div>
-      <div class="sb-plan-sub">Búsquedas IA ilimitadas</div>
-      <button class="sb-plan-btn">Mejorar plan</button>
-    </div>
-  </nav>
 
   <!-- Content area -->
   <div class="chat-with-sidebar">
@@ -1036,19 +1020,14 @@ body {
         Plan financiero
       </button>
       <div class="sb-section-label">Herramientas</div>
+      <button class="sb-item" onclick="show('l-listing')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Listing Rufus IA
+      </button>
       <button class="sb-item">
         <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         Proveedores
       </button>
-      <button class="sb-item">
-        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="9 3 15 3 20 8 20 21 4 21 4 8 9 3"/></svg>
-        Pricing
-      </button>
-      <button class="sb-item">
-        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        Insights IA
-      </button>
-      <div class="sb-section-label">Cuenta</div>
       <button class="sb-item" onclick="openSavedPanel()">
         <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         Mis Planes
@@ -3259,7 +3238,590 @@ function handleCellEdit(cell){
   </div>
   <div id="saved-list" style="flex:1;overflow-y:auto;padding:14px"></div>
 </div>
+<!-- ══════════════════════════════
+     LAYER 5: LISTING GENERATOR RUFUS IA
+══════════════════════════════ -->
+<div class="layer" id="l-listing">
+  <!-- Apex Sidebar -->
+  <nav class="apex-sidebar">
+    <a class="sb-logo" href="#" onclick="goHome();return false;">
+      <div class="sb-logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 3L8 13L13 13L10 21L16 11L11 11Z" fill="white" stroke="white" stroke-width="0.5" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="sb-logo-text">Seller<span>Plus</span></span>
+    </a>
+    <div class="sb-nav">
+      <div class="sb-section-label">Principal</div>
+      <button class="sb-item" onclick="show('l-dash')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="sb-item" onclick="show('l-dash')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Simulador
+      </button>
+      <button class="sb-item" onclick="show('l-chat')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Buscador IA
+      </button>
+      <div class="sb-section-label">Herramientas</div>
+      <button class="sb-item active">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Listing Rufus IA
+      </button>
+      <button class="sb-item">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Proveedores
+      </button>
+      <button class="sb-item">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Insights IA
+      </button>
+      <div class="sb-section-label">Cuenta</div>
+      <button class="sb-item" onclick="goHome()">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Ajustes
+      </button>
+    </div>
+    <div class="sb-plan-badge">
+      <div class="sb-plan-name">✦ Plan Pro</div>
+      <div class="sb-plan-sub">Búsquedas IA ilimitadas</div>
+      <button class="sb-plan-btn">Mejorar plan</button>
+    </div>
+  </nav>
+
+  <!-- Content area -->
+  <div class="dash-with-sidebar">
+    <!-- Topbar -->
+    <div class="dash-topbar">
+      <div class="dash-topbar-left">
+        <span class="topbar-breadcrumb">
+          <span>Herramientas</span>
+          <span class="bc-sep">›</span>
+          <span class="bc-active">Listing Rufus IA</span>
+        </span>
+      </div>
+      <div class="dash-actions">
+        <button class="btn-dash" onclick="lstCopyAll()" id="lst-btn-copy" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar todo
+        </button>
+        <button class="btn-dash" onclick="lstReset()" id="lst-btn-reset" style="display:none">Nueva búsqueda</button>
+        <button class="btn-dash" onclick="goHome()">← Inicio</button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="dash-body">
+      <div class="dash-inner" style="max-width:860px">
+
+        <!-- INPUT FORM (state: idle) -->
+        <div id="lst-form">
+          <!-- Hero header -->
+          <div style="margin-bottom:28px">
+            <div style="display:inline-flex;align-items:center;gap:8px;padding:4px 12px;background:rgba(245,130,32,.1);border:1px solid rgba(245,130,32,.2);border-radius:99px;font-size:11px;font-weight:700;color:var(--accent);margin-bottom:14px">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.5 7H22l-6 4.5 2.5 7L12 17l-6.5 3.5 2.5-7L2 9h7.5z"/></svg>
+              Optimizado para Rufus AI + COSMO
+            </div>
+            <h1 style="font-size:22px;font-weight:700;color:var(--text);letter-spacing:-0.03em;margin-bottom:6px">Generador de Listing Amazon</h1>
+            <p style="font-size:13.5px;color:var(--text2);line-height:1.6;max-width:560px">Ingresa tu producto y la IA genera un listing completo optimizado para que Rufus te recomiende: título, bullets, descripción, backend keywords, A+ Content y más.</p>
+          </div>
+
+          <!-- Form card -->
+          <div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden">
+            <div style="padding:20px 24px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fff8f2,#fff)">
+              <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Paso 1 de 1 — Datos del producto</div>
+              <div style="font-size:12px;color:var(--text3)">Solo necesitas dos campos. La IA infiere el resto.</div>
+            </div>
+            <div style="padding:24px">
+              <div style="margin-bottom:18px">
+                <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:7px">Nombre del producto *</label>
+                <input id="lst-name" type="text" placeholder="Ej: Sérum de Vitamina C 30ml con Ácido Hialurónico"
+                  style="width:100%;padding:12px 14px;font-size:14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:all .15s"
+                  onfocus="this.style.borderColor='var(--accent)';this.style.boxShadow='0 0 0 3px rgba(245,130,32,.1)'"
+                  onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"/>
+              </div>
+              <div style="margin-bottom:24px">
+                <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:7px">Descripción breve *</label>
+                <textarea id="lst-desc" rows="4" placeholder="Ej: Sérum facial antienvejecimiento con 20% de vitamina C estabilizada, ácido hialurónico y vitamina E. Para piel opaca con manchas. Frasco de vidrio con gotero de precisión."
+                  style="width:100%;padding:12px 14px;font-size:14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;outline:none;resize:vertical;line-height:1.5;transition:all .15s"
+                  onfocus="this.style.borderColor='var(--accent)';this.style.boxShadow='0 0 0 3px rgba(245,130,32,.1)'"
+                  onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></textarea>
+              </div>
+
+              <!-- Intent preview chips -->
+              <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:20px;border:1px solid var(--border)">
+                <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">La IA generará (10 secciones)</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <span class="lst-chip">Título SEO</span>
+                  <span class="lst-chip">5 Bullet Points</span>
+                  <span class="lst-chip">Descripción</span>
+                  <span class="lst-chip">Backend Keywords</span>
+                  <span class="lst-chip">Generic Keywords</span>
+                  <span class="lst-chip">Item Type Keyword</span>
+                  <span class="lst-chip">Subject Matter</span>
+                  <span class="lst-chip">Target Audience</span>
+                  <span class="lst-chip">Use Cases</span>
+                  <span class="lst-chip">A+ Content</span>
+                </div>
+              </div>
+
+              <button onclick="lstGenerate()" id="lst-btn-gen"
+                style="width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:var(--radius-sm);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:0 4px 16px rgba(245,130,32,.3);display:flex;align-items:center;justify-content:center;gap:10px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.5 7H22l-6 4.5 2.5 7L12 17l-6.5 3.5 2.5-7L2 9h7.5z"/></svg>
+                Generar Listing con Rufus IA
+              </button>
+            </div>
+          </div>
+
+          <!-- Info cards row -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px">
+            <div style="background:var(--surface);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow)">
+              <div style="font-size:19px;margin-bottom:6px">🤖</div>
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Optimizado para Rufus</div>
+              <div style="font-size:11.5px;color:var(--text3);line-height:1.5">Intent matching, noun phrases SEO y attribute completeness para el AI de Amazon.</div>
+            </div>
+            <div style="background:var(--surface);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow)">
+              <div style="font-size:19px;margin-bottom:6px">🕸</div>
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">COSMO Knowledge Graph</div>
+              <div style="font-size:11.5px;color:var(--text3);line-height:1.5">Estructura semántica que ubica tu producto en el grafo de conocimiento de Amazon.</div>
+            </div>
+            <div style="background:var(--surface);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow)">
+              <div style="font-size:19px;margin-bottom:6px">📋</div>
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Listo para subir</div>
+              <div style="font-size:11.5px;color:var(--text3);line-height:1.5">Todos los campos del flat file de Amazon. Copia sección por sección o todo de una vez.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOADING STATE -->
+        <div id="lst-loading" style="display:none;text-align:center;padding:60px 24px">
+          <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 24px rgba(245,130,32,.3);animation:lstPulse 1.5s ease-in-out infinite">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.5 7H22l-6 4.5 2.5 7L12 17l-6.5 3.5 2.5-7L2 9h7.5z"/></svg>
+          </div>
+          <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px">Rufus IA analizando tu producto...</div>
+          <div style="font-size:13px;color:var(--text3);margin-bottom:28px" id="lst-loading-step">Extrayendo intenciones de usuario</div>
+          <div style="max-width:400px;margin:0 auto">
+            <div style="height:4px;background:var(--bg);border-radius:99px;overflow:hidden">
+              <div id="lst-progress-bar" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;width:0%;transition:width .4s ease"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:20px;gap:8px;flex-wrap:wrap" id="lst-steps-display">
+              <span class="lst-step-dot" data-step="0">Intenciones</span>
+              <span class="lst-step-dot" data-step="1">Atributos</span>
+              <span class="lst-step-dot" data-step="2">Clusters</span>
+              <span class="lst-step-dot" data-step="3">Título</span>
+              <span class="lst-step-dot" data-step="4">Bullets</span>
+              <span class="lst-step-dot" data-step="5">Descripción</span>
+              <span class="lst-step-dot" data-step="6">Keywords</span>
+              <span class="lst-step-dot" data-step="7">A+ Content</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESULTS (populated by JS) -->
+        <div id="lst-results" style="display:none"></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LISTING STYLES ══ -->
+<style>
+.lst-chip {
+  display:inline-block;padding:3px 10px;background:var(--surface);border:1px solid var(--border);
+  border-radius:99px;font-size:11px;font-weight:600;color:var(--text2);
+}
+.lst-section {
+  background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px;
+}
+.lst-section-head {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 18px;border-bottom:1px solid var(--border);background:var(--surface2);
+}
+.lst-section-tag {
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);
+}
+.lst-section-body { padding:16px 18px;font-size:13.5px;color:var(--text);line-height:1.65; }
+.lst-copy-btn {
+  padding:5px 13px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:11px;font-weight:700;color:var(--text2);background:var(--surface);
+  cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px;
+}
+.lst-copy-btn:hover { border-color:var(--accent);color:var(--accent);background:#fff8f2; }
+.lst-copy-btn.copied { border-color:var(--green);color:var(--green);background:var(--green-bg); }
+.lst-bullet { display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--bg); }
+.lst-bullet:last-child { border-bottom:none; }
+.lst-bullet-num {
+  width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;
+  font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.lst-keyword-wrap { display:flex;flex-wrap:wrap;gap:6px; }
+.lst-kw-pill {
+  padding:3px 9px;background:var(--bg);border:1px solid var(--border);
+  border-radius:99px;font-size:11.5px;color:var(--text2);font-family:var(--font-mono);
+}
+.lst-intent-card {
+  padding:9px 12px;background:var(--bg);border-radius:var(--radius-sm);
+  border-left:3px solid var(--accent);font-size:12.5px;color:var(--text2);line-height:1.5;
+}
+.lst-step-dot {
+  font-size:10.5px;color:var(--text3);font-weight:600;
+  padding:3px 8px;border-radius:99px;background:var(--bg);border:1px solid var(--border);
+  transition:all .3s;
+}
+.lst-step-dot.active { background:rgba(245,130,32,.12);border-color:rgba(245,130,32,.3);color:var(--accent); }
+.lst-step-dot.done { background:var(--green-bg);border-color:var(--green-brd);color:var(--green); }
+.lst-aplus-module {
+  background:var(--bg);border-radius:var(--radius-sm);padding:13px 15px;margin-bottom:10px;
+  border-left:3px solid var(--blue);
+}
+.lst-aplus-module:last-child { margin-bottom:0; }
+.lst-aplus-label { font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:5px; }
+@keyframes lstPulse { 0%,100%{box-shadow:0 8px 24px rgba(245,130,32,.3)} 50%{box-shadow:0 12px 36px rgba(245,130,32,.5)} }
+</style>
+
 <div id="panel-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199" onclick="closeSavedPanel()"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   LISTING GENERATOR — RUFUS / COSMO OPTIMIZED
+   Standalone module. No interference with existing logic.
+═══════════════════════════════════════════════════ */
+
+// ── State ──
+var _lstState = { name:'', desc:'', result:null };
+
+// ── Loading steps sequence ──
+var _lstSteps = [
+  'Extrayendo intenciones de usuario…',
+  'Expandiendo atributos del producto…',
+  'Construyendo clusters semánticos…',
+  'Redactando título optimizado…',
+  'Generando bullet points Rufus…',
+  'Escribiendo descripción NLP…',
+  'Compilando keywords y backend…',
+  'Construyendo módulos A+ Content…'
+];
+
+function lstReset(){
+  _lstState = { name:'', desc:'', result:null };
+  document.getElementById('lst-form').style.display='';
+  document.getElementById('lst-loading').style.display='none';
+  document.getElementById('lst-results').style.display='none';
+  document.getElementById('lst-btn-copy').style.display='none';
+  document.getElementById('lst-btn-reset').style.display='none';
+  document.getElementById('lst-name').value='';
+  document.getElementById('lst-desc').value='';
+}
+
+function lstGenerate(){
+  var name = (document.getElementById('lst-name').value||'').trim();
+  var desc = (document.getElementById('lst-desc').value||'').trim();
+  if(!name){ document.getElementById('lst-name').focus(); return; }
+  if(!desc){ document.getElementById('lst-desc').focus(); return; }
+  _lstState.name = name;
+  _lstState.desc = desc;
+
+  // Switch to loading state
+  document.getElementById('lst-form').style.display='none';
+  document.getElementById('lst-results').style.display='none';
+  document.getElementById('lst-loading').style.display='';
+  document.getElementById('lst-btn-copy').style.display='none';
+  document.getElementById('lst-btn-reset').style.display='none';
+
+  // Animate steps
+  var stepEls = document.querySelectorAll('.lst-step-dot');
+  var progressBar = document.getElementById('lst-progress-bar');
+  var loadingStep = document.getElementById('lst-loading-step');
+  var stepIdx = 0;
+  var stepInterval = setInterval(function(){
+    if(stepIdx < stepEls.length){
+      stepEls.forEach(function(el,i){
+        el.classList.remove('active','done');
+        if(i < stepIdx) el.classList.add('done');
+        else if(i === stepIdx) el.classList.add('active');
+      });
+      if(loadingStep) loadingStep.textContent = _lstSteps[stepIdx]||'';
+      var pct = Math.round((stepIdx+1) / stepEls.length * 90);
+      if(progressBar) progressBar.style.width = pct+'%';
+      stepIdx++;
+    }
+  }, 700);
+
+  // Build the prompt following the MD spec exactly
+  var systemPrompt = 'Eres un motor de generación de listings para Amazon, optimizado para Rufus AI (búsqueda conversacional de Amazon) y el grafo de conocimiento COSMO.\n\nEscribo SOLO JSON estructurado. No uses markdown. No uses bloques de código. El JSON debe poder parsearse directamente.\n\nResponde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:\n{\n  "intents": ["string×6"],\n  "attributes": {"product_type":"","material":"","size":"","quantity":"","use_scenario":"","compatibility":"","performance":""},\n  "semantic_clusters": {"primary":["×4"],"secondary":["×4"],"longtail":["×4"]},\n  "title": "string 180-200 chars",\n  "bullets": ["string×5 each 180-250 chars"],\n  "description": "string with 5 paragraphs separated by \\n\\n",\n  "backend_search_terms": "string max 249 bytes, no commas",\n  "generic_keywords": ["string×8"],\n  "item_type_keyword": "string hyphenated-specific",\n  "subject_matter": ["string×5"],\n  "target_audience": "string",\n  "use_cases": ["string×4"],\n  "aplus": [\n    {"module":"Módulo 1","headline":"","body":""},\n    {"module":"Módulo 2","headline":"","body":""},\n    {"module":"Módulo 3","headline":"","body":""},\n    {"module":"Módulo 4","headline":"","body":""},\n    {"module":"Módulo 5","headline":"","body":""}\n  ]\n}\n\nPrincipios OBLIGATORIOS:\n- Escribe para que Rufus AI recomiende el producto\n- Usa Noun Phrase SEO (no keyword stuffing)\n- Mapea TODO el contenido a intenciones de usuario\n- Prioriza: contexto, claridad, completitud de atributos\n- Cada sección debe responder: "¿Por qué Rufus recomendaría este producto?"';
+
+  var userMsg = 'Product Name: '+name+'\nShort Description: '+desc;
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:4000,
+      system: systemPrompt,
+      messages:[{role:'user', content: userMsg}]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    clearInterval(stepInterval);
+    // Complete progress bar
+    stepEls.forEach(function(el){ el.classList.remove('active'); el.classList.add('done'); });
+    if(progressBar) progressBar.style.width='100%';
+
+    setTimeout(function(){
+      var raw = (data.content&&data.content[0]&&data.content[0].text)||'{}';
+      // Strip potential markdown fences
+      raw = raw.replace(/```json[\s\S]*?```/g, function(m){ return m.replace(/```json\n?/,'').replace(/\n?```/,''); })
+               .replace(/```[\s\S]*?```/g, function(m){ return m.replace(/```\n?/g,''); });
+      // Extract first JSON object
+      var match = raw.match(/\{[\s\S]*\}/);
+      var obj = {};
+      try{ obj = JSON.parse(match?match[0]:raw); }catch(e){ obj = {_error: raw}; }
+      _lstState.result = obj;
+      lstRenderResults(obj, name, desc);
+    }, 600);
+  })
+  .catch(function(err){
+    clearInterval(stepInterval);
+    document.getElementById('lst-loading').style.display='none';
+    document.getElementById('lst-form').style.display='';
+    alert('Error al conectar con la IA. Por favor intenta de nuevo.');
+  });
+}
+
+function lstRenderResults(obj, name, desc){
+  document.getElementById('lst-loading').style.display='none';
+  document.getElementById('lst-btn-copy').style.display='flex';
+  document.getElementById('lst-btn-reset').style.display='';
+
+  var html = '';
+
+  // ── Page header ──
+  html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">'
+    +'<div>'
+      +'<h1 style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.02em;margin-bottom:4px">'+lstEsc(name)+'</h1>'
+      +'<div style="font-size:12.5px;color:var(--text3)">Listing generado · 10 secciones · Rufus + COSMO optimizado</div>'
+    +'</div>'
+    +'<span class="status-pill pill-ok"><div class="dot dot-ok"></div>Listing completo</span>'
+  +'</div>';
+
+  // ── Intent cards ──
+  if(obj.intents && obj.intents.length){
+    html += lstSection('🎯 Intenciones de Usuario','intents',
+      '<div style="display:flex;flex-direction:column;gap:7px">'
+      + obj.intents.map(function(it){
+          return '<div class="lst-intent-card">'+lstEsc(it)+'</div>';
+        }).join('')
+      +'</div>'
+    );
+  }
+
+  // ── Attributes ──
+  if(obj.attributes){
+    var attrs = obj.attributes;
+    var attrHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">';
+    var attrLabels = {product_type:'Tipo de producto',material:'Material',size:'Tamaño / Dims.',quantity:'Cantidad',use_scenario:'Escenario de uso',compatibility:'Compatibilidad',performance:'Rendimiento'};
+    Object.keys(attrLabels).forEach(function(k){
+      if(attrs[k]){
+        attrHTML += '<div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;border:1px solid var(--border)">'
+          +'<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px">'+attrLabels[k]+'</div>'
+          +'<div style="font-size:13px;color:var(--text);font-weight:600">'+lstEsc(attrs[k])+'</div>'
+        +'</div>';
+      }
+    });
+    attrHTML += '</div>';
+    html += lstSection('📐 Atributos del Producto','attributes', attrHTML);
+  }
+
+  // ── TITLE ──
+  if(obj.title){
+    var charCount = obj.title.length;
+    var charColor = charCount<=200?'var(--green)':'var(--red)';
+    html += lstSection('1 · TÍTULO','title',
+      '<div style="font-size:15px;font-weight:600;color:var(--text);line-height:1.5;margin-bottom:10px">'+lstEsc(obj.title)+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">Caracteres: <span style="font-family:var(--font-mono);font-weight:700;color:'+charColor+'">'+charCount+'</span> / 200</div>'
+    );
+  }
+
+  // ── BULLETS ──
+  if(obj.bullets && obj.bullets.length){
+    var bLabels = ['Beneficio principal','Problema resuelto','Atributos clave','Casos de uso','Diferenciación'];
+    html += lstSection('2 · BULLET POINTS (5)','bullets',
+      '<div style="display:flex;flex-direction:column">'
+      + obj.bullets.map(function(b,i){
+          return '<div class="lst-bullet">'
+            +'<div class="lst-bullet-num">'+(i+1)+'</div>'
+            +'<div><div style="font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">'+bLabels[i]+'</div>'
+            +'<div style="font-size:13.5px;color:var(--text);line-height:1.55">'+lstEsc(b)+'</div>'
+            +'<div style="font-size:10.5px;color:var(--text3);margin-top:3px">'+b.length+' chars</div>'
+            +'</div>'
+          +'</div>';
+        }).join('')
+      +'</div>'
+    );
+  }
+
+  // ── DESCRIPTION ──
+  if(obj.description){
+    var descParas = obj.description.split('\n\n').filter(function(p){return p.trim();});
+    var pLabels=['Quién es + problema principal','Cómo funciona','Beneficios clave','Escenarios de uso','Posicionamiento de valor'];
+    html += lstSection('3 · DESCRIPCIÓN DEL PRODUCTO','description',
+      descParas.map(function(p,i){
+        return '<div style="margin-bottom:14px">'
+          +'<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:4px">Párrafo '+(i+1)+(pLabels[i]?' — '+pLabels[i]:'')+'</div>'
+          +'<div style="font-size:13.5px;color:var(--text);line-height:1.65">'+lstEsc(p)+'</div>'
+        +'</div>';
+      }).join('')
+    );
+  }
+
+  // ── BACKEND SEARCH TERMS ──
+  if(obj.backend_search_terms){
+    var byteLen = new TextEncoder().encode(obj.backend_search_terms).length;
+    var byteColor = byteLen<=249?'var(--green)':'var(--red)';
+    html += lstSection('4 · BACKEND SEARCH TERMS','backend_search_terms',
+      '<div style="font-size:13px;font-family:var(--font-mono);color:var(--text);line-height:1.7;background:var(--bg);padding:12px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);word-break:break-all">'+lstEsc(obj.backend_search_terms)+'</div>'
+      +'<div style="font-size:11px;color:var(--text3);margin-top:8px">Bytes: <span style="font-family:var(--font-mono);font-weight:700;color:'+byteColor+'">'+byteLen+'</span> / 249 · Sin comas · Sin repetición</div>'
+    );
+  }
+
+  // ── GENERIC KEYWORDS ──
+  if(obj.generic_keywords && obj.generic_keywords.length){
+    html += lstSection('5 · GENERIC KEYWORDS','generic_keywords',
+      '<div class="lst-keyword-wrap">'
+      + obj.generic_keywords.map(function(k){ return '<span class="lst-kw-pill">'+lstEsc(k)+'</span>'; }).join('')
+      +'</div>'
+    );
+  }
+
+  // ── ITEM TYPE KEYWORD ──
+  if(obj.item_type_keyword){
+    html += lstSection('6 · ITEM TYPE KEYWORD (ITK)','item_type_keyword',
+      '<div style="font-size:16px;font-weight:700;color:var(--accent);font-family:var(--font-mono);background:rgba(245,130,32,.08);padding:10px 14px;border-radius:var(--radius-sm);border:1px solid rgba(245,130,32,.2)">'+lstEsc(obj.item_type_keyword)+'</div>'
+      +'<div style="font-size:11.5px;color:var(--text3);margin-top:8px">Define la ubicación del producto en el grafo de Amazon COSMO. Debe ser lo más específico posible.</div>'
+    );
+  }
+
+  // ── SUBJECT MATTER ──
+  if(obj.subject_matter && obj.subject_matter.length){
+    html += lstSection('7 · SUBJECT MATTER','subject_matter',
+      '<div class="lst-keyword-wrap">'
+      + obj.subject_matter.map(function(s){ return '<span class="lst-kw-pill" style="background:var(--blue-bg);border-color:rgba(46,144,250,.2);color:var(--blue)">'+lstEsc(s)+'</span>'; }).join('')
+      +'</div>'
+    );
+  }
+
+  // ── TARGET AUDIENCE ──
+  if(obj.target_audience){
+    html += lstSection('8 · TARGET AUDIENCE','target_audience',
+      '<div style="font-size:13.5px;color:var(--text);line-height:1.65;padding:12px 14px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">'+lstEsc(obj.target_audience)+'</div>'
+    );
+  }
+
+  // ── USE CASES ──
+  if(obj.use_cases && obj.use_cases.length){
+    html += lstSection('9 · USE CASES','use_cases',
+      '<div style="display:flex;flex-direction:column;gap:8px">'
+      + obj.use_cases.map(function(uc,i){
+          return '<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">'
+            +'<span style="width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">'+(i+1)+'</span>'
+            +'<div style="font-size:13px;color:var(--text);line-height:1.5">'+lstEsc(uc)+'</div>'
+          +'</div>';
+        }).join('')
+      +'</div>'
+    );
+  }
+
+  // ── A+ CONTENT ──
+  if(obj.aplus && obj.aplus.length){
+    html += lstSection('10 · A+ CONTENT (Estructura de módulos)','aplus',
+      '<div>'
+      + obj.aplus.map(function(m){
+          return '<div class="lst-aplus-module">'
+            +'<div class="lst-aplus-label">'+lstEsc(m.module)+'</div>'
+            +'<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px">'+lstEsc(m.headline||'')+'</div>'
+            +'<div style="font-size:12.5px;color:var(--text2);line-height:1.6">'+lstEsc(m.body||'')+'</div>'
+          +'</div>';
+        }).join('')
+      +'</div>'
+    );
+  }
+
+  // ── Error fallback ──
+  if(obj._error){
+    html += '<div class="insight ins-warn" style="margin-top:12px"><strong>Respuesta en texto plano:</strong><br><pre style="white-space:pre-wrap;font-size:12px;margin-top:8px">'+lstEsc(obj._error)+'</pre></div>';
+  }
+
+  document.getElementById('lst-results').innerHTML = html;
+  document.getElementById('lst-results').style.display='';
+
+  // Bind copy buttons
+  document.querySelectorAll('[data-lst-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var key = btn.getAttribute('data-lst-copy');
+      var text = lstGetText(key, _lstState.result);
+      navigator.clipboard.writeText(text).then(function(){
+        btn.textContent='✓ Copiado';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar'; btn.classList.remove('copied'); }, 2000);
+      }).catch(function(){ alert('No se pudo copiar. Selecciona el texto manualmente.'); });
+    });
+  });
+}
+
+function lstSection(label, copyKey, contentHTML){
+  return '<div class="lst-section">'
+    +'<div class="lst-section-head">'
+      +'<span class="lst-section-tag">'+label+'</span>'
+      +'<button class="lst-copy-btn" data-lst-copy="'+copyKey+'">'
+        +'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
+        +' Copiar'
+      +'</button>'
+    +'</div>'
+    +'<div class="lst-section-body">'+contentHTML+'</div>'
+  +'</div>';
+}
+
+function lstGetText(key, obj){
+  if(!obj) return '';
+  switch(key){
+    case 'intents': return (obj.intents||[]).join('\n');
+    case 'attributes': return Object.entries(obj.attributes||{}).map(function(e){return e[0]+': '+e[1];}).join('\n');
+    case 'title': return obj.title||'';
+    case 'bullets': return (obj.bullets||[]).map(function(b,i){return (i+1)+'. '+b;}).join('\n\n');
+    case 'description': return obj.description||'';
+    case 'backend_search_terms': return obj.backend_search_terms||'';
+    case 'generic_keywords': return (obj.generic_keywords||[]).join(' ');
+    case 'item_type_keyword': return obj.item_type_keyword||'';
+    case 'subject_matter': return (obj.subject_matter||[]).join('\n');
+    case 'target_audience': return obj.target_audience||'';
+    case 'use_cases': return (obj.use_cases||[]).join('\n');
+    case 'aplus': return (obj.aplus||[]).map(function(m){return m.module+'\n'+m.headline+'\n'+m.body;}).join('\n\n---\n\n');
+    default: return '';
+  }
+}
+
+function lstCopyAll(){
+  var obj = _lstState.result;
+  if(!obj) return;
+  var sections = ['title','bullets','description','backend_search_terms','generic_keywords','item_type_keyword','subject_matter','target_audience','use_cases','aplus'];
+  var labels = {title:'TÍTULO',bullets:'BULLET POINTS',description:'DESCRIPCIÓN',backend_search_terms:'BACKEND SEARCH TERMS',generic_keywords:'GENERIC KEYWORDS',item_type_keyword:'ITEM TYPE KEYWORD',subject_matter:'SUBJECT MATTER',target_audience:'TARGET AUDIENCE',use_cases:'USE CASES',aplus:'A+ CONTENT'};
+  var full = sections.map(function(k){ return '=== '+labels[k]+' ===\n'+lstGetText(k,obj); }).join('\n\n');
+  navigator.clipboard.writeText(full).then(function(){
+    var btn = document.getElementById('lst-btn-copy');
+    if(btn){ btn.textContent='✓ Todo copiado'; setTimeout(function(){ btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar todo'; },2500); }
+  }).catch(function(){ alert('No se pudo copiar. Intenta manualmente.'); });
+}
+
+function lstEsc(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
 
 </body>
 </html>
