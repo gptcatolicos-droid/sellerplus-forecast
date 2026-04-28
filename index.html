@@ -236,297 +236,149 @@ body {
 }
 
 /* ════════════════════════════════
-   WELCOME SCREEN — IA SELLER PLUS dark design
+   WELCOME — IA SELLER PLUS  v4 Landing Page
 ════════════════════════════════ */
 :root {
-  --wc-orange: #F58220;
-  --wc-orange2: #E04A00;
-  --wc-purple: #A855F7;
-  --wc-green: #10B981;
+  --wc-orange: #F58220; --wc-orange2: #E04A00;
+  --wc-purple: #A855F7; --wc-green: #10B981; --wc-blue: #3B82F6;
   --wc-font-head: 'Righteous', sans-serif;
   --wc-font-body: 'DM Sans', 'Inter', sans-serif;
 }
 #l-welcome {
-  background: linear-gradient(160deg,#050D1F 0%,#081428 35%,#0A1535 65%,#060E20 100%);
+  background:
+    linear-gradient(165deg,rgba(5,13,31,.52) 0%,rgba(5,13,31,.72) 40%,rgba(5,13,31,.93) 70%,#050D1F 100%),
+    url('/fondo.png');
+  background-size: cover, cover;
+  background-position: center top, center top;
+  background-attachment: fixed, fixed;
   align-items: flex-start; justify-content: center;
   overflow-y: auto; overflow-x: hidden; padding: 0;
-  animation: fadeIn .4s ease;
-  position: relative;
+  animation: fadeIn .4s ease; color: #fff;
 }
-/* Background image layer */
-#l-welcome .wc-bg {
-  position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background-image: url('/fondo.png');
-  background-size: cover; background-position: center top;
-  opacity: 0.28;
-}
-#l-welcome .wc-bg-overlay {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background: linear-gradient(180deg,
-    rgba(5,13,31,0.45) 0%,
-    rgba(5,13,31,0.68) 35%,
-    rgba(5,13,31,0.88) 60%,
-    rgba(5,13,31,0.97) 100%
-  );
-}
-#l-welcome .wc-bg-radial {
-  position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  background: radial-gradient(ellipse 80% 45% at 50% 0%, rgba(168,85,247,0.13), transparent 65%);
-}
-/* Main scroll wrapper */
-.welcome-box {
-  position: relative; z-index: 3;
-  width: 100%; max-width: 520px;
-  margin: 0 auto; min-height: 100%;
-  display: flex; flex-direction: column;
-  color: #fff;
-}
-@media(min-width:700px){
-  .welcome-box { max-width: 600px; }
-}
-
-/* ── TOPBAR ── */
-.wc-topbar {
+.wc-nav {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 20px 22px 0;
+  padding: 22px clamp(20px,5vw,80px); max-width: 1280px; margin: 0 auto;
 }
-.wc-logo-wrap { display: flex; align-items: center; gap: 9px; }
-.wc-logo-img {
-  width: 36px; height: 36px; object-fit: contain;
-  mix-blend-mode: screen;
-}
-.wc-logo-txt { font-family: var(--wc-font-head); font-size: 18px; color: #fff; }
+.wc-logo-wrap { display: flex; align-items: center; gap: 10px; }
+.wc-logo-img { width: 38px; height: 38px; object-fit: contain; mix-blend-mode: screen; }
+.wc-logo-txt { font-family: var(--wc-font-head); font-size: 20px; color: #fff; }
 .wc-logo-txt span { color: var(--wc-orange); }
-.wc-gratis {
-  border: 1.5px solid rgba(245,130,32,0.75);
-  border-radius: 10px; padding: 7px 13px; text-align: center;
-  background: rgba(245,130,32,0.09);
-  box-shadow: 0 0 18px rgba(245,130,32,0.18);
-}
-.wc-gratis strong {
-  display: block; font-family: var(--wc-font-head);
-  font-size: 15px; color: var(--wc-orange); line-height: 1.1;
-}
-.wc-gratis span { font-size: 9px; font-weight: 600; color: rgba(245,130,32,0.7); text-transform: uppercase; letter-spacing: .1em; }
-
-/* ── HERO ── */
-.wc-hero { padding: 22px 22px 0; text-align: center; }
-.wc-ia-pill {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: rgba(245,130,32,0.1); border: 1px solid rgba(245,130,32,0.3);
-  border-radius: 999px; padding: 6px 16px; margin-bottom: 14px;
-}
-.wc-ia-dot {
-  width: 7px; height: 7px; border-radius: 50%; background: var(--wc-orange);
-  animation: wc-blink 1.8s ease-in-out infinite;
-}
-@keyframes wc-blink {
-  0%,100%{ opacity:1; box-shadow:0 0 8px var(--wc-orange); }
-  50%{ opacity:.25; box-shadow:none; }
-}
-.wc-ia-pill-txt { font-family: var(--wc-font-head); font-size: 11px; color: var(--wc-orange); letter-spacing: .08em; }
-.wc-eyebrow {
-  font-family: var(--wc-font-head); font-size: 12px; letter-spacing: .35em;
-  color: rgba(255,255,255,.38); text-transform: uppercase; margin-bottom: 6px;
-}
-.wc-h1 {
-  font-family: var(--wc-font-head);
-  font-size: clamp(38px,9vw,52px);
-  line-height: .95; letter-spacing: .01em; margin-bottom: 10px;
-}
-.wc-h1 .t1 {
-  display: block;
-  background: linear-gradient(100deg,#FF8C00 0%,#FF4DA6 52%,#A855F7 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.wc-h1 .t2 { display: block; font-size: clamp(26px,6.5vw,36px); color: #fff; margin-top: 4px; }
-.wc-hero-desc {
-  font-family: var(--wc-font-body);
-  font-size: 14px; color: rgba(255,255,255,.55); line-height: 1.65;
-  max-width: 340px; margin: 0 auto 18px;
-}
-.wc-hero-desc strong { color: rgba(255,255,255,.78); }
-
-/* Platforms row */
-.wc-platforms {
-  display: flex; align-items: center; justify-content: center;
-  gap: 10px; margin-bottom: 18px; flex-wrap: wrap;
-}
-.wc-plat {
-  display: flex; align-items: center; gap: 7px;
-  border-radius: 10px; padding: 7px 14px;
-}
+.wc-gratis { border: 1.5px solid rgba(245,130,32,.75); border-radius: 10px; padding: 7px 14px; text-align: center; background: rgba(245,130,32,.09); box-shadow: 0 0 18px rgba(245,130,32,.18); }
+.wc-gratis strong { display: block; font-family: var(--wc-font-head); font-size: 15px; color: var(--wc-orange); line-height: 1.1; }
+.wc-gratis span { font-size: 9px; font-weight: 600; color: rgba(245,130,32,.7); text-transform: uppercase; letter-spacing: .1em; }
+.wc-hero { text-align: center; padding: 52px clamp(20px,5vw,80px) 64px; max-width: 960px; margin: 0 auto; }
+.wc-ia-pill { display: inline-flex; align-items: center; gap: 7px; background: rgba(245,130,32,.1); border: 1px solid rgba(245,130,32,.3); border-radius: 999px; padding: 6px 18px; margin-bottom: 22px; }
+.wc-ia-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--wc-orange); animation: wc-blink 1.8s infinite; }
+@keyframes wc-blink { 0%,100%{opacity:1;box-shadow:0 0 8px var(--wc-orange)} 50%{opacity:.25;box-shadow:none} }
+.wc-ia-pill-txt { font-family: var(--wc-font-head); font-size: 12px; color: var(--wc-orange); letter-spacing: .08em; }
+.wc-eyebrow { font-family: var(--wc-font-head); font-size: 13px; letter-spacing: .35em; color: rgba(255,255,255,.35); text-transform: uppercase; margin-bottom: 10px; }
+.wc-h1 { font-family: var(--wc-font-head); font-size: clamp(44px,7vw,86px); line-height: .95; letter-spacing: .01em; margin-bottom: 14px; }
+.wc-h1 .t1 { display: block; background: linear-gradient(100deg,#FF8C00 0%,#FF4DA6 50%,#A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.wc-h1 .t2 { display: block; color: #fff; font-size: clamp(30px,5vw,58px); margin-top: 6px; }
+.wc-h1 .t3 { display: block; color: rgba(255,255,255,.85); font-size: clamp(26px,4.2vw,46px); margin-top: 4px; }
+.wc-hero-desc { font-family: var(--wc-font-body); font-size: clamp(15px,2vw,19px); color: rgba(255,255,255,.58); line-height: 1.65; max-width: 700px; margin: 0 auto 32px; }
+.wc-hero-desc strong { color: rgba(255,255,255,.9); }
+.wc-hero-ctas { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; margin-bottom: 42px; }
+.wc-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg,#F58220,#E04A00); border: none; border-radius: 14px; padding: 16px 32px; font-family: var(--wc-font-head); font-size: 16px; color: #fff; cursor: pointer; box-shadow: 0 4px 28px rgba(245,130,32,.45); letter-spacing: .03em; transition: transform .15s,box-shadow .15s; text-decoration: none; }
+.wc-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(245,130,32,.55); }
+.wc-btn-ghost { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.18); border-radius: 14px; padding: 16px 28px; font-family: var(--wc-font-head); font-size: 15px; color: rgba(255,255,255,.8); cursor: pointer; transition: all .15s; text-decoration: none; }
+.wc-btn-ghost:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.3); }
+.wc-platforms { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.wc-plat { display: flex; align-items: center; gap: 7px; border-radius: 10px; padding: 8px 16px; }
 .wc-plat-amazon { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
 .wc-plat-walmart { background: rgba(0,113,206,.2); border: 1px solid rgba(0,113,206,.4); }
-.wc-plat img { width: 28px; height: 28px; object-fit: contain; }
-.wc-plat-name { font-family: var(--wc-font-head); font-size: 13px; color: #fff; }
-.wc-wm-star { color: #FFC220; font-size: 15px; }
-
-/* Stats bar */
-.wc-stats {
-  display: flex; justify-content: center; gap: 0;
-  margin: 0 22px 20px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 14px; overflow: hidden;
-}
-.wc-stat { flex: 1; padding: 14px 6px; text-align: center; }
+.wc-plat img { width: 30px; height: 30px; object-fit: contain; }
+.wc-plat-name { font-family: var(--wc-font-head); font-size: 14px; color: #fff; }
+.wc-plat-sep { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.25); }
+.wc-wm-star { color: #FFC220; font-size: 16px; }
+.wc-glow-sep { height: 1px; background: linear-gradient(90deg,transparent,rgba(245,130,32,.5) 25%,rgba(168,85,247,.5) 75%,transparent); }
+.wc-stats-wrap { padding: 28px clamp(20px,5vw,80px); }
+.wc-stats { display: flex; justify-content: center; gap: 0; max-width: 700px; margin: 0 auto; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; overflow: hidden; }
+.wc-stat { flex: 1; padding: 18px 10px; text-align: center; }
 .wc-stat + .wc-stat { border-left: 1px solid rgba(255,255,255,.07); }
-.wc-stat-num { font-family: var(--wc-font-head); font-size: 22px; color: var(--wc-orange); }
-.wc-stat-lbl { font-family: var(--wc-font-body); font-size: 10px; color: rgba(255,255,255,.33); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; line-height: 1.3; }
-
-/* Glow separator */
-.wc-glow-sep {
-  height: 1px;
-  background: linear-gradient(90deg,transparent,rgba(245,130,32,.55) 30%,rgba(168,85,247,.55) 70%,transparent);
-  margin: 0 0 18px;
-}
-
-/* ── FORM BOX ── */
-.wc-form-wrap { padding: 0 16px; }
-.wc-form-box {
-  background: rgba(6,16,38,.84);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 20px; padding: 22px;
-  box-shadow: 0 16px 48px rgba(0,0,0,.55);
-}
-.wc-form-head {
-  font-family: var(--wc-font-head); font-size: 11px; letter-spacing: .1em;
-  color: rgba(245,130,32,.75); margin-bottom: 16px;
-  display: flex; align-items: center; gap: 6px; text-transform: uppercase;
-}
+.wc-stat-num { font-family: var(--wc-font-head); font-size: 28px; color: var(--wc-orange); }
+.wc-stat-lbl { font-family: var(--wc-font-body); font-size: 11px; color: rgba(255,255,255,.32); text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; line-height: 1.3; }
+.wc-features-section { padding: 80px clamp(20px,5vw,80px) 0; max-width: 1280px; margin: 0 auto; }
+.wc-section-label { font-family: var(--wc-font-head); font-size: 11px; letter-spacing: .25em; color: rgba(255,255,255,.28); text-transform: uppercase; text-align: center; margin-bottom: 14px; }
+.wc-section-title { font-family: var(--wc-font-head); font-size: clamp(28px,4vw,42px); text-align: center; color: #fff; margin-bottom: 10px; line-height: 1.1; }
+.wc-section-title span { color: var(--wc-orange); }
+.wc-section-sub { text-align: center; font-size: 16px; color: rgba(255,255,255,.5); max-width: 560px; margin: 0 auto 48px; line-height: 1.6; }
+.wc-feat-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.wc-feat-card { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09); border-radius: 18px; padding: 24px 20px; transition: transform .2s,border-color .2s; cursor: pointer; }
+.wc-feat-card:hover { transform: translateY(-4px); }
+.wc-feat-card.c-org:hover { border-color: rgba(245,130,32,.45); }
+.wc-feat-card.c-pur:hover { border-color: rgba(168,85,247,.45); }
+.wc-feat-card.c-grn:hover { border-color: rgba(16,185,129,.45); }
+.wc-fc-ico { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; overflow: hidden; }
+.wc-fc-ico.org { background: rgba(245,130,32,.13); border: 1px solid rgba(245,130,32,.22); }
+.wc-fc-ico.pur { background: rgba(168,85,247,.13); border: 1px solid rgba(168,85,247,.22); }
+.wc-fc-ico.grn { background: rgba(16,185,129,.13); border: 1px solid rgba(16,185,129,.22); }
+.wc-fc-ico img { width: 36px; height: 36px; object-fit: contain; }
+.wc-fc-ico svg { width: 28px; height: 28px; }
+.wc-fc-badge { display: inline-block; margin-bottom: 10px; font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+.wc-b-pop { background: rgba(245,130,32,.18); color: var(--wc-orange); border: 1px solid rgba(245,130,32,.3); }
+.wc-b-new { background: rgba(59,130,246,.18); color: #60A5FA; border: 1px solid rgba(59,130,246,.3); }
+.wc-b-ai  { background: rgba(168,85,247,.18); color: #C084FC; border: 1px solid rgba(168,85,247,.3); }
+.wc-b-grn { background: rgba(16,185,129,.18); color: var(--wc-green); border: 1px solid rgba(16,185,129,.3); }
+.wc-fc-title { font-family: var(--wc-font-head); font-size: 17px; color: #fff; margin-bottom: 8px; line-height: 1.2; }
+.wc-fc-desc { font-family: var(--wc-font-body); font-size: 13px; color: rgba(255,255,255,.45); line-height: 1.55; margin-bottom: 14px; }
+.wc-fc-cta { font-family: var(--wc-font-body); font-size: 13px; font-weight: 700; }
+.wc-fc-cta.org { color: var(--wc-orange); } .wc-fc-cta.pur { color: var(--wc-purple); } .wc-fc-cta.grn { color: var(--wc-green); }
+.wc-form-section { padding: 80px clamp(20px,5vw,80px); max-width: 1280px; margin: 0 auto; }
+.wc-form-inner { display: grid; grid-template-columns: 1fr 480px; gap: 64px; align-items: start; }
+.wc-fl-eyebrow { font-family: var(--wc-font-head); font-size: 12px; letter-spacing: .25em; color: rgba(245,130,32,.7); text-transform: uppercase; margin-bottom: 14px; }
+.wc-fl-title { font-family: var(--wc-font-head); font-size: clamp(30px,3.5vw,46px); line-height: 1.05; color: #fff; margin-bottom: 16px; }
+.wc-fl-title span { color: var(--wc-orange); }
+.wc-fl-desc { font-size: 16px; color: rgba(255,255,255,.5); line-height: 1.7; margin-bottom: 30px; }
+.wc-fl-points { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+.wc-fl-pt { display: flex; align-items: flex-start; gap: 12px; }
+.wc-fl-pt-dot { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; margin-top: 1px; }
+.wc-fl-pt-dot.org { background: rgba(245,130,32,.15); border: 1px solid rgba(245,130,32,.25); }
+.wc-fl-pt-dot.pur { background: rgba(168,85,247,.15); border: 1px solid rgba(168,85,247,.25); }
+.wc-fl-pt-dot.grn { background: rgba(16,185,129,.15); border: 1px solid rgba(16,185,129,.25); }
+.wc-fl-pt-dot.blu { background: rgba(59,130,246,.15); border: 1px solid rgba(59,130,246,.25); }
+.wc-fl-pt-body strong { font-family: var(--wc-font-head); font-size: 15px; color: #fff; display: block; margin-bottom: 3px; }
+.wc-fl-pt-body span { font-size: 13px; color: rgba(255,255,255,.42); }
+.wc-fl-trust { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: rgba(16,185,129,.07); border: 1px solid rgba(16,185,129,.18); border-radius: 12px; }
+.wc-fl-trust-txt strong { font-family: var(--wc-font-head); font-size: 13px; color: #fff; display: block; }
+.wc-fl-trust-txt span { font-size: 12px; color: rgba(255,255,255,.38); }
+.wc-form-box { background: rgba(6,16,38,.88); border: 1px solid rgba(255,255,255,.1); border-radius: 22px; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(245,130,32,.04); position: sticky; top: 24px; }
+.wc-form-head { font-family: var(--wc-font-head); font-size: 11px; letter-spacing: .1em; color: rgba(245,130,32,.75); margin-bottom: 20px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
 .wc-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.wc-field label {
-  display: block; font-family: var(--wc-font-body); font-size: 10px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .08em;
-  color: rgba(255,255,255,.3); margin-bottom: 5px;
-}
-.wc-field input {
-  width: 100%; padding: 11px 13px;
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 9px; color: #fff;
-  font-size: 14px; font-family: var(--wc-font-body); outline: none;
-  transition: border-color .2s, background .2s;
-}
+.wc-field label { display: block; font-family: var(--wc-font-body); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.3); margin-bottom: 5px; }
+.wc-field input { width: 100%; padding: 12px 14px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; color: #fff; font-size: 14px; font-family: var(--wc-font-body); outline: none; transition: border-color .2s,background .2s; }
 .wc-field input:focus { border-color: rgba(245,130,32,.6); background: rgba(245,130,32,.06); }
 .wc-field input::placeholder { color: rgba(255,255,255,.2); }
 .wc-field.full { margin-bottom: 10px; }
-
-/* Divider */
-.wc-divider { display: flex; align-items: center; gap: 8px; margin: 18px 0 14px; }
+.wc-divider { display: flex; align-items: center; gap: 8px; margin: 20px 0 14px; }
 .wc-div-line { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
 .wc-div-txt { font-family: var(--wc-font-body); font-size: 11px; font-weight: 500; color: rgba(255,255,255,.3); white-space: nowrap; }
-
-/* ── CARDS ── */
-.welcome-cards-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;
-}
-.welcome-card {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.09);
-  border-radius: 14px; padding: 14px 12px;
-  cursor: pointer; position: relative; overflow: hidden;
-  transition: border-color .2s, transform .2s;
-  display: flex; flex-direction: column; align-items: flex-start;
-}
-.welcome-card:hover { transform: translateY(-2px); }
+.welcome-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.welcome-card { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09); border-radius: 12px; padding: 12px 10px; cursor: pointer; transition: border-color .2s,transform .15s; position: relative; display: flex; flex-direction: column; }
+.welcome-card:hover { transform: translateY(-1px); }
 .welcome-card-hover-orange { border-color: rgba(245,130,32,.5) !important; }
 .welcome-card-hover-purple { border-color: rgba(168,85,247,.5) !important; }
 .welcome-card-hover-green  { border-color: rgba(16,185,129,.5) !important; }
-.welcome-card-icon {
-  width: 46px; height: 46px; border-radius: 11px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; margin-bottom: 10px; overflow: hidden;
-}
-.welcome-card-icon img { width: 32px; height: 32px; object-fit: contain; }
-.welcome-card-icon svg { width: 24px; height: 24px; }
-.wc-card-title { font-family: var(--wc-font-head); font-size: 13.5px; color: #fff; margin-bottom: 4px; line-height: 1.25; }
-.wc-card-desc { font-family: var(--wc-font-body); font-size: 11.5px; color: rgba(255,255,255,.42); line-height: 1.45; margin-bottom: 8px; flex: 1; }
-.wc-card-cta { font-family: var(--wc-font-body); font-size: 11.5px; font-weight: 700; }
-.wc-card-cta.orange { color: var(--wc-orange); }
-.wc-card-cta.purple { color: var(--wc-purple); }
-.wc-card-cta.green  { color: var(--wc-green); }
-.wc-card-badge {
-  position: absolute; top: 10px; right: 10px;
-  font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 999px;
-}
-.wc-badge-pop  { background: rgba(245,130,32,.18); color: var(--wc-orange); border: 1px solid rgba(245,130,32,.3); }
-.wc-badge-new  { background: rgba(59,130,246,.18); color: #60A5FA; border: 1px solid rgba(59,130,246,.3); }
-.wc-badge-ai   { background: rgba(168,85,247,.18); color: #C084FC; border: 1px solid rgba(168,85,247,.3); }
-
-/* ── CTA BUTTON ── */
-.wc-cta {
-  width: 100%; padding: 15px;
-  background: linear-gradient(135deg,#F58220,#E04A00);
-  border: none; border-radius: 13px;
-  font-family: var(--wc-font-head); font-size: 15px; color: #fff;
-  cursor: pointer; letter-spacing: .04em;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  box-shadow: 0 4px 28px rgba(245,130,32,.45);
-  margin-bottom: 13px; transition: transform .15s, box-shadow .15s;
-}
+.welcome-card-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; flex-shrink: 0; }
+.welcome-card-icon img { width: 24px; height: 24px; object-fit: contain; }
+.welcome-card-icon svg { width: 18px; height: 18px; }
+.wc-mc-badge { position: absolute; top: 8px; right: 8px; font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: 999px; }
+.wc-mc-title { font-family: var(--wc-font-head); font-size: 12px; color: #fff; margin-bottom: 3px; }
+.wc-mc-desc  { font-family: var(--wc-font-body); font-size: 10.5px; color: rgba(255,255,255,.38); line-height: 1.4; flex: 1; }
+.wc-mc-arr   { font-family: var(--wc-font-body); font-size: 11px; font-weight: 700; margin-top: 6px; }
+.wc-mc-arr.org { color: var(--wc-orange); } .wc-mc-arr.pur { color: var(--wc-purple); } .wc-mc-arr.grn { color: var(--wc-green); }
+.wc-cta { width: 100%; padding: 16px; margin-bottom: 12px; background: linear-gradient(135deg,#F58220,#E04A00); border: none; border-radius: 13px; font-family: var(--wc-font-head); font-size: 15px; color: #fff; cursor: pointer; letter-spacing: .04em; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 28px rgba(245,130,32,.45); transition: transform .15s,box-shadow .15s; }
 .wc-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 36px rgba(245,130,32,.55); }
-
-/* Trust bar */
-.wc-trust {
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(16,185,129,.07); border: 1px solid rgba(16,185,129,.18);
-  border-radius: 9px; padding: 10px 13px;
-}
-.wc-trust-txt { font-family: var(--wc-font-body); font-size: 11px; color: rgba(255,255,255,.45); line-height: 1.4; }
+.wc-trust { display: flex; align-items: center; gap: 8px; background: rgba(16,185,129,.07); border: 1px solid rgba(16,185,129,.18); border-radius: 9px; padding: 10px 13px; }
+.wc-trust-txt { font-family: var(--wc-font-body); font-size: 11px; color: rgba(255,255,255,.42); line-height: 1.4; }
 .wc-trust-txt a { color: var(--wc-orange); font-weight: 600; text-decoration: none; }
-
-/* Features strip */
-.wc-features { padding: 22px 22px 18px; border-top: 1px solid rgba(255,255,255,.06); margin-top: 18px; }
-.wc-features-lbl {
-  font-family: var(--wc-font-head); font-size: 10px; letter-spacing: .18em;
-  color: rgba(255,255,255,.25); text-align: center; text-transform: uppercase; margin-bottom: 14px;
-}
-.wc-feat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
-.wc-feat-item {
-  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
-  border-radius: 11px; padding: 12px 6px; text-align: center;
-}
-.wc-feat-ico { font-size: 20px; margin-bottom: 5px; }
-.wc-feat-name { font-family: var(--wc-font-body); font-size: 10px; font-weight: 600; color: rgba(255,255,255,.48); line-height: 1.35; }
-.wc-footer { text-align: center; padding: 12px 22px 20px; font-family: var(--wc-font-body); font-size: 11px; color: rgba(255,255,255,.2); }
-.wc-footer b { color: rgba(245,130,32,.55); }
-
-/* ── RESPONSIVE ── */
-@media(max-width:480px){
-  .wc-topbar { padding: 16px 16px 0; }
-  .wc-hero { padding: 18px 16px 0; }
-  .wc-stats { margin: 0 16px 18px; }
-  .wc-stat-num { font-size: 19px; }
-  .wc-form-wrap { padding: 0 12px; }
-  .wc-form-box { padding: 18px 16px; border-radius: 16px; }
-  .wc-form-row { gap: 8px; }
-  .welcome-card { padding: 12px 10px; }
-  .welcome-card-icon { width: 40px; height: 40px; }
-  .welcome-card-icon img { width: 28px; height: 28px; }
-  .wc-card-title { font-size: 12.5px; }
-  .wc-card-desc { font-size: 11px; }
-  .wc-feat-grid { grid-template-columns: repeat(2,1fr); }
-  .wc-feat-item { padding: 14px 8px; }
-  .wc-feat-ico { font-size: 22px; }
-  .wc-feat-name { font-size: 11px; }
-  .wc-h1 { font-size: clamp(34px,10vw,44px); }
-}
-@media(min-width:700px){
-  .wc-hero { padding: 28px 32px 0; }
-  .wc-topbar { padding: 24px 32px 0; }
-  .wc-form-wrap { padding: 0 32px; }
-  .wc-features { padding: 24px 32px 20px; }
-  .wc-stats { margin: 0 32px 22px; }
-  .wc-h1 { font-size: 56px; }
-  .wc-hero-desc { font-size: 15px; max-width: 440px; }
-  .welcome-card-icon { width: 52px; height: 52px; }
-  .welcome-card-icon img { width: 36px; height: 36px; }
-  .wc-card-title { font-size: 15px; }
-  .wc-card-desc { font-size: 12.5px; }
-  .welcome-cards-grid { gap: 12px; }
-}
+.wc-footer-bar { border-top: 1px solid rgba(255,255,255,.06); padding: 28px clamp(20px,5vw,80px); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; max-width: 1280px; margin: 0 auto; }
+.wc-footer-bar p { font-family: var(--wc-font-body); font-size: 12px; color: rgba(255,255,255,.2); }
+.wc-footer-bar a { font-family: var(--wc-font-body); font-size: 12px; color: rgba(245,130,32,.6); text-decoration: none; }
+.wc-footer-bar a:hover { color: var(--wc-orange); }
+.wc-footer-links { display: flex; gap: 20px; }
+@media(max-width:1024px){ .wc-form-inner { grid-template-columns: 1fr; gap: 40px; } .wc-form-box { position: static; } .wc-feat-cards { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:600px){ .wc-nav { padding: 16px 20px; } .wc-hero { padding: 36px 20px 48px; } .wc-h1 { font-size: clamp(36px,10vw,50px); } .wc-hero-desc { font-size: 14px; } .wc-hero-ctas { flex-direction: column; padding: 0; } .wc-btn-primary,.wc-btn-ghost { justify-content: center; padding: 15px 24px; width: 100%; } .wc-stats-wrap { padding: 20px; } .wc-stat-num { font-size: 22px; } .wc-features-section,.wc-form-section { padding: 48px 20px 0; } .wc-form-section { padding-bottom: 48px; } .wc-feat-cards { grid-template-columns: 1fr; gap: 12px; } .wc-section-title { font-size: clamp(24px,7vw,32px); } .wc-footer-bar { flex-direction: column; align-items: center; text-align: center; padding: 24px 20px; } }
 
 /* ════════════════════════════════
    PATH SELECTOR
@@ -1097,80 +949,117 @@ body {
      LAYER 1: WELCOME
 ══════════════════════════════ -->
 <div class="layer on" id="l-welcome">
-  <!-- Background layers -->
-  <div class="wc-bg"></div>
-  <div class="wc-bg-overlay"></div>
-  <div class="wc-bg-radial"></div>
+<div style="width:100%;min-height:100%">
 
-  <div class="welcome-box">
-
-    <!-- TOPBAR -->
-    <div class="wc-topbar">
-      <div class="wc-logo-wrap">
-        <img class="wc-logo-img" src="/logo-sp.png" alt="SellerPlus"/>
-        <div class="wc-logo-txt">Seller<span>Plus</span></div>
-      </div>
-      <div class="wc-gratis">
-        <strong>100%</strong>
-        <span>GRATIS</span>
-      </div>
+  <!-- NAV -->
+  <nav class="wc-nav">
+    <div class="wc-logo-wrap">
+      <img class="wc-logo-img" src="/logo-sp.png" alt="SellerPlus"/>
+      <div class="wc-logo-txt">Seller<span>Plus</span></div>
     </div>
+    <div class="wc-gratis"><strong>100%</strong><span>GRATIS</span></div>
+  </nav>
 
-    <!-- HERO -->
-    <div class="wc-hero">
-      <div class="wc-ia-pill">
-        <div class="wc-ia-dot"></div>
-        <span class="wc-ia-pill-txt">IA Activa · Amazon &amp; Walmart</span>
-      </div>
-      <div class="wc-eyebrow">Presentamos</div>
-      <h1 class="wc-h1">
-        <span class="t1">IA SELLER PLUS</span>
-        <span class="t2">Tu Copiloto Inteligente</span>
-      </h1>
-      <p class="wc-hero-desc">
-        Encuentra productos rentables en Alibaba, simula tu inversión FBA, importa listings al instante y genera contenido optimizado para Rufus AI. <strong>Todo con IA. Todo gratis.</strong>
-      </p>
-      <div class="wc-platforms">
-        <div class="wc-plat wc-plat-amazon">
-          <img src="/amazon3d.webp" alt="Amazon"/>
-          <span class="wc-plat-name">Amazon</span>
-        </div>
-        <span style="color:rgba(255,255,255,0.25);font-size:12px;font-weight:600">Y</span>
-        <div class="wc-plat wc-plat-walmart">
-          <span class="wc-wm-star">✦</span>
-          <span class="wc-plat-name">WALMART</span>
-        </div>
-      </div>
+  <!-- HERO -->
+  <div class="wc-hero">
+    <div class="wc-ia-pill"><div class="wc-ia-dot"></div><span class="wc-ia-pill-txt">IA Activa &middot; Amazon &amp; Walmart</span></div>
+    <div class="wc-eyebrow">Presentamos IA Seller Plus</div>
+    <h1 class="wc-h1">
+      <span class="t1">Vende M&aacute;s.</span>
+      <span class="t2">Trabaja Menos.</span>
+      <span class="t3">Con Inteligencia Artificial.</span>
+    </h1>
+    <p class="wc-hero-desc">Encuentra productos ganadores en Alibaba, calcula si son rentables en Amazon FBA, e importa listings que posicionan solos. <strong>Tu negocio Amazon, automatizado con IA.</strong></p>
+    <div class="wc-hero-ctas">
+      <a class="wc-btn-primary" href="#wc-form">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Prueba Gratis Ahora
+      </a>
+      <a class="wc-btn-ghost" href="#wc-features">Ver qu&eacute; incluye &darr;</a>
     </div>
+    <div class="wc-platforms">
+      <div class="wc-plat wc-plat-amazon"><img src="/amazon3d.webp" alt="Amazon"/><span class="wc-plat-name">Amazon</span></div>
+      <span class="wc-plat-sep">Y</span>
+      <div class="wc-plat wc-plat-walmart"><span class="wc-wm-star">&#10022;</span><span class="wc-plat-name">WALMART</span></div>
+    </div>
+  </div>
 
-    <!-- STATS -->
+  <div class="wc-glow-sep"></div>
+
+  <!-- STATS -->
+  <div class="wc-stats-wrap">
     <div class="wc-stats">
-      <div class="wc-stat">
-        <div class="wc-stat-num">700+</div>
-        <div class="wc-stat-lbl">Productos<br>analizados</div>
+      <div class="wc-stat"><div class="wc-stat-num">700+</div><div class="wc-stat-lbl">Productos<br>analizados</div></div>
+      <div class="wc-stat"><div class="wc-stat-num">$115K</div><div class="wc-stat-lbl">Ventas<br>simuladas</div></div>
+      <div class="wc-stat"><div class="wc-stat-num">32</div><div class="wc-stat-lbl">Productos<br>rentables</div></div>
+      <div class="wc-stat"><div class="wc-stat-num">100%</div><div class="wc-stat-lbl">Gratis<br>para empezar</div></div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div id="wc-features" class="wc-features-section">
+    <div class="wc-section-label">Herramientas incluidas</div>
+    <h2 class="wc-section-title">Todo lo que necesitas para<br><span>triunfar en Amazon</span></h2>
+    <p class="wc-section-sub">4 herramientas de IA en una sola plataforma. Sin costos ocultos. Sin instalar nada.</p>
+    <div class="wc-feat-cards">
+      <div class="wc-feat-card c-org" onclick="document.getElementById('wc-form').scrollIntoView({behavior:'smooth'})">
+        <div class="wc-fc-ico org"><img src="/amazon3d.webp" alt="Amazon"/></div>
+        <span class="wc-fc-badge wc-b-pop">M&aacute;s popular</span>
+        <h3 class="wc-fc-title">Simular mi inversi&oacute;n</h3>
+        <p class="wc-fc-desc">Calcula exactamente cu&aacute;nto vas a ganar. Proyecci&oacute;n a 12 meses, punto de equilibrio, ROI y margen neto despu&eacute;s de fees Amazon FBA.</p>
+        <span class="wc-fc-cta org">Abrir calculadora &rarr;</span>
       </div>
-      <div class="wc-stat">
-        <div class="wc-stat-num">$115K</div>
-        <div class="wc-stat-lbl">Ventas<br>simuladas</div>
+      <div class="wc-feat-card c-pur" onclick="document.getElementById('wc-form').scrollIntoView({behavior:'smooth'})">
+        <div class="wc-fc-ico pur"><img src="/alibaba-logo.png" alt="Alibaba"/></div>
+        <span class="wc-fc-badge wc-b-new">Nuevo</span>
+        <h3 class="wc-fc-title">Buscar productos ganadores</h3>
+        <p class="wc-fc-desc">La IA busca en Alibaba y DHgate por ti. Filtra por margen, demanda y competencia. Solo ve los productos con alto potencial.</p>
+        <span class="wc-fc-cta pur">Buscar con IA &rarr;</span>
       </div>
-      <div class="wc-stat">
-        <div class="wc-stat-num">32</div>
-        <div class="wc-stat-lbl">Productos<br>rentables</div>
+      <div class="wc-feat-card c-grn" onclick="document.getElementById('wc-form').scrollIntoView({behavior:'smooth'})">
+        <div class="wc-fc-ico grn"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg></div>
+        <span class="wc-fc-badge wc-b-grn">R&aacute;pido</span>
+        <h3 class="wc-fc-title">Importar URL de producto</h3>
+        <p class="wc-fc-desc">Pega el link de cualquier producto en Amazon, Alibaba o AliExpress. La IA lo analiza al instante y te dice si vale la pena venderlo.</p>
+        <span class="wc-fc-cta grn">Pegar link &rarr;</span>
+      </div>
+      <div class="wc-feat-card c-org" onclick="goToListing()">
+        <div class="wc-fc-ico org"><img src="/amazon3d.webp" alt="Amazon"/></div>
+        <span class="wc-fc-badge wc-b-ai">Rufus IA</span>
+        <h3 class="wc-fc-title">Listing Rufus IA</h3>
+        <p class="wc-fc-desc">Genera autom&aacute;ticamente t&iacute;tulo, bullets, descripci&oacute;n, keywords y A+ Content optimizados para Rufus AI y el Knowledge Graph de Amazon.</p>
+        <span class="wc-fc-cta org">Crear listing &rarr;</span>
       </div>
     </div>
+  </div>
 
-    <div class="wc-glow-sep"></div>
+  <!-- FORM SECTION -->
+  <div id="wc-form" class="wc-form-section">
+    <div class="wc-form-inner">
 
-    <!-- FORM + CARDS -->
-    <div class="wc-form-wrap">
+      <!-- LEFT: selling copy -->
+      <div>
+        <div class="wc-fl-eyebrow">Empieza hoy &middot; Es gratis</div>
+        <h2 class="wc-fl-title">Tu primer producto<br>rentable en<br><span>menos de 10 minutos</span></h2>
+        <p class="wc-fl-desc">Miles de emprendedores en Colombia, M&eacute;xico y Espa&ntilde;a ya usan IA Seller Plus para encontrar sus primeros productos y lanzarlos en Amazon.</p>
+        <div class="wc-fl-points">
+          <div class="wc-fl-pt"><div class="wc-fl-pt-dot org">&#128202;</div><div class="wc-fl-pt-body"><strong>Calcula antes de invertir</strong><span>Sabe exactamente cu&aacute;nto ganar&aacute;s antes de comprar un solo producto</span></div></div>
+          <div class="wc-fl-pt"><div class="wc-fl-pt-dot pur">&#128269;</div><div class="wc-fl-pt-body"><strong>Productos de bajo costo, alto margen</strong><span>La IA encuentra oportunidades que la mayor&iacute;a no ve en Alibaba</span></div></div>
+          <div class="wc-fl-pt"><div class="wc-fl-pt-dot grn">&#128279;</div><div class="wc-fl-pt-body"><strong>An&aacute;lisis en segundos</strong><span>Pega cualquier URL y obt&eacute;n un an&aacute;lisis completo de rentabilidad</span></div></div>
+          <div class="wc-fl-pt"><div class="wc-fl-pt-dot blu">&#128221;</div><div class="wc-fl-pt-body"><strong>Listings que posicionan solos</strong><span>Optimizados para Rufus AI, el buscador inteligente de Amazon</span></div></div>
+        </div>
+        <div class="wc-fl-trust">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg>
+          <div class="wc-fl-trust-txt"><strong>100% gratuito &middot; Sin tarjeta de cr&eacute;dito</strong><span>Tus datos son privados. Jam&aacute;s spam.</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: form -->
       <div class="wc-form-box">
-
         <div class="wc-form-head">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Comienza gratis — sin tarjeta de crédito
+          Comienza gratis &mdash; sin tarjeta
         </div>
-
-        <!-- Nombre / Apellido -->
         <div class="wc-form-row">
           <div class="wc-field">
             <label>Nombre</label>
@@ -1180,133 +1069,76 @@ body {
           </div>
           <div class="wc-field">
             <label>Apellido</label>
-            <input type="text" id="inp-lastname" placeholder="González..." maxlength="40" autocomplete="family-name"
+            <input type="text" id="inp-lastname" placeholder="Gonz&aacute;lez..." maxlength="40" autocomplete="family-name"
               onfocus="this.style.borderColor='rgba(245,130,32,0.6)';this.style.background='rgba(245,130,32,0.06)'"
               onblur="this.style.borderColor='rgba(255,255,255,0.1)';this.style.background='rgba(255,255,255,0.05)'"/>
           </div>
         </div>
-
-        <!-- Email -->
         <div class="wc-field full">
-          <label>Correo electrónico</label>
+          <label>Correo electr&oacute;nico</label>
           <input type="email" id="inp-email" placeholder="tu@correo.com" autocomplete="email"
             onfocus="this.style.borderColor='rgba(245,130,32,0.6)';this.style.background='rgba(245,130,32,0.06)'"
             onblur="this.style.borderColor='rgba(255,255,255,0.1)';this.style.background='rgba(255,255,255,0.05)'"/>
         </div>
-
-        <!-- Phone -->
         <div class="wc-field">
           <label>Celular (WhatsApp)</label>
           <input type="tel" id="inp-phone" placeholder="+57 300 000 0000" autocomplete="tel"
             onfocus="this.style.borderColor='rgba(245,130,32,0.6)';this.style.background='rgba(245,130,32,0.06)'"
             onblur="this.style.borderColor='rgba(255,255,255,0.1)';this.style.background='rgba(255,255,255,0.05)'"/>
         </div>
-
-        <!-- Divider -->
-        <div class="wc-divider">
-          <div class="wc-div-line"></div>
-          <span class="wc-div-txt">¿Por dónde empezamos?</span>
-          <div class="wc-div-line"></div>
-        </div>
-
-        <!-- 4 Cards -->
+        <div class="wc-divider"><div class="wc-div-line"></div><span class="wc-div-txt">&iquest;Por d&oacute;nde empezamos?</span><div class="wc-div-line"></div></div>
         <div class="welcome-cards-grid">
-
-          <!-- Card 1: Simular inversión -->
-          <div onclick="quickStart('simulate')" id="btn-simulate" class="welcome-card"
-            onmouseover="this.classList.add('welcome-card-hover-orange')"
-            onmouseout="this.classList.remove('welcome-card-hover-orange')">
-            <span class="wc-card-badge wc-badge-pop">Popular</span>
-            <div class="welcome-card-icon" style="background:rgba(245,130,32,0.12);border:1px solid rgba(245,130,32,0.22)">
-              <img src="/amazon3d.webp" alt="Amazon"/>
-            </div>
-            <div class="wc-card-title">Simular mi inversión</div>
-            <div class="wc-card-desc">Calcula rentabilidad y punto de equilibrio FBA.</div>
-            <span class="wc-card-cta orange">Calculadora →</span>
+          <div onclick="quickStart('simulate')" id="btn-simulate" class="welcome-card" onmouseover="this.classList.add('welcome-card-hover-orange')" onmouseout="this.classList.remove('welcome-card-hover-orange')">
+            <span class="wc-mc-badge wc-b-pop">Popular</span>
+            <div class="welcome-card-icon" style="background:rgba(245,130,32,0.12);border:1px solid rgba(245,130,32,0.22)"><img src="/amazon3d.webp" alt="Amazon"/></div>
+            <div class="wc-mc-title">Simular inversi&oacute;n</div>
+            <div class="wc-mc-desc">Calcula rentabilidad FBA</div>
+            <div class="wc-mc-arr org">Calculadora &rarr;</div>
           </div>
-
-          <!-- Card 2: Buscar productos -->
-          <div onclick="quickStart('discover')" class="welcome-card"
-            onmouseover="this.classList.add('welcome-card-hover-purple')"
-            onmouseout="this.classList.remove('welcome-card-hover-purple')">
-            <span class="wc-card-badge wc-badge-new">Nuevo</span>
-            <div class="welcome-card-icon" style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.22)">
-              <img src="/alibaba-logo.png" alt="Alibaba"/>
-            </div>
-            <div class="wc-card-title">Buscar productos</div>
-            <div class="wc-card-desc">IA busca en Alibaba y DHgate por ti.</div>
-            <span class="wc-card-cta purple">IA busca →</span>
+          <div onclick="quickStart('discover')" class="welcome-card" onmouseover="this.classList.add('welcome-card-hover-purple')" onmouseout="this.classList.remove('welcome-card-hover-purple')">
+            <span class="wc-mc-badge wc-b-new">Nuevo</span>
+            <div class="welcome-card-icon" style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.22)"><img src="/alibaba-logo.png" alt="Alibaba"/></div>
+            <div class="wc-mc-title">Buscar productos</div>
+            <div class="wc-mc-desc">IA busca en Alibaba</div>
+            <div class="wc-mc-arr pur">IA busca &rarr;</div>
           </div>
-
-          <!-- Card 3: Importar URL -->
-          <div onclick="quickStart('discover')" class="welcome-card"
-            onmouseover="this.classList.add('welcome-card-hover-green')"
-            onmouseout="this.classList.remove('welcome-card-hover-green')">
-            <div class="welcome-card-icon" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.22)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg>
-            </div>
-            <div class="wc-card-title">Importar URL de producto</div>
-            <div class="wc-card-desc">Pega un link de Amazon, Alibaba o AliExpress.</div>
-            <span class="wc-card-cta green">Pegar link →</span>
+          <div onclick="quickStart('discover')" class="welcome-card" onmouseover="this.classList.add('welcome-card-hover-green')" onmouseout="this.classList.remove('welcome-card-hover-green')">
+            <div class="welcome-card-icon" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.22)"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg></div>
+            <div class="wc-mc-title">Importar URL</div>
+            <div class="wc-mc-desc">Analiza cualquier link</div>
+            <div class="wc-mc-arr grn">Pegar link &rarr;</div>
           </div>
-
-          <!-- Card 4: Listing Rufus IA -->
-          <div onclick="goToListing()" class="welcome-card"
-            onmouseover="this.classList.add('welcome-card-hover-orange')"
-            onmouseout="this.classList.remove('welcome-card-hover-orange')">
-            <span class="wc-card-badge wc-badge-ai">Rufus IA</span>
-            <div class="welcome-card-icon" style="background:rgba(245,130,32,0.12);border:1px solid rgba(245,130,32,0.22)">
-              <img src="/amazon3d.webp" alt="Amazon"/>
-            </div>
-            <div class="wc-card-title">Listing Rufus IA</div>
-            <div class="wc-card-desc">Listing completo optimizado para Rufus AI + COSMO.</div>
-            <span class="wc-card-cta orange">Crear listing →</span>
+          <div onclick="goToListing()" class="welcome-card" onmouseover="this.classList.add('welcome-card-hover-orange')" onmouseout="this.classList.remove('welcome-card-hover-orange')">
+            <span class="wc-mc-badge wc-b-ai">Rufus</span>
+            <div class="welcome-card-icon" style="background:rgba(245,130,32,0.12);border:1px solid rgba(245,130,32,0.22)"><img src="/amazon3d.webp" alt="Amazon"/></div>
+            <div class="wc-mc-title">Listing Rufus IA</div>
+            <div class="wc-mc-desc">Optimizado para Rufus AI</div>
+            <div class="wc-mc-arr org">Crear &rarr;</div>
           </div>
-
-        </div><!-- /cards-grid -->
-
-        <!-- CTA Principal -->
+        </div>
         <button class="wc-cta" onclick="quickStart('simulate')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           PRUEBA IA SELLER PLUS AHORA
         </button>
-
-        <!-- Trust -->
         <div class="wc-trust">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg>
-          <div class="wc-trust-txt">Tus datos son privados. Sin spam. <a href="/terms.html" target="_blank">Términos y privacidad →</a></div>
-        </div>
-
-      </div><!-- /form-box -->
-
-      <!-- Features -->
-      <div class="wc-features">
-        <div class="wc-features-lbl">✦ Todo lo que incluye IA Seller Plus ✦</div>
-        <div class="wc-feat-grid">
-          <div class="wc-feat-item">
-            <div class="wc-feat-ico">📊</div>
-            <div class="wc-feat-name">Simulador FBA 12 meses</div>
-          </div>
-          <div class="wc-feat-item">
-            <div class="wc-feat-ico">🔍</div>
-            <div class="wc-feat-name">Buscador IA Alibaba / DHgate</div>
-          </div>
-          <div class="wc-feat-item">
-            <div class="wc-feat-ico">🔗</div>
-            <div class="wc-feat-name">Importar URL al instante</div>
-          </div>
-          <div class="wc-feat-item">
-            <div class="wc-feat-ico">📝</div>
-            <div class="wc-feat-name">Listing Rufus + COSMO IA</div>
-          </div>
+          <div class="wc-trust-txt">Tus datos son privados. Sin spam. <a href="/terms.html" target="_blank">T&eacute;rminos y privacidad &rarr;</a></div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="wc-footer"><b>ai.sellerplus.co</b> · Tu éxito es nuestra meta</div>
+  <!-- FOOTER -->
+  <footer style="border-top:1px solid rgba(255,255,255,.06);padding:28px clamp(20px,5vw,80px);max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <p style="font-family:'DM Sans','Inter',sans-serif;font-size:12px;color:rgba(255,255,255,.2)"><b style="color:rgba(245,130,32,.6)">ai.sellerplus.co</b> &middot; Tu &eacute;xito es nuestra meta &middot; &copy; 2025 SellerPlus</p>
+    <div style="display:flex;gap:20px">
+      <a href="/terms.html" style="font-family:'DM Sans','Inter',sans-serif;font-size:12px;color:rgba(245,130,32,.6);text-decoration:none">T&eacute;rminos de uso</a>
+      <a href="/terms.html" style="font-family:'DM Sans','Inter',sans-serif;font-size:12px;color:rgba(245,130,32,.6);text-decoration:none">Privacidad</a>
+    </div>
+  </footer>
 
-    </div><!-- /form-wrap -->
-  </div><!-- /welcome-box -->
-</div>
+</div><!-- /inner wrapper -->
+</div></div>
 
 <!-- ══════════════════════════════
      LAYER 2: PATH SELECTOR
