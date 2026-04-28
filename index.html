@@ -273,6 +273,7 @@ body {
 .wc-ia-pill-txt { font-family: var(--wc-font-head); font-size: 12px; color: var(--wc-orange); letter-spacing: .08em; }
 .wc-eyebrow { font-family: var(--wc-font-head); font-size: 13px; letter-spacing: .35em; color: rgba(255,255,255,.35); text-transform: uppercase; margin-bottom: 10px; }
 .wc-h1 { font-family: var(--wc-font-head); font-size: clamp(44px,7vw,86px); line-height: .95; letter-spacing: .01em; margin-bottom: 14px; }
+.wc-h1 .t0 { display: block; font-size: clamp(20px,3vw,34px); background: linear-gradient(100deg,#FF8C00 0%,#FF4DA6 50%,#A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: .08em; margin-bottom: 2px; }
 .wc-h1 .t1 { display: block; background: linear-gradient(100deg,#FF8C00 0%,#FF4DA6 50%,#A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .wc-h1 .t2 { display: block; color: #fff; font-size: clamp(30px,5vw,58px); margin-top: 6px; }
 .wc-h1 .t3 { display: block; color: rgba(255,255,255,.85); font-size: clamp(26px,4.2vw,46px); margin-top: 4px; }
@@ -965,6 +966,7 @@ body {
     <div class="wc-ia-pill"><div class="wc-ia-dot"></div><span class="wc-ia-pill-txt">IA Activa &middot; Amazon &amp; Walmart</span></div>
     <div class="wc-eyebrow">Presentamos IA Seller Plus</div>
     <h1 class="wc-h1">
+      <span class="t0">IA SELLER PLUS</span>
       <span class="t1">Vende M&aacute;s.</span>
       <span class="t2">Trabaja Menos.</span>
       <span class="t3">Con Inteligencia Artificial.</span>
@@ -2059,23 +2061,52 @@ function triggerURLInput(){
 async function searchWinningProducts(category){
   lockInput(); clearQuick();
   var body=document.getElementById('chat-body');
-  var prog=document.createElement('div'); prog.className='msg'; prog.id='search-progress';
-  prog.innerHTML='<div class="avatar bot">&#10022;</div>'
-    +'<div class="bubble bot">'
-    +'<div>Buscando en <strong>'+category+'</strong>... ya casi 🔍</div>'
-    +'<div style="margin-top:8px;background:#f1f5f9;border-radius:99px;height:5px;overflow:hidden">'
-    +'<div id="prog-bar" style="height:100%;background:linear-gradient(90deg,#f97316,#f59e0b);border-radius:99px;width:0%;transition:width .5s ease"></div></div>'
-    +'<div id="prog-step" style="font-size:11px;color:#94a3b8;margin-top:5px">Analizando mercado...</div>'
-    +'</div>';
+
+  // Spectacular AI loading card
+  var prog=document.createElement('div');
+  prog.id='search-progress';
+  prog.style.cssText='width:100%;max-width:680px;margin:8px auto;';
+  prog.innerHTML=
+    '<div style="background:linear-gradient(135deg,#0F1117 0%,#1a1035 100%);border:1px solid rgba(168,85,247,.25);border-radius:18px;padding:28px 24px;text-align:center;position:relative;overflow:hidden">'
+    // Glow backdrop
+    +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(168,85,247,.12),transparent 70%);pointer-events:none"></div>'
+    // Spinning orbit ring
+    +'<div style="position:relative;width:72px;height:72px;margin:0 auto 20px">'
+      +'<div id="sp-orbit" style="position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:#F58220;border-right-color:rgba(245,130,32,.3);animation:sp-spin 1s linear infinite"></div>'
+      +'<div style="position:absolute;inset:8px;border-radius:50%;border:1.5px solid transparent;border-bottom-color:#A855F7;border-left-color:rgba(168,85,247,.3);animation:sp-spin 1.6s linear infinite reverse"></div>'
+      +'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">'
+        +'<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M14 3L8 13h5L10 21l6-10h-5L14 3z" fill="url(#spg)" stroke="url(#spg)" stroke-width="0.3"/><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#F58220"/><stop offset="100%" stop-color="#A855F7"/></linearGradient></defs></svg>'
+      +'</div>'
+    +'</div>'
+    // Brand text
+    +'<div style="font-family:\'Righteous\',sans-serif;font-size:11px;letter-spacing:.25em;background:linear-gradient(90deg,#F58220,#FF4DA6,#A855F7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;text-transform:uppercase">IA Seller Plus</div>'
+    +'<div id="sp-step-txt" style="font-family:\'Righteous\',sans-serif;font-size:17px;color:#fff;margin-bottom:18px">Buscando en <span style=\'color:#F58220\'>'+category+'</span>...</div>'
+    // Progress bar
+    +'<div style="background:rgba(255,255,255,.08);border-radius:99px;height:4px;overflow:hidden;margin-bottom:12px">'
+      +'<div id="sp-prog-bar" style="height:100%;background:linear-gradient(90deg,#F58220,#A855F7);border-radius:99px;width:5%;transition:width .6s ease"></div>'
+    +'</div>'
+    +'<div id="sp-sub-txt" style="font-size:12px;color:rgba(255,255,255,.4);font-family:\'DM Sans\',sans-serif">Analizando mercado...</div>'
+    +'</div>'
+    +'<style>@keyframes sp-spin{to{transform:rotate(360deg)}}</style>';
   body.appendChild(prog);
-  var steps=[[20,'Revisando proveedores en Alibaba...'],[45,'Calculando márgenes reales en Amazon...'],[70,'Evaluando competencia...'],[90,'Casi listo...']];
+  scrollBot();
+
+  var steps=[
+    [18,'Revisando proveedores en Alibaba...'],
+    [38,'Calculando márgenes reales en Amazon...'],
+    [58,'Evaluando nivel de competencia...'],
+    [78,'Filtrando oportunidades de alto potencial...'],
+    [92,'Preparando tu lista personalizada...']
+  ];
   var si=0;
   var progInt=setInterval(function(){
     if(si<steps.length){
-      var b=document.getElementById('prog-bar'),st=document.getElementById('prog-step');
-      if(b)b.style.width=steps[si][0]+'%'; if(st)st.textContent=steps[si][1]; si++;
+      var b=document.getElementById('sp-prog-bar'),st=document.getElementById('sp-sub-txt');
+      if(b) b.style.width=steps[si][0]+'%';
+      if(st) st.textContent=steps[si][1];
+      si++;
     }
-  },800);
+  },900);
 
   var sys='Responde SOLO con JSON. Sin texto antes ni después.';
   var prompt='Dame exactamente 5 productos para vender en Amazon FBA en la categoría: '+category+'. Para cada producto incluye: name (español), supplier (Alibaba/DHgate/AliExpress), supplierPrice (número), priceMin, priceMax, moq, amazonPrice, fbaFee (4.59), amzFeePct (0.15), margin (decimal), demand (Alta/Media/Baja), competition (Alta/Media/Baja), description (1 frase en español), whyNow (tendencia en 1 frase), alibabaTerm (en inglés), aliexpressTerm (en inglés), tradeAssurance (true/false). Responde SOLO con el JSON, empezando con { y terminando con }.';
@@ -2135,10 +2166,11 @@ async function showProductCards(prods, batchOffset){
     var card = document.createElement('div');
     card.id = 'pc-' + globalIdx;
 
-    var baseBorder = isTop ? '#f97316' : '#e8e8e8';
-    var baseBg = isTop ? '#fffbf7' : '#fff';
-    card.style.cssText = 'background:'+baseBg+';border-radius:14px;border:2px solid '+baseBorder+';'
-      +'padding:0;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;';
+    var baseBorder = isTop ? 'rgba(245,130,32,.35)' : '#E5E7EB';
+    var baseBg = '#FFFFFF';
+    var baseShadow = isTop ? '0 0 0 1px rgba(245,130,32,.15), 0 4px 20px rgba(245,130,32,.08)' : '0 1px 3px rgba(0,0,0,.06)';
+    card.style.cssText = 'background:'+baseBg+';border-radius:14px;border:1.5px solid '+baseBorder+';'
+      +'padding:0;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;box-shadow:'+baseShadow+';';
 
     var aliUrl = 'https://www.alibaba.com/trade/search?SearchText='
       + encodeURIComponent((p.alibabaTerm||p.name)+' gold supplier')+'&IndexArea=product_en';
@@ -2182,56 +2214,65 @@ async function showProductCards(prods, batchOffset){
     }
 
     card.innerHTML =
-      // Top bar: rank + name + supplier badge + check
-      '<div style="display:flex;align-items:center;gap:8px;padding:12px 14px 10px;border-bottom:1px solid '+(isTop?'#fed7aa':'#f5f5f5')+'">'
-        +'<div style="width:24px;height:24px;border-radius:50%;background:'+rankColor+';color:#fff;'
-          +'font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div>'
-        +'<div style="flex:1;font-size:13.5px;font-weight:800;color:#1a1a1a;line-height:1.3">'+p.name+'</div>'
-        +supBadge
-        +(isTop?'<div style="font-size:9px;font-weight:800;background:#f97316;color:#fff;padding:2px 8px;border-radius:99px;flex-shrink:0;letter-spacing:.04em">★ IA</div>':'')
-        +'<div id="chk-'+globalIdx+'" style="display:none;width:22px;height:22px;background:#f97316;border-radius:50%;'
-          +'align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900;flex-shrink:0">✓</div>'
+      // ── TOP HEADER ──
+      '<div style="display:flex;align-items:center;gap:10px;padding:14px 16px 12px;border-bottom:1px solid '+(isTop?'rgba(245,130,32,.15)':'rgba(0,0,0,.06)')+'">'
+        // Rank badge
+        +'<div style="width:26px;height:26px;border-radius:8px;background:'+(isTop?'linear-gradient(135deg,#F58220,#E04A00)':'rankColor')+';background:'+(isTop?'linear-gradient(135deg,#F58220,#E04A00)':rankColor)+';color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:8px">'+(i+1)+'</div>'
+        // Product name
+        +'<div style="flex:1;font-size:14px;font-weight:700;color:#111827;line-height:1.25;letter-spacing:-.01em">'+p.name+'</div>'
+        // Supplier + IA badge
+        +'<div style="display:flex;align-items:center;gap:5px;flex-shrink:0">'
+          +supBadge
+          +(isTop?'<div style="font-size:9px;font-weight:800;background:linear-gradient(135deg,#F58220,#A855F7);color:#fff;padding:3px 8px;border-radius:6px;letter-spacing:.04em">★ IA</div>':'')
+        +'</div>'
+        // Selected checkmark
+        +'<div id="chk-'+globalIdx+'" style="display:none;width:22px;height:22px;background:#F58220;border-radius:6px;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:900;flex-shrink:0">✓</div>'
       +'</div>'
 
-      // Price + margin row
-      +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 14px;background:'+(isTop?'#fff7ed':'#fafafa')+';">'
-        +'<span style="font-size:14px;font-weight:800;color:#1a1a1a">'+priceRange+'/ud</span>'
-        +(moq?'<span style="font-size:10.5px;color:#94a3b8;font-weight:600">'+moq+'</span>':'')
-        +'<span style="margin-left:auto;font-size:11px;font-weight:800;background:'+marginBg+';color:'+marginColor+';padding:3px 9px;border-radius:99px;">'+margin+'% margen</span>'
-        +'<span style="font-size:11px;font-weight:700;color:#2563eb;background:#eff6ff;padding:3px 9px;border-radius:99px;">Amazon $'+Number(p.amazonPrice).toFixed(2)+'</span>'
+      // ── PRICE + METRICS ROW ──
+      +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;background:'+(isTop?'#FFFBF5':'#FAFAFA')+';">'
+        +'<div>'
+          +'<span style="font-size:16px;font-weight:800;color:#111827;letter-spacing:-.02em">'+priceRange+'</span>'
+          +'<span style="font-size:10px;color:#9CA3AF;font-weight:500;margin-left:4px">/ud</span>'
+          +(moq?'<span style="font-size:10px;color:#CBD5E1;font-weight:600;margin-left:6px">·</span><span style="font-size:10px;color:#9CA3AF;font-weight:500;margin-left:6px">'+moq+'</span>':'')
+        +'</div>'
+        +'<div style="margin-left:auto;display:flex;align-items:center;gap:6px">'
+          +'<div style="font-size:11px;font-weight:700;background:'+marginBg+';color:'+marginColor+';padding:4px 10px;border-radius:7px;letter-spacing:-.01em">'+margin+'% margen</div>'
+          +'<div style="font-size:11px;font-weight:700;color:#1D4ED8;background:#EFF6FF;padding:4px 10px;border-radius:7px">Amazon $'+Number(p.amazonPrice).toFixed(2)+'</div>'
+        +'</div>'
       +'</div>'
 
-      // Description + whyNow
-      +'<div style="padding:8px 14px 6px;">'
-        +'<div style="font-size:12px;color:#444;line-height:1.55;margin-bottom:5px">'+p.description+'</div>'
-        +(p.whyNow?'<div style="font-size:11px;color:#f97316;font-weight:600;display:flex;align-items:flex-start;gap:4px">'
-          +'<span style="flex-shrink:0">↑</span><span>'+p.whyNow+'</span></div>':'')
+      // ── DESCRIPTION ──
+      +'<div style="padding:10px 16px 8px;">'
+        +'<div style="font-size:12.5px;color:#4B5563;line-height:1.6;margin-bottom:6px">'+p.description+'</div>'
+        +(p.whyNow?'<div style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#EA580C;font-weight:600;background:#FFF7ED;border:1px solid #FED7AA;border-radius:6px;padding:3px 9px"><span>↑</span><span>'+p.whyNow+'</span></div>':'')
       +'</div>'
 
-      // Tags row
-      +'<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:0 14px 10px;">'
-        +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;'
-          +(p.demand==='Alta'?'background:#dcfce7;color:#15803d':'background:#fef9c3;color:#92400e')+'">'+p.demand+' demanda</span>'
-        +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;'
-          +(p.competition==='Baja'?'background:#dcfce7;color:#15803d':p.competition==='Media'?'background:#dbeafe;color:#1d4ed8':'background:#fee2e2;color:#dc2626')+'">Comp. '+p.competition+'</span>'
-        +(ta?'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:#ede9fe;color:#6d28d9">✔ Trade Assurance</span>':'')
+      // ── TAGS + LINKS ──
+      +'<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:8px 16px 14px;">'
+        +'<span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;letter-spacing:.01em;'
+          +(p.demand==='Alta'?'background:#DCFCE7;color:#15803D':'background:#FEF9C3;color:#92400E')+'">'+p.demand+' demanda</span>'
+        +'<span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;letter-spacing:.01em;'
+          +(p.competition==='Baja'?'background:#DCFCE7;color:#15803D':p.competition==='Media'?'background:#DBEAFE;color:#1D4ED8':'background:#FEE2E2;color:#DC2626')+'">Comp. '+p.competition+'</span>'
+        +(ta?'<span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;background:#EDE9FE;color:#6D28D9;letter-spacing:.01em">✔ Trade Assurance</span>':'')
         +'<div style="margin-left:auto;display:flex;gap:6px;">'
           +'<a href="'+aliUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" '
-            +'style="font-size:10.5px;font-weight:700;color:#ff6a00;text-decoration:none;padding:4px 10px;'
-            +'border:1.5px solid #ff6a00;border-radius:7px;white-space:nowrap" '
-            +'onmouseover="this.style.background=\'#fff7ed\'" onmouseout="this.style.background=\'\'">Alibaba ↗</a>'
+            +'style="font-size:10.5px;font-weight:700;color:#EA580C;text-decoration:none;padding:5px 12px;'
+            +'background:#FFF7ED;border:1px solid #FED7AA;border-radius:7px;white-space:nowrap;transition:all .15s" '
+            +'onmouseover="this.style.background=\'#FFEDD5\';this.style.borderColor=\'#F97316\'" onmouseout="this.style.background=\'#FFF7ED\';this.style.borderColor=\'#FED7AA\'">Alibaba ↗</a>'
           +'<a href="'+aexUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" '
-            +'style="font-size:10.5px;font-weight:700;color:#e62e04;text-decoration:none;padding:4px 10px;'
-            +'border:1.5px solid #e62e04;border-radius:7px;white-space:nowrap" '
-            +'onmouseover="this.style.background=\'#fff1f0\'" onmouseout="this.style.background=\'\'">AliExpress ↗</a>'
+            +'style="font-size:10.5px;font-weight:700;color:#DC2626;text-decoration:none;padding:5px 12px;'
+            +'background:#FFF1F2;border:1px solid #FECDD3;border-radius:7px;white-space:nowrap;transition:all .15s" '
+            +'onmouseover="this.style.background=\'#FFE4E6\';this.style.borderColor=\'#F87171\'" onmouseout="this.style.background=\'#FFF1F2\';this.style.borderColor=\'#FECDD3\'">AliExpress ↗</a>'
         +'</div>'
       +'</div>';
 
     card.onmouseenter = function(){
-      if(!this.classList.contains('sel')) this.style.boxShadow='0 4px 16px rgba(249,115,22,.15)';
+      if(!this.classList.contains('sel')) this.style.boxShadow='0 6px 24px rgba(0,0,0,.1)';
+      if(!this.classList.contains('sel')) this.style.transform='translateY(-1px)';
     };
     card.onmouseleave = function(){
-      if(!this.classList.contains('sel')) this.style.boxShadow='none';
+      if(!this.classList.contains('sel')){ this.style.boxShadow=baseShadow; this.style.transform=''; }
     };
     card.onclick = function(){ toggleProductPick(globalIdx); };
     grid.appendChild(card);
@@ -2254,11 +2295,11 @@ function toggleProductPick(globalIdx){
   var chk=document.getElementById('chk-'+globalIdx);
   if(already>=0){
     S.currentBatchPicks.splice(already,1);
-    if(card){card.style.borderColor='#e8e8e8';card.style.background='#fff';}
+    if(card){card.style.borderColor='#E5E7EB';card.style.background='#fff';card.style.boxShadow='0 1px 3px rgba(0,0,0,.06)';}
     if(chk)chk.style.display='none';
   } else if(totalSel<10){
     S.currentBatchPicks.push(globalIdx);
-    if(card){card.style.borderColor='#f97316';card.style.background='#fff7ed';}
+    if(card){card.style.borderColor='rgba(245,130,32,.5)';card.style.background='#FFFBF5';card.style.boxShadow='0 0 0 3px rgba(245,130,32,.1), 0 4px 16px rgba(245,130,32,.12)';}
     if(chk)chk.style.display='flex';
   }
   var btn=document.getElementById('btn-confirm-picks');
