@@ -21,6 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Righteous&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -304,7 +305,7 @@ body {
 .wc-section-title { font-family: var(--wc-font-head); font-size: clamp(28px,4vw,42px); text-align: center; color: #fff; margin-bottom: 10px; line-height: 1.1; }
 .wc-section-title span { color: var(--wc-orange); }
 .wc-section-sub { text-align: center; font-size: 16px; color: rgba(255,255,255,.5); max-width: 560px; margin: 0 auto 48px; line-height: 1.6; }
-.wc-feat-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.wc-feat-cards { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 16px; }
 .wc-feat-card { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09); border-radius: 18px; padding: 24px 20px; transition: transform .2s,border-color .2s; cursor: pointer; }
 .wc-feat-card:hover { transform: translateY(-4px); }
 .wc-feat-card.c-org:hover { border-color: rgba(245,130,32,.45); }
@@ -1032,6 +1033,13 @@ body {
         <p class="wc-fc-desc">Genera autom&aacute;ticamente t&iacute;tulo, bullets, descripci&oacute;n, keywords y A+ Content optimizados para Rufus AI y el Knowledge Graph de Amazon.</p>
         <span class="wc-fc-cta org">Crear listing &rarr;</span>
       </div>
+      <div class="wc-feat-card c-grn" onclick="show('l-fba')">
+        <div class="wc-fc-ico grn"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+        <span class="wc-fc-badge wc-b-grn">Nuevo</span>
+        <h3 class="wc-fc-title">Calculadora Costos FBA</h3>
+        <p class="wc-fc-desc">Calcula Referral Fees, FBA fees, storage, PPC, impuestos, margen neto, ROI y break-even. Gr&aacute;ficas en tiempo real + export PDF y CSV.</p>
+        <span class="wc-fc-cta grn">Calcular fees &rarr;</span>
+      </div>
     </div>
   </div>
 
@@ -1117,6 +1125,13 @@ body {
             <div class="wc-mc-desc">Optimizado para Rufus AI</div>
             <div class="wc-mc-arr org">Crear &rarr;</div>
           </div>
+          <div onclick="show('l-fba')" class="welcome-card" style="grid-column:span 2" onmouseover="this.classList.add('welcome-card-hover-green')" onmouseout="this.classList.remove('welcome-card-hover-green')">
+            <span class="wc-mc-badge wc-b-grn">FBA</span>
+            <div class="welcome-card-icon" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.22)"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+            <div class="wc-mc-title">Calculadora Costos FBA</div>
+            <div class="wc-mc-desc">Fees, margen, ROI y break-even</div>
+            <div class="wc-mc-arr grn">Calcular &rarr;</div>
+          </div>
         </div>
         <button class="wc-cta" onclick="quickStart('simulate')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -1197,6 +1212,10 @@ body {
       <button class="sb-item" onclick="show('l-listing')">
         <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Listing Rufus IA
+      </button>
+      <button class="sb-item" onclick="show('l-fba')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Costos FBA
       </button>
       <button class="sb-item">
         <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -1280,6 +1299,10 @@ body {
       <button class="sb-item" onclick="show('l-listing')">
         <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Listing Rufus IA
+      </button>
+      <button class="sb-item" onclick="show('l-fba')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Costos FBA
       </button>
       <button class="sb-item">
         <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -1380,7 +1403,8 @@ function show(id){
     'l-path':     '/seleccionar-herramienta',
     'l-chat':     '/buscador-ia',
     'l-dash':     '/dashboard',
-    'l-listing':  '/listing-rufus-ia'
+    'l-listing':  '/listing-rufus-ia',
+    'l-fba':      '/calculadora-costos-fba'
   };
   if(screenNames[id]){
     gaEvent('screen_view', { screen_name: screenNames[id] });
@@ -3913,6 +3937,10 @@ function handleCellEdit(cell){
         <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Listing Rufus IA
       </button>
+      <button class="sb-item" onclick="show('l-fba')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Costos FBA
+      </button>
       <button class="sb-item">
         <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         Proveedores
@@ -4679,5 +4707,868 @@ function lstEsc(str){
 
 })();
 </script>
+
+<!-- ══════════════════════════════════════════════════
+     LAYER: FBA COST CALCULATOR
+══════════════════════════════════════════════════ -->
+<style>
+/* ═══════════════════════════════
+   FBA CALCULATOR — Scoped styles
+═══════════════════════════════ */
+.fba-shell {
+  display:flex; flex-direction:column;
+  height:100vh; overflow:hidden;
+  padding-top: var(--topbar-h);
+}
+.fba-body  { flex:1; display:flex; overflow:hidden; }
+
+.fba-left {
+  width:380px; min-width:300px; flex-shrink:0;
+  overflow-y:auto; overflow-x:hidden;
+  padding:18px; background:var(--bg);
+  border-right:1px solid var(--border);
+}
+.fba-left::-webkit-scrollbar { width:4px; }
+.fba-left::-webkit-scrollbar-thumb { background:var(--border-md); border-radius:2px; }
+
+.fba-right {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  padding:18px; background:var(--bg);
+}
+.fba-right::-webkit-scrollbar { width:4px; }
+.fba-right::-webkit-scrollbar-thumb { background:var(--border-md); border-radius:2px; }
+
+/* Sections */
+.fba-section {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); margin-bottom:12px; overflow:hidden;
+}
+.fba-sec-head {
+  padding:10px 14px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:8px;
+}
+.fba-sec-tag {
+  font-size:9.5px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--accent);
+  background:var(--accent-glow); padding:2px 7px; border-radius:99px;
+}
+.fba-sec-body {
+  padding:14px; display:grid;
+  grid-template-columns:1fr 1fr; gap:10px;
+}
+.fba-field       { display:flex; flex-direction:column; gap:4px; }
+.fba-field.span2 { grid-column:span 2; }
+.fba-label {
+  font-size:11px; font-weight:600; color:var(--text2);
+  display:flex; align-items:center; gap:4px;
+}
+.fba-input, .fba-select {
+  width:100%; padding:7px 10px;
+  border:1px solid var(--border-md); border-radius:var(--radius-sm);
+  font-size:12.5px; font-family:inherit;
+  background:var(--surface2); color:var(--text);
+  transition:border-color .15s,box-shadow .15s;
+}
+.fba-input:focus, .fba-select:focus {
+  outline:none; border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+.fba-input-pre { position:relative; }
+.fba-pre {
+  position:absolute; left:9px; top:50%;
+  transform:translateY(-50%);
+  font-size:11.5px; color:var(--text3); pointer-events:none;
+}
+.fba-input-pre .fba-input { padding-left:20px; }
+
+/* Action buttons */
+.fba-btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.fba-btn {
+  padding:8px 14px; border-radius:var(--radius-sm);
+  border:1px solid var(--border-md);
+  font-size:12px; font-weight:600; cursor:pointer;
+  font-family:inherit; transition:all .15s;
+  display:flex; align-items:center; gap:5px;
+}
+.fba-btn.ghost  { background:var(--surface); color:var(--text2); }
+.fba-btn.ghost:hover  { background:var(--bg); }
+.fba-btn.danger { background:var(--surface); color:var(--red); border-color:rgba(240,68,56,.2); }
+.fba-btn.danger:hover { background:var(--red-bg); }
+
+/* KPI Cards */
+.fba-kpi-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:10px; margin-bottom:14px;
+}
+.fba-kpi {
+  background:var(--surface); border:1px solid var(--border);
+  border-left:3px solid var(--border-md);
+  border-radius:var(--radius); padding:14px 14px 12px;
+  transition:border-color .2s;
+}
+.fba-kpi.positive { border-left-color:var(--green); }
+.fba-kpi.warning  { border-left-color:#F59E0B; }
+.fba-kpi.negative { border-left-color:var(--red); }
+.fba-kpi-lbl {
+  font-size:10px; font-weight:700; color:var(--text3);
+  text-transform:uppercase; letter-spacing:.07em; margin-bottom:5px;
+}
+.fba-kpi-val {
+  font-size:20px; font-weight:800;
+  font-family:var(--font-mono); color:var(--text); line-height:1;
+}
+.fba-kpi-val.positive { color:var(--green); }
+.fba-kpi-val.warning  { color:#F59E0B; }
+.fba-kpi-val.negative { color:var(--red); }
+.fba-kpi-sub { font-size:10.5px; color:var(--text3); margin-top:3px; }
+
+/* Status Banner */
+.fba-banner {
+  padding:9px 13px; border-radius:var(--radius-sm);
+  margin-bottom:14px; font-size:12.5px; font-weight:600;
+  display:none; align-items:center; gap:7px;
+}
+.fba-banner.show { display:flex; }
+.fba-banner.positive { background:var(--green-bg); color:#027A48; border:1px solid var(--green-brd); }
+.fba-banner.warning  { background:#FFFBEB; color:#92400E; border:1px solid rgba(245,158,11,.2); }
+.fba-banner.negative { background:var(--red-bg); color:#B42318; border:1px solid rgba(240,68,56,.18); }
+
+/* Cost Breakdown */
+.fba-breakdown {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:14px; margin-bottom:14px;
+}
+.fba-break-title {
+  font-size:11px; font-weight:700; color:var(--text2);
+  text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px;
+}
+.fba-break-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:5px 0; border-bottom:1px solid var(--border); font-size:12.5px;
+  color:var(--text2);
+}
+.fba-break-row:last-child { border-bottom:none; font-weight:700; font-size:13.5px; color:var(--text); padding-top:8px; }
+.fba-amt { font-family:var(--font-mono); font-size:12px; }
+.fba-amt.neg { color:var(--red); }
+.fba-amt.pos { color:var(--green); }
+
+/* Charts */
+.fba-charts-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px; margin-bottom:14px;
+}
+.fba-chart-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:14px;
+}
+.fba-chart-card.wide { grid-column:span 2; }
+.fba-chart-title {
+  font-size:10.5px; font-weight:700; color:var(--text3);
+  text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px;
+}
+.fba-gauge-label {
+  font-size:22px; font-weight:800; font-family:var(--font-mono);
+  margin-top:-28px; text-align:center;
+}
+.fba-gauge-sub {
+  font-size:10px; color:var(--text3); text-align:center; margin-top:4px;
+}
+
+/* Scenarios */
+.fba-scenarios {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:14px; margin-bottom:18px;
+}
+.fba-sc-head {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:10px;
+}
+.fba-sc-title {
+  font-size:11px; font-weight:700; color:var(--text2);
+  text-transform:uppercase; letter-spacing:.07em;
+}
+.fba-sc-table { width:100%; border-collapse:collapse; font-size:12px; }
+.fba-sc-table th {
+  text-align:left; padding:5px 8px; color:var(--text3);
+  font-weight:600; font-size:10.5px; text-transform:uppercase;
+  letter-spacing:.06em; border-bottom:1px solid var(--border);
+}
+.fba-sc-table td { padding:6px 8px; border-bottom:1px solid var(--border); color:var(--text); }
+.fba-sc-table tr:last-child td { border-bottom:none; }
+.fba-sc-empty { text-align:center; padding:20px; color:var(--text3); font-size:12px; }
+.fba-currency-sel {
+  padding:5px 8px; border:1px solid var(--border-md); border-radius:6px;
+  font-size:12px; background:var(--surface); color:var(--text2);
+  cursor:pointer; font-family:inherit;
+}
+.fba-currency-sel:focus { outline:none; border-color:var(--accent); }
+
+/* Responsive */
+@media(max-width:1100px){ .fba-kpi-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:900px){
+  .fba-body { flex-direction:column; }
+  .fba-left { width:100%; min-width:unset; border-right:none; border-bottom:1px solid var(--border); }
+  .fba-charts-grid { grid-template-columns:1fr; }
+  .fba-chart-card.wide { grid-column:span 1; }
+}
+
+/* Print */
+@media print {
+  .apex-sidebar, .dash-topbar, .fba-left, .fba-btn-row,
+  .fba-scenarios, #fba-banner { display:none !important; }
+  #l-fba.on { display:block !important; }
+  .fba-shell { height:auto !important; }
+  .fba-body  { overflow:visible !important; display:block !important; }
+  .fba-right { overflow:visible !important; padding:0 !important; }
+  .fba-charts-grid { grid-template-columns:1fr 1fr !important; }
+}
+</style>
+
+<div class="layer" id="l-fba">
+  <!-- Sidebar -->
+  <nav class="apex-sidebar">
+    <a class="sb-logo" href="#" onclick="goHome();return false;">
+      <div class="sb-logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 3L8 13L13 13L10 21L16 11L11 11Z" fill="white" stroke="white" stroke-width="0.5" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="sb-logo-text">Seller<span>Plus</span></span>
+    </a>
+    <div class="sb-nav">
+      <div class="sb-section-label">Principal</div>
+      <button class="sb-item" onclick="show('l-dash')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="sb-item" onclick="show('l-chat')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Buscador IA
+      </button>
+      <div class="sb-section-label">Herramientas</div>
+      <button class="sb-item" onclick="show('l-listing')">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Listing Rufus IA
+      </button>
+      <button class="sb-item active">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Costos FBA
+      </button>
+      <div class="sb-section-label">Cuenta</div>
+      <button class="sb-item" onclick="goHome()">
+        <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Inicio
+      </button>
+    </div>
+    <div class="sb-plan-badge">
+      <div class="sb-plan-name">✦ Plan Pro</div>
+      <div class="sb-plan-sub">Búsquedas IA ilimitadas</div>
+      <button class="sb-plan-btn">Mejorar plan</button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="with-sidebar fba-shell">
+
+    <!-- Topbar -->
+    <div class="dash-topbar">
+      <div class="dash-topbar-left">
+        <span class="topbar-breadcrumb">
+          <span>Herramientas</span>
+          <span class="bc-sep">›</span>
+          <span class="bc-active">Calculadora Costos FBA</span>
+        </span>
+      </div>
+      <div class="dash-actions">
+        <select class="fba-currency-sel" id="fba-currency" onchange="fbaRecalc()">
+          <option value="USD">$ USD</option>
+          <option value="EUR">€ EUR</option>
+          <option value="GBP">£ GBP</option>
+          <option value="MXN">MX$</option>
+          <option value="COP">COP</option>
+        </select>
+        <button class="btn-dash" onclick="fbaExportCSV()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV
+        </button>
+        <button class="btn-dash" onclick="fbaExportPDF()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          PDF
+        </button>
+        <button class="btn-dash btn-new" onclick="fbaReset()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="fba-body">
+
+      <!-- ── LEFT PANEL: INPUTS ── -->
+      <div class="fba-left">
+
+        <!-- 01 Product Info -->
+        <div class="fba-section">
+          <div class="fba-sec-head">
+            <span class="fba-sec-tag">01</span>
+            <span style="font-size:13px;font-weight:700;color:var(--text)">Product Info</span>
+          </div>
+          <div class="fba-sec-body">
+            <div class="fba-field span2">
+              <label class="fba-label">Product Name</label>
+              <input class="fba-input" type="text" id="fba-name" placeholder="Ej. Contenedor hermético de vidrio..." oninput="fbaRecalc()"/>
+            </div>
+            <div class="fba-field span2">
+              <label class="fba-label">Category</label>
+              <select class="fba-select" id="fba-category" onchange="fbaRecalc()">
+                <option>Home &amp; Kitchen</option>
+                <option>Beauty</option>
+                <option>Electronics</option>
+                <option>Books</option>
+                <option>Sports</option>
+                <option>Clothing</option>
+                <option>Jewelry</option>
+                <option>Pet Supplies</option>
+                <option>Toys</option>
+                <option>Office Products</option>
+                <option>Automotive</option>
+                <option>Health &amp; Household</option>
+                <option>Grocery</option>
+                <option>Handmade</option>
+                <option>Industrial</option>
+              </select>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">Selling Price</label>
+              <div class="fba-input-pre"><span class="fba-pre">$</span><input class="fba-input" type="number" id="fba-price" placeholder="0.00" min="0" step="0.01" value="29.99" oninput="fbaRecalc()"/></div>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">Units / Month</label>
+              <input class="fba-input" type="number" id="fba-units" placeholder="100" min="0" value="100" oninput="fbaRecalc()"/>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">Product Cost</label>
+              <div class="fba-input-pre"><span class="fba-pre">$</span><input class="fba-input" type="number" id="fba-cost" placeholder="0.00" min="0" step="0.01" value="8.00" oninput="fbaRecalc()"/></div>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">Packaging Cost</label>
+              <div class="fba-input-pre"><span class="fba-pre">$</span><input class="fba-input" type="number" id="fba-packaging" placeholder="0.00" min="0" step="0.01" value="0.50" oninput="fbaRecalc()"/></div>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">Weight (lbs)</label>
+              <input class="fba-input" type="number" id="fba-weight" placeholder="0.0" min="0" step="0.1" value="0.8" oninput="fbaRecalc()"/>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">Shipping Inbound</label>
+              <div class="fba-input-pre"><span class="fba-pre">$</span><input class="fba-input" type="number" id="fba-shipping" placeholder="0.00" min="0" step="0.01" value="1.20" oninput="fbaRecalc()"/></div>
+            </div>
+            <div class="fba-field span2">
+              <label class="fba-label">Dimensions — L &times; W &times; H (inches)</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+                <input class="fba-input" type="number" id="fba-len" placeholder="L" min="0" step="0.1" value="8" oninput="fbaRecalc()"/>
+                <input class="fba-input" type="number" id="fba-wid" placeholder="W" min="0" step="0.1" value="5" oninput="fbaRecalc()"/>
+                <input class="fba-input" type="number" id="fba-hei" placeholder="H" min="0" step="0.1" value="3" oninput="fbaRecalc()"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 Amazon Settings -->
+        <div class="fba-section">
+          <div class="fba-sec-head">
+            <span class="fba-sec-tag">02</span>
+            <span style="font-size:13px;font-weight:700;color:var(--text)">Amazon Settings</span>
+          </div>
+          <div class="fba-sec-body">
+            <div class="fba-field">
+              <label class="fba-label">Seller Plan</label>
+              <select class="fba-select" id="fba-plan" onchange="fbaRecalc()">
+                <option value="Professional">Professional</option>
+                <option value="Individual">Individual</option>
+              </select>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">Fulfillment</label>
+              <select class="fba-select" id="fba-fulfillment" onchange="fbaRecalc()">
+                <option value="FBA">FBA</option>
+                <option value="FBM">FBM</option>
+              </select>
+            </div>
+            <div class="fba-field span2">
+              <label class="fba-label">Marketplace</label>
+              <select class="fba-select" id="fba-marketplace" onchange="fbaRecalc()">
+                <option value="US">🇺🇸 United States</option>
+                <option value="CA">🇨🇦 Canada</option>
+                <option value="MX">🇲🇽 Mexico</option>
+                <option value="UK">🇬🇧 United Kingdom</option>
+                <option value="EU">🇪🇺 Europe</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 Taxes & Ads -->
+        <div class="fba-section">
+          <div class="fba-sec-head">
+            <span class="fba-sec-tag">03</span>
+            <span style="font-size:13px;font-weight:700;color:var(--text)">Taxes &amp; Ads</span>
+          </div>
+          <div class="fba-sec-body">
+            <div class="fba-field">
+              <label class="fba-label">Tax Rate %</label>
+              <div class="fba-input-pre"><span class="fba-pre">%</span><input class="fba-input" type="number" id="fba-tax" placeholder="0" min="0" max="50" step="0.5" value="0" oninput="fbaRecalc()"/></div>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">PPC Spend %</label>
+              <div class="fba-input-pre"><span class="fba-pre">%</span><input class="fba-input" type="number" id="fba-ppc" placeholder="0" min="0" max="100" step="0.5" value="10" oninput="fbaRecalc()"/></div>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">Return Rate %</label>
+              <div class="fba-input-pre"><span class="fba-pre">%</span><input class="fba-input" type="number" id="fba-return-rate" placeholder="0" min="0" max="50" step="0.5" value="2" oninput="fbaRecalc()"/></div>
+            </div>
+            <div class="fba-field">
+              <label class="fba-label">Storage Months</label>
+              <input class="fba-input" type="number" id="fba-storage" placeholder="1" min="1" max="12" value="1" oninput="fbaRecalc()"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="fba-btn-row">
+          <button class="fba-btn ghost" onclick="fbaSaveScenario()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+            Guardar escenario
+          </button>
+          <button class="fba-btn danger" onclick="fbaReset()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.71"/></svg>
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- ── RIGHT PANEL: RESULTS ── -->
+      <div class="fba-right">
+
+        <!-- Status Banner -->
+        <div class="fba-banner" id="fba-banner"></div>
+
+        <!-- KPI Grid -->
+        <div class="fba-kpi-grid">
+          <div class="fba-kpi" id="fba-kpi-profit">
+            <div class="fba-kpi-lbl">Net Profit / Unit</div>
+            <div class="fba-kpi-val" id="kpi-profit">—</div>
+            <div class="fba-kpi-sub" id="kpi-profit-sub">Fee % del precio</div>
+          </div>
+          <div class="fba-kpi" id="fba-kpi-margin">
+            <div class="fba-kpi-lbl">Net Margin</div>
+            <div class="fba-kpi-val" id="kpi-margin">—</div>
+            <div class="fba-kpi-sub">Del precio de venta</div>
+          </div>
+          <div class="fba-kpi" id="fba-kpi-roi">
+            <div class="fba-kpi-lbl">ROI</div>
+            <div class="fba-kpi-val" id="kpi-roi">—</div>
+            <div class="fba-kpi-sub">Retorno sobre inversión</div>
+          </div>
+          <div class="fba-kpi" id="fba-kpi-fees">
+            <div class="fba-kpi-lbl">Total Amazon Fees</div>
+            <div class="fba-kpi-val" id="kpi-fees" style="color:var(--red)">—</div>
+            <div class="fba-kpi-sub" id="kpi-fees-sub">Ref + FBA + Storage</div>
+          </div>
+          <div class="fba-kpi" id="fba-kpi-monthly">
+            <div class="fba-kpi-lbl">Monthly Profit</div>
+            <div class="fba-kpi-val" id="kpi-monthly">—</div>
+            <div class="fba-kpi-sub" id="kpi-monthly-sub">Ganancia mensual neta</div>
+          </div>
+          <div class="fba-kpi" id="fba-kpi-breakeven">
+            <div class="fba-kpi-lbl">Break-even Price</div>
+            <div class="fba-kpi-val" id="kpi-breakeven">—</div>
+            <div class="fba-kpi-sub">Precio mínimo de venta</div>
+          </div>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="fba-breakdown">
+          <div class="fba-break-title">Desglose por Unidad</div>
+          <div class="fba-break-row"><span>Precio de venta</span><span class="fba-amt" id="bd-price">—</span></div>
+          <div class="fba-break-row"><span>Costo del producto</span><span class="fba-amt neg" id="bd-cost">—</span></div>
+          <div class="fba-break-row"><span>Shipping inbound</span><span class="fba-amt neg" id="bd-shipping">—</span></div>
+          <div class="fba-break-row"><span>Packaging</span><span class="fba-amt neg" id="bd-packaging">—</span></div>
+          <div class="fba-break-row"><span>Referral Fee (<span id="bd-ref-pct">—</span>%)</span><span class="fba-amt neg" id="bd-referral">—</span></div>
+          <div class="fba-break-row"><span>FBA Fulfillment Fee</span><span class="fba-amt neg" id="bd-fba">—</span></div>
+          <div class="fba-break-row"><span>Storage Fee</span><span class="fba-amt neg" id="bd-storage">—</span></div>
+          <div class="fba-break-row"><span>PPC / Ads</span><span class="fba-amt neg" id="bd-ppc">—</span></div>
+          <div class="fba-break-row"><span>Taxes</span><span class="fba-amt neg" id="bd-taxes">—</span></div>
+          <div class="fba-break-row"><span><strong>Net Profit</strong></span><span class="fba-amt" id="bd-net">—</span></div>
+        </div>
+
+        <!-- Charts -->
+        <div class="fba-charts-grid">
+          <div class="fba-chart-card">
+            <div class="fba-chart-title">Distribución de Costos</div>
+            <div style="position:relative;height:210px"><canvas id="fba-pie-chart"></canvas></div>
+          </div>
+          <div class="fba-chart-card">
+            <div class="fba-chart-title">Margin Gauge</div>
+            <div style="position:relative;height:150px"><canvas id="fba-gauge-chart"></canvas></div>
+            <div class="fba-gauge-label" id="fba-gauge-label">—</div>
+            <div class="fba-gauge-sub" id="fba-gauge-sub">Margen neto</div>
+          </div>
+          <div class="fba-chart-card wide">
+            <div class="fba-chart-title">Revenue vs Costs vs Profit — Mensual</div>
+            <div style="position:relative;height:190px"><canvas id="fba-bar-chart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Scenarios Comparison -->
+        <div class="fba-scenarios">
+          <div class="fba-sc-head">
+            <div class="fba-sc-title">Comparador de Escenarios</div>
+            <button class="fba-btn ghost" style="padding:4px 10px;font-size:11px" onclick="fbaClearScenarios()">Limpiar</button>
+          </div>
+          <div id="fba-scenarios-body">
+            <div class="fba-sc-empty">Guarda hasta 3 escenarios con el botón "Guardar escenario" para compararlos aquí.</div>
+          </div>
+        </div>
+
+      </div><!-- /fba-right -->
+    </div><!-- /fba-body -->
+  </div><!-- /fba-shell -->
+</div><!-- /l-fba -->
+
+<script>
+/* ═══════════════════════════════════════════════
+   FBA COST CALCULATOR — Engine
+═══════════════════════════════════════════════ */
+(function(){
+  var fbaCharts   = {};
+  var fbaScenarios = [];
+  var fbaCurrSyms = { USD:'$', EUR:'€', GBP:'£', MXN:'MX$', COP:'$' };
+  var fbaRefRates = {
+    'Home & Kitchen':15,'Beauty':8,'Electronics':8,'Books':15,'Sports':15,
+    'Clothing':17,'Jewelry':20,'Pet Supplies':15,'Toys':15,'Office Products':15,
+    'Automotive':12,'Health & Household':15,'Grocery':8,'Handmade':15,'Industrial':12
+  };
+
+  function fbaSym(){
+    var sel = document.getElementById('fba-currency');
+    return fbaCurrSyms[(sel && sel.value) || 'USD'] || '$';
+  }
+
+  function fbaFmt(v, dec){
+    return fbaSym() + Math.abs(v).toFixed(dec !== undefined ? dec : 2);
+  }
+
+  function fbaNum(id){ return parseFloat(document.getElementById(id).value) || 0; }
+
+  function fbaCalcData(){
+    var price   = fbaNum('fba-price');
+    var units   = fbaNum('fba-units');
+    var cost    = fbaNum('fba-cost');
+    var weight  = fbaNum('fba-weight');
+    var len     = fbaNum('fba-len');
+    var wid     = fbaNum('fba-wid');
+    var hei     = fbaNum('fba-hei');
+    var ship    = fbaNum('fba-shipping');
+    var pkg     = fbaNum('fba-packaging');
+    var tax     = fbaNum('fba-tax');
+    var ppc     = fbaNum('fba-ppc');
+    var ret     = fbaNum('fba-return-rate');
+    var sto     = Math.max(1, fbaNum('fba-storage'));
+    var cat     = document.getElementById('fba-category').value;
+    var fulfil  = document.getElementById('fba-fulfillment').value;
+
+    var refRate = fbaRefRates[cat] || 15;
+    var refFee  = price * refRate / 100;
+
+    var fbaFee = 0;
+    if(fulfil === 'FBA'){
+      if(weight < 1)       fbaFee = 3.22;
+      else if(weight <= 3) fbaFee = 4.75;
+      else                 fbaFee = 8.50;
+      if(weight > 1) fbaFee += (weight - 1) * 0.25;
+    }
+
+    var vol        = (len * wid * hei) / 1728;
+    var storageFee = vol * 0.87 * sto;
+    var ppcCost    = price * ppc / 100;
+    var taxes      = price * tax / 100;
+
+    var amazonFees = refFee + fbaFee + storageFee + ppcCost;
+    var totalCost  = cost + ship + pkg + amazonFees + taxes;
+    var netProfit  = price - totalCost;
+    var netMargin  = price > 0 ? (netProfit / price) * 100 : 0;
+    var roi        = cost  > 0 ? (netProfit / cost)  * 100 : 0;
+    var breakEven  = totalCost;
+    var effUnits   = units * (1 - ret / 100);
+    var monthlyRev = price * effUnits;
+    var monthlyCost= totalCost * effUnits;
+    var monthlyPro = netProfit * effUnits;
+    var feesPct    = price > 0 ? (amazonFees / price) * 100 : 0;
+
+    return { price, units, cost, ship, pkg, tax, ppc, ret, refRate, refFee, fbaFee,
+             storageFee, ppcCost, taxes, amazonFees, totalCost, netProfit, netMargin,
+             roi, breakEven, monthlyRev, monthlyCost, monthlyPro, feesPct };
+  }
+
+  function fbaCls(margin){
+    if(margin >= 25) return 'positive';
+    if(margin >= 10) return 'warning';
+    return 'negative';
+  }
+
+  function fbaSet(id, text){ var el=document.getElementById(id); if(el) el.textContent=text; }
+
+  window.fbaRecalc = function(){
+    var d = fbaCalcData();
+    var cls = fbaCls(d.netMargin);
+
+    /* KPI: Profit */
+    var elProfit = document.getElementById('kpi-profit');
+    if(elProfit){
+      elProfit.textContent = (d.netProfit<0?'-':'') + fbaFmt(Math.abs(d.netProfit));
+      elProfit.className   = 'fba-kpi-val ' + cls;
+    }
+    fbaSet('kpi-profit-sub', 'Fees: ' + d.feesPct.toFixed(1) + '% del precio');
+    var kpiP = document.getElementById('fba-kpi-profit');
+    if(kpiP) kpiP.className = 'fba-kpi ' + cls;
+
+    /* KPI: Margin */
+    var elMargin = document.getElementById('kpi-margin');
+    if(elMargin){ elMargin.textContent = d.netMargin.toFixed(1)+'%'; elMargin.className='fba-kpi-val '+cls; }
+    var kpiM = document.getElementById('fba-kpi-margin');
+    if(kpiM) kpiM.className = 'fba-kpi ' + cls;
+
+    /* KPI: ROI */
+    var elROI = document.getElementById('kpi-roi');
+    if(elROI){ elROI.textContent = d.roi.toFixed(1)+'%'; elROI.className='fba-kpi-val '+cls; }
+    var kpiR = document.getElementById('fba-kpi-roi');
+    if(kpiR) kpiR.className = 'fba-kpi ' + cls;
+
+    /* KPI: Fees */
+    fbaSet('kpi-fees', fbaFmt(d.amazonFees));
+    fbaSet('kpi-fees-sub', 'Ref: '+fbaFmt(d.refFee)+' · FBA: '+fbaFmt(d.fbaFee));
+
+    /* KPI: Monthly */
+    var elMon = document.getElementById('kpi-monthly');
+    if(elMon){ elMon.textContent=(d.monthlyPro<0?'-':'')+fbaFmt(Math.abs(d.monthlyPro)); elMon.className='fba-kpi-val '+cls; }
+    fbaSet('kpi-monthly-sub', d.units+' uds · Rev: '+fbaFmt(d.monthlyRev,0));
+    var kpiMo = document.getElementById('fba-kpi-monthly');
+    if(kpiMo) kpiMo.className = 'fba-kpi ' + cls;
+
+    /* KPI: Break-even */
+    fbaSet('kpi-breakeven', fbaFmt(d.breakEven));
+
+    /* Breakdown */
+    fbaSet('bd-price',    fbaFmt(d.price));
+    fbaSet('bd-cost',     '-'+fbaFmt(d.cost));
+    fbaSet('bd-shipping', '-'+fbaFmt(d.ship));
+    fbaSet('bd-packaging','-'+fbaFmt(d.pkg));
+    fbaSet('bd-ref-pct',  d.refRate);
+    fbaSet('bd-referral', '-'+fbaFmt(d.refFee));
+    fbaSet('bd-fba',      '-'+fbaFmt(d.fbaFee));
+    fbaSet('bd-storage',  '-'+fbaFmt(d.storageFee));
+    fbaSet('bd-ppc',      '-'+fbaFmt(d.ppcCost));
+    fbaSet('bd-taxes',    '-'+fbaFmt(d.taxes));
+    var bdNet = document.getElementById('bd-net');
+    if(bdNet){
+      bdNet.textContent = (d.netProfit<0?'-':'')+fbaFmt(Math.abs(d.netProfit));
+      bdNet.className   = 'fba-amt ' + cls;
+    }
+
+    /* Banner */
+    var banner = document.getElementById('fba-banner');
+    if(banner){
+      banner.className = 'fba-banner show ' + cls;
+      if(cls==='positive') banner.textContent = '✓ Producto rentable — Margen del '+d.netMargin.toFixed(1)+'% · Excelente oportunidad de negocio';
+      else if(cls==='warning') banner.textContent = '⚠ Margen ajustado — '+d.netMargin.toFixed(1)+'% · Revisa costos y precio para mejorar';
+      else banner.textContent = '✗ Producto en pérdidas — Ajusta el precio de venta o reduce los costos';
+    }
+
+    fbaUpdateCharts(d);
+  };
+
+  function fbaUpdateCharts(d){
+    /* Pie / Doughnut */
+    var pieCtx = document.getElementById('fba-pie-chart');
+    if(!pieCtx) return;
+    if(fbaCharts.pie){ fbaCharts.pie.destroy(); fbaCharts.pie=null; }
+    var pieData = [
+      Math.max(0, d.refFee + d.fbaFee + d.storageFee),
+      Math.max(0, d.ppcCost),
+      Math.max(0, d.taxes),
+      Math.max(0, d.cost + d.ship + d.pkg),
+      Math.max(0, d.netProfit)
+    ];
+    fbaCharts.pie = new Chart(pieCtx, {
+      type:'doughnut',
+      data:{
+        labels:['Amazon Fees','PPC','Taxes','COGS + Shipping','Net Profit'],
+        datasets:[{ data:pieData,
+          backgroundColor:['#F04438','#F59E0B','#8B5CF6','#3B82F6','#12B76A'],
+          borderWidth:2, borderColor:'#fff' }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false, cutout:'62%',
+        plugins:{
+          legend:{position:'bottom',labels:{font:{size:10},padding:8,usePointStyle:true}},
+          tooltip:{callbacks:{label:function(c){return c.label+': '+fbaSym()+parseFloat(c.raw).toFixed(2);}}}
+        }
+      }
+    });
+
+    /* Gauge (half doughnut) */
+    var gaugeCtx = document.getElementById('fba-gauge-chart');
+    if(!gaugeCtx) return;
+    if(fbaCharts.gauge){ fbaCharts.gauge.destroy(); fbaCharts.gauge=null; }
+    var margin  = Math.min(Math.max(d.netMargin,0), 50);
+    var gaugeClr = d.netMargin>=25?'#12B76A':d.netMargin>=10?'#F59E0B':'#F04438';
+    fbaCharts.gauge = new Chart(gaugeCtx,{
+      type:'doughnut',
+      data:{datasets:[{
+        data:[margin, 50-margin],
+        backgroundColor:[gaugeClr,'#E8EAED'],
+        borderWidth:0
+      }]},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        circumference:180, rotation:-90, cutout:'72%',
+        plugins:{legend:{display:false},tooltip:{enabled:false}}
+      }
+    });
+    var gl = document.getElementById('fba-gauge-label');
+    var gs = document.getElementById('fba-gauge-sub');
+    if(gl){ gl.textContent = d.netMargin.toFixed(1)+'%'; gl.style.color = gaugeClr; }
+    if(gs) gs.textContent = d.netMargin>=25?'Excelente':d.netMargin>=10?'Aceptable':'Mejorar';
+
+    /* Bar */
+    var barCtx = document.getElementById('fba-bar-chart');
+    if(!barCtx) return;
+    if(fbaCharts.bar){ fbaCharts.bar.destroy(); fbaCharts.bar=null; }
+    fbaCharts.bar = new Chart(barCtx,{
+      type:'bar',
+      data:{
+        labels:['Revenue','Costs','Net Profit'],
+        datasets:[{
+          label:'Mensual',
+          data:[d.monthlyRev, d.monthlyCost, d.monthlyPro],
+          backgroundColor:['#3B82F6','#F04438', d.monthlyPro>=0?'#12B76A':'#F04438'],
+          borderRadius:6, borderSkipped:false
+        }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:function(c){return fbaSym()+parseFloat(c.raw).toFixed(2);}}}},
+        scales:{
+          y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:10},callback:function(v){return fbaSym()+v.toFixed(0);}}},
+          x:{grid:{display:false},ticks:{font:{size:11}}}
+        }
+      }
+    });
+  }
+
+  window.fbaReset = function(){
+    var defaults = {
+      'fba-price':'29.99','fba-units':'100','fba-cost':'8.00',
+      'fba-weight':'0.8','fba-len':'8','fba-wid':'5','fba-hei':'3',
+      'fba-shipping':'1.20','fba-packaging':'0.50','fba-tax':'0',
+      'fba-ppc':'10','fba-return-rate':'2','fba-storage':'1','fba-name':''
+    };
+    Object.keys(defaults).forEach(function(k){
+      var el=document.getElementById(k); if(el) el.value=defaults[k];
+    });
+    fbaRecalc();
+  };
+
+  window.fbaSaveScenario = function(){
+    if(fbaScenarios.length >= 3) fbaScenarios.shift();
+    var d    = fbaCalcData();
+    var name = (document.getElementById('fba-name').value||'').trim() ||
+               ('Escenario '+(fbaScenarios.length+1));
+    fbaScenarios.push({ name:name.substring(0,22), data:d });
+    fbaRenderScenarios();
+  };
+
+  window.fbaClearScenarios = function(){
+    fbaScenarios = [];
+    fbaRenderScenarios();
+  };
+
+  function fbaRenderScenarios(){
+    var body = document.getElementById('fba-scenarios-body');
+    if(!body) return;
+    if(!fbaScenarios.length){
+      body.innerHTML='<div class="fba-sc-empty">Guarda hasta 3 escenarios con el botón "Guardar escenario" para compararlos aquí.</div>';
+      return;
+    }
+    var html='<table class="fba-sc-table"><thead><tr>'
+      +'<th>Producto</th><th>Precio</th><th>Net Profit</th>'
+      +'<th>Margen</th><th>ROI</th><th>Profit/Mes</th></tr></thead><tbody>';
+    fbaScenarios.forEach(function(s){
+      var c = fbaCls(s.data.netMargin);
+      var col = c==='positive'?'var(--green)':c==='warning'?'#F59E0B':'var(--red)';
+      html+='<tr>'
+        +'<td style="font-weight:600">'+s.name+'</td>'
+        +'<td>'+fbaFmt(s.data.price)+'</td>'
+        +'<td style="color:'+col+';font-family:var(--font-mono)">'+(s.data.netProfit<0?'-':'')+fbaFmt(Math.abs(s.data.netProfit))+'</td>'
+        +'<td style="color:'+col+'">'+s.data.netMargin.toFixed(1)+'%</td>'
+        +'<td style="color:'+col+'">'+s.data.roi.toFixed(1)+'%</td>'
+        +'<td style="color:'+col+';font-family:var(--font-mono)">'+(s.data.monthlyPro<0?'-':'')+fbaFmt(Math.abs(s.data.monthlyPro),0)+'</td>'
+        +'</tr>';
+    });
+    html+='</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  window.fbaExportCSV = function(){
+    var d = fbaCalcData();
+    var n = (document.getElementById('fba-name').value||'producto').trim();
+    var rows=[
+      ['Campo','Valor'],
+      ['Producto', n],
+      ['Precio de venta', d.price],
+      ['Unidades/mes', d.units],
+      ['Costo producto', d.cost],
+      ['Shipping inbound', d.ship],
+      ['Packaging', d.pkg],
+      ['Referral Fee', d.refFee.toFixed(2)],
+      ['FBA Fee', d.fbaFee.toFixed(2)],
+      ['Storage Fee', d.storageFee.toFixed(2)],
+      ['PPC Cost', d.ppcCost.toFixed(2)],
+      ['Taxes', d.taxes.toFixed(2)],
+      ['Total Amazon Fees', d.amazonFees.toFixed(2)],
+      ['Total Cost', d.totalCost.toFixed(2)],
+      ['Net Profit', d.netProfit.toFixed(2)],
+      ['Net Margin %', d.netMargin.toFixed(2)],
+      ['ROI %', d.roi.toFixed(2)],
+      ['Break-even Price', d.breakEven.toFixed(2)],
+      ['Monthly Profit', d.monthlyPro.toFixed(2)]
+    ];
+    var csv = rows.map(function(r){return r.join(',');}).join('\n');
+    var blob = new Blob([csv],{type:'text/csv'});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href   = url;
+    a.download = 'fba-calc-'+n.replace(/\s+/g,'-').toLowerCase()+'.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    gaEvent('fba_export_csv');
+  };
+
+  window.fbaExportPDF = function(){
+    gaEvent('fba_export_pdf');
+    window.print();
+  };
+
+  /* Trigger recalc when layer is shown */
+  var _origShow2 = window.show;
+  window.show = function(id){
+    _origShow2(id);
+    if(id === 'l-fba'){ setTimeout(window.fbaRecalc, 60); }
+  };
+
+  /* Initial run if layer visible on load */
+  if(document.getElementById('l-fba') && document.getElementById('l-fba').classList.contains('on')){
+    window.fbaRecalc();
+  }
+})();
+</script>
+
 </body>
 </html>
